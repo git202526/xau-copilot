@@ -88,6 +88,18 @@ npm run serve     # http://127.0.0.1:8080
 | 行情源全线不可用 | 自动降级（灰卡 + 置信度降级），不影响其他卡片 |
 | 页面改版出问题 | Pages 跟随 main；`git revert` 到上一个 tag（`git tag -l`）即回滚 |
 
-## 六、免责
+## 六、发版流程（以后每次更新都走这里）
+
+```bash
+npm test                                   # 1. 必须 10/10 绿
+git commit -am "feat(vX.Y.Z): ..."         # 2. 功能 +0.1，修复 +0.0.1，禁止硬编码版本
+git tag -a vX.Y.Z -m "..."                 # 3. 打 tag 前先 git tag -l 校验唯一
+git push origin main && git push origin vX.Y.Z
+gh release create vX.Y.Z --notes "..."     # 4. Release Notes
+```
+
+Pages 跟随 `main` 自动重发，链接不变；数据由 `sync-data` 每 15 分钟自动跟进，无需手动发版。
+
+## 七、免责
 
 本页只做多源印证与纪律复核，不构成投资建议。页面公开可访问，持仓金额按「模拟数据」对待。
