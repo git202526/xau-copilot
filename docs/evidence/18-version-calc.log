@@ -1,0 +1,21 @@
+[warn] 远端 tag 读取失败，仅用本地 tag 校验：spawnSync /bin/sh ETIMEDOUT
+{
+  "kind": "feature",
+  "latestTag": "v2.0.0",
+  "oldPackageVersion": "2.0.0",
+  "newVersion": "v2.1.0",
+  "unique": true,
+  "localTagCount": 3,
+  "remoteTagCount": 0,
+  "allKnownTags": [
+    "v1.0.0",
+    "v1.0.1",
+    "v2.0.0"
+  ]
+}
+=== 远端 tag 唯一性校验 ===
+v2.0.0
+v1.0.1
+v1.0.0
+--- v2.1.0 是否已存在 ---
+UNIQUE: v2.1.0 远端不存在，可打 tag

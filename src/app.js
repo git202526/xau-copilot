@@ -1,60 +1,140 @@
-/** app.js —— 装配层：取数 → 归一化 → 引擎计算（无 DOM，可被测试直接调用） */
+/**
+ * 装配层：把四个源拉齐 → 跑引擎 → 产出一个只读 state
+ * 渲染层只消费 state，不再做任何判断。
+ */
 import { CONFIG } from "./config.js";
-import { loadA } from "./sourceA.js";
 import { loadB } from "./sourceB.js";
-import * as E from "./engine.js";
+import { loadC, loadFx, usdOzToCnyGram, OZ_TO_GRAM } from "./sourceC.js";
+import { normalizeA, degraded } from "./core/normalize.js";
+import { decide } from "./core/confidence.js";
+import { assess } from "./core/risk.js";
+import { assessGrid } from "./core/grid.js";
+import { rebalance } from "./core/rebalance.js";
+import { discipline } from "./core/discipline.js";
+import { isStale, ageMinutes, premiumState } from "./core/sanitize.js";
 
-export function buildState({ a, b, now, config = CONFIG }) {
-  const fx = (b && b.fx) || config.fxFallback;
-  const A = E.normalizeA(a && a.raw, { fx, now });
-  A.ok = !!(a && a.ok) && A.ok;
-  A.err = (a && a.err) || null;
-  A.stale = !!(a && a.stale);
-
-  const B = b || { ok: false, err: "no external data", trend: null };
-  const decision = E.confidence(A, B, config);
-
-  const state = {
-    now,
-    A,
-    B,
-    decision,
-    briefing: E.briefing(A, B, decision, now),
-    tradePlan: E.tradePlan(A, B),
-    stress: E.stress(A, B, config),
-    grid: E.grid(A, B, config),
-    rebalance: E.rebalance(A, config),
-    discipline: E.discipline(A, B, now),
-    meta: {
-      dataUpdatedAt: A.updatedAt,
-      dataStale: A.stale,
-      dataErr: A.err,
-      bSource: B.ok ? B.source : null,
-      bSourceLabel: B.ok ? B.sourceLabel : null,
-      bAsOf: B.ok ? B.asOf : null,
-      bBars: B.ok ? B.bars : 0,
-      fx: fx,
-      fxOk: !!(B && B.fxOk),
-      fxFallbackUsed: !(B && B.fxOk),
-      degraded: [!A.ok ? "A" : null, !B.ok ? "B" : null].filter(Boolean),
-      dataUrl: config.dataUrl,
-      syncAt: (a && a.syncAt) || null,
-    },
-  };
-  return state;
+async function getJSON(fetchImpl, url) {
+  const res = await fetchImpl(url, { cache: "no-store" });
+  if (!res || !res.ok) throw new Error(`HTTP ${res ? res.status : "?"}`);
+  return res.json();
 }
 
-export async function loadAll(opt = {}) {
-  const config = opt.config || CONFIG;
-  const now = Number(opt.now) || Date.now();
-  const fetchImpl = opt.fetchImpl || globalThis.fetch;
-  const storage = opt.storage !== undefined
-    ? opt.storage
-    : (typeof localStorage !== "undefined" ? localStorage : null);
+/** Source A：老应用快照 + 同步元信息 */
+export async function loadA(fetchImpl = globalThis.fetch, cfg = CONFIG) {
+  const errs = [];
+  let raw = null;
+  let meta = null;
+  try {
+    raw = await getJSON(fetchImpl, `${cfg.dataUrl}?t=${Date.now()}`);
+  } catch (e) {
+    errs.push(`老应用数据 ${e.message || e}`);
+  }
+  try {
+    meta = await getJSON(fetchImpl, cfg.dataUrl.replace(/live\.json$/, "meta.json"));
+  } catch (e) {
+    /* meta 缺失不致命 */
+  }
+  return { raw, meta, err: errs.length ? errs.join("；") : null };
+}
 
-  const [a, b] = await Promise.all([
-    loadA({ fetchImpl, storage, now, config }),
-    loadB({ fetchImpl, now, config }),
+export async function buildState(ctx = {}) {
+  const now = ctx.now || Date.now();
+  const fetchImpl = ctx.fetchImpl || globalThis.fetch;
+  const cfg = { ...CONFIG, ...(ctx.config || {}) };
+
+  const [aRes, B, C, fx] = await Promise.all([
+    loadA(fetchImpl, cfg).catch((e) => ({ raw: null, meta: null, err: String(e.message || e) })),
+    loadB({ fetchImpl, now, config: cfg }).catch((e) => ({
+      ok: false, instrument: "XAUUSD", err: String(e.message || e), trend: 0, ratingOk: false, rating: null, ts: null,
+    })),
+    loadC({ fetchImpl, now, config: cfg }).catch(() => ({ dir: 0, mode: "normal", items: [], ok: false, err: "宏观不可用" })),
+    loadFx({ fetchImpl, config: cfg }).catch(() => ({ ok: false, rate: cfg.fxFallback, fallback: true, err: "汇率不可用" })),
   ]);
-  return buildState({ a, b, now, config });
+
+  const errs = [];
+  if (aRes.err) errs.push(aRes.err);
+  if (B.err) errs.push(B.err);
+  if (C.err) errs.push(C.err);
+  if (fx.err) errs.push(fx.err);
+
+  /* 国际金 → 国内金折算：唯一允许的换算点，且只用于仓位市值与溢价率 */
+  const priceCnyGram = B.ok ? usdOzToCnyGram(B.priceUsdOz, fx.rate) : null;
+
+  const A = aRes.raw ? normalizeA(aRes.raw, { priceCnyGram, now }) : degraded(aRes.err || "老应用数据不可读");
+
+  /* 国内参考价：取最近一笔成交价（老应用不提供独立国内实时盘口） */
+  const refTrade = [...(A.todayActions || [])].sort((x, y) => y.time - x.time)[0];
+  const domesticRef = refTrade ? refTrade.priceCny : null;
+
+  const premium =
+    domesticRef != null && priceCnyGram ? ((domesticRef - priceCnyGram) / priceCnyGram) * 100 : null;
+  const pState = premiumState(new Date(now));
+
+  /* 僵尸数据须在印证前判定：超 15 分钟的外部数据直接废弃方向结论 */
+  const staleB = isStale(B.ts, now, cfg.staleMinutes * 60 * 1000);
+  const decision = decide({
+    aSign: A.trend ? A.trend.sign : 0,
+    bRating: B.ratingOk && B.rating ? B.rating.score : null,
+    cDir: C.dir || 0,
+    vixSpike: C.mode === "risk_off",
+    bMissing: !B.ratingOk,
+    stale: B.ok ? staleB : false,
+  });
+
+  const risk = assess({
+    A,
+    priceCnyGram,
+    macro: C,
+    stale: B.ok ? staleB : false,
+    divergence: decision.scenario === "divergence",
+  });
+
+  const grid = assessGrid({ A, atrUsdOz: B.atr14, fx: fx.rate, priceUsdOz: B.priceUsdOz });
+  const rebal = rebalance({ A, spreadPct: cfg.rebalanceSpreadPct, priceCnyGram });
+  const disc = discipline({ A, decision });
+
+  const dataAt = A.updatedAt || null;
+  const syncAt = aRes.meta && aRes.meta.syncedAt ? Date.parse(aRes.meta.syncedAt) : null;
+  /* 数据管道新鲜度以「云端同步时间」为准（Actions 每 15 分钟落盘）；
+     meta 缺失时退回源数据 updatedAt，给 1 小时容忍（持仓是用户手动记账，天然不会频繁变动）。 */
+  const staleA = syncAt != null
+    ? isStale(syncAt, now, cfg.staleMinutes * 60 * 1000)
+    : isStale(dataAt, now, 60 * 60 * 1000);
+
+  return {
+    ok: true,
+    now,
+    cfg,
+    A, B, C, fx,
+    priceCnyGram,
+    domesticRef,
+    premium: {
+      value: premium != null ? +premium.toFixed(2) : null,
+      frozen: pState.frozen,
+      reason: pState.reason,
+      ref: domesticRef,
+      intl: priceCnyGram,
+    },
+    decision,
+    risk,
+    grid,
+    rebal,
+    disc,
+    meta: {
+      dataAt,
+      syncAt,
+      dataAgeMin: ageMinutes(dataAt, now),
+      syncAgeMin: ageMinutes(syncAt, now),
+      staleA,
+      staleB,
+      degraded: !A.ok || !B.ok,
+      aOk: A.ok,
+      bOk: B.ok,
+      cOk: Boolean(C.ok),
+      fxFallback: Boolean(fx.fallback),
+      errs,
+      fx: fx.rate,
+      ozToGram: OZ_TO_GRAM,
+    },
+  };
 }

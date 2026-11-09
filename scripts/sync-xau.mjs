@@ -7,6 +7,7 @@
  * 这里由 Actions 剪成最近 60 根，前端只取 MA20 需要的部分；现价仍由前端实时拉。
  */
 import { writeFileSync, existsSync, readFileSync } from "node:fs";
+import { computeRating } from "../src/core/rating.js";
 
 const SINA =
   "https://stock2.finance.sina.com.cn/futures/api/jsonp.php/xauSync=/GlobalFuturesService.getGlobalFuturesDailyKLine?symbol=XAU";
@@ -55,6 +56,24 @@ if (!spot) {
   spotAt = null;
 }
 
+/* 评级只在服务端计算：前端只读结果，绝不自己拉 K 线造指标 */
+const closed = tail.filter((b) => b.d !== new Date().toISOString().slice(0, 10));
+const rating = computeRating(closed);
+const ratingDoc = {
+  symbol: "XAUUSD",
+  provider: "local:rating.js",
+  method: "MA5/10/20/50 + RSI14 + MACD + Stoch + CCI + W%R 加权投票（TradingView 口径）",
+  ok: rating.ok,
+  score: rating.score,
+  label: rating.label,
+  buy: rating.buy,
+  sell: rating.sell,
+  neutral: rating.neutral,
+  detail: rating.detail,
+  lastBar: closed.length ? closed[closed.length - 1].d : null,
+  at: new Date().toISOString(),
+};
+
 const doc = {
   symbol: "XAUUSD",
   provider: "sina:XAU",
@@ -77,8 +96,25 @@ const sameBars = (() => {
     return false;
   }
 })();
+
+/* 评级独立写盘：评分变了也要更新，避免「日线没动但评级漂移」时前端读到旧分 */
+const ROUT = "data/rating.json";
+const rPrev = existsSync(ROUT) ? readFileSync(ROUT, "utf8") : "";
+const ratingSame = (() => {
+  try {
+    const p = JSON.parse(rPrev || "{}");
+    return p.score === ratingDoc.score && p.label === ratingDoc.label && p.lastBar === ratingDoc.lastBar;
+  } catch (_) {
+    return false;
+  }
+})();
+if (!ratingSame) {
+  writeFileSync(ROUT, JSON.stringify(ratingDoc, null, 2) + "\n");
+  console.log(`[xau] 评级写入 ${ratingDoc.score} / ${ratingDoc.label}（买${ratingDoc.buy} 卖${ratingDoc.sell}）`);
+}
+
 if (sameBars) {
-  console.log("[xau] 无变化，跳过写入");
+  console.log("[xau] 日线无变化，跳过写入");
   process.exit(0);
 }
 writeFileSync(OUT, next);

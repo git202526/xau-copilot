@@ -1,0 +1,347 @@
+TAP version 13
+# Subtest: T1 持仓数据缺失 → 不崩溃，盈亏标记为数据缺失而非 0
+ok 1 - T1 持仓数据缺失 → 不崩溃，盈亏标记为数据缺失而非 0
+  ---
+  duration_ms: 2.056685
+  ...
+# Subtest: T2 外部数据延迟 30 分钟 → 判定为僵尸数据并废弃
+ok 2 - T2 外部数据延迟 30 分钟 → 判定为僵尸数据并废弃
+  ---
+  duration_ms: 9.711853
+  ...
+# Subtest: T3 国内凌晨 3:00 休市 → 溢价率冻结
+ok 3 - T3 国内凌晨 3:00 休市 → 溢价率冻结
+  ---
+  duration_ms: 0.231972
+  ...
+# Subtest: T4 真实浮亏 -30000 → 原样透出，不回退成 0
+ok 4 - T4 真实浮亏 -30000 → 原样透出，不回退成 0
+  ---
+  duration_ms: 0.429365
+  ...
+# Subtest: T5 内部看空 + 外部多头 + 今日有 BUY → 背离卡 + FOMO 锁
+ok 5 - T5 内部看空 + 外部多头 + 今日有 BUY → 背离卡 + FOMO 锁
+  ---
+  duration_ms: 0.4909
+  ...
+# Subtest: T6 剩余额 < 1.5 倍下一档 → 红色枯竭告警
+ok 6 - T6 剩余额 < 1.5 倍下一档 → 红色枯竭告警
+  ---
+  duration_ms: 0.345823
+  ...
+# Subtest: T7 VIX 单日 +69.7% → 强制避险模式
+ok 7 - T7 VIX 单日 +69.7% → 强制避险模式
+  ---
+  duration_ms: 0.261229
+  ...
+# Subtest: T8 全项目不得出现 PAXG 字样
+ok 8 - T8 全项目不得出现 PAXG 字样
+  ---
+  duration_ms: 9.521249
+  ...
+# Subtest: T9 外部数据僵尸（>15min）→ 废弃印证，置信度降级
+not ok 9 - T9 外部数据僵尸（>15min）→ 废弃印证，置信度降级
+  ---
+  duration_ms: 0.846702
+  location: '/workspace/xau-copilot/tests/terminal.test.mjs:163:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    僵尸数据不得产出共振/背离结论
+    + actual - expected
+    
+    + 'resonance_short'
+    - 'degraded'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'degraded'
+  actual: 'resonance_short'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/terminal.test.mjs:165:10)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: T10 再平衡整体均价取 A.position.avgCost，不得二次加权造出第二个数字
+not ok 10 - T10 再平衡整体均价取 A.position.avgCost，不得二次加权造出第二个数字
+  ---
+  duration_ms: 0.589053
+  location: '/workspace/xau-copilot/tests/terminal.test.mjs:173:1'
+  failureType: 'testCodeFailure'
+  error: '文案未引用主均价：建行 成本 988.21 元/克，比 民生 的 949.73 高出 4.1%。建议逢高减仓 建行，逢低补入 民生，把整体均价从 972.05 往下压。'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '建行 成本 988.21 元/克，比 民生 的 949.73 高出 4.1%。建议逢高减仓 建行，逢低补入 民生，把整体均价从 972.05 往下压。'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/terminal.test.mjs:184:10)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: T11 pagehide 清理 ui.timer 与 ui.countdown
+not ok 11 - T11 pagehide 清理 ui.timer 与 ui.countdown
+  ---
+  duration_ms: 1.660377
+  location: '/workspace/xau-copilot/tests/terminal.test.mjs:190:1'
+  failureType: 'testCodeFailure'
+  error: '缺少卸载钩子'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    /**
+     * main.js —— 唯一调度入口
+     *
+     * 调用链严格单向：init → refreshAll → (buildState → renderAll) → 副作用
+     * 七个 render 函数之间零互调，任何交互都走 refreshAll 统一刷新。
+     */
+    import { CONFIG } from "./config.js";
+    import { buildState } from "./app.js";
+    import { renderAll, renderFailSafe } from "./render.js";
+    
+    const $ = (id) => document.getElementById(id);
+    const HOOK_KEY = "xau_copilot_hook_url";
+    const FOMO_KEY = "xau_copilot_fomo_dismissed";
+    
+    const ui = { state: null, timer: null, countdown: null, busy: false };
+    
+    /* ── 骨架屏：只填充各容器内部，绝不替换容器本身（否则渲染层找不到挂载点） ── */
+    function paintSkeleton() {
+      const sk = (h, w, mb = 7) => `<div class="skel" style="height:${h}px;width:${w};margin-bottom:${mb}px"></div>`;
+      const m0 = $("m0");
+      if (m0) {
+        m0.innerHTML = `<section class="bubble"><div class="b-head"><span class="tag">AI 研判</span><time>加载中</time></div>${sk(16, "92%")}${sk(16, "64%", 0)}</section>`;
+      }
+      const titles = ["宏观雷达", "共振决策", "账户体检", "网格效率", "再平衡", "纪律复盘"];
+      titles.forEach((t, i) => {
+        const el = $(`m${i + 1}`);
+        if (!el) return;
+        el.innerHTML = `<section class="card" style="--bar:#333">
+          <div class="c-head"><span class="c-no">0${i + 1}</span><span class="c-title">${t}</span></div>
+          ${sk(13, "74%")}${sk(13, "46%", 0)}</section>`;
+      });
+    }
+    
+    /* ── 统一刷新（唯一入口） ── */
+    async function refreshAll() {
+      if (ui.busy) return;
+      ui.busy = true;
+      const dot = $("live-dot");
+      if (dot) dot.className = "dot warn";
+      try {
+        const next = await buildState({});
+        ui.state = next;
+        renderAll(next);
+        afterRender(next);
+      } catch (e) {
+        console.error("[copilot] refresh failed", e);
+        renderFailSafe(e);
+        if (dot) dot.className = "dot bad";
+      } finally {
+        ui.busy = false;
+      }
+    }
+    
+    /* ── 渲染后的副作用：FOMO 锁 + Webhook ── */
+    function afterRender(s) {
+      maybeFomo(s);
+      maybePush(s);
+    }
+    
+    /* FOMO 锁：同日只弹一次，10 秒倒计时后才允许「强行买入」 */
+    function maybeFomo(s) {
+      if (!s.risk || !s.risk.fomoLock) return;
+      const today = new Date(s.now).toISOString().slice(0, 10);
+      let dismissed = null;
+      try {
+        dismissed = localStorage.getItem(FOMO_KEY);
+      } catch (_) {}
+      if (dismissed === today) return;
+    
+      const modal = $("fomo");
+      const txt = $("fomo-text");
+      const cd = $("fomo-cd");
+      const okBtn = $("fomo-ok");
+      if (!modal || !txt || !cd || !okBtn) return;
+    
+      txt.textContent = s.risk.fomoText || "当前处于多源背离区间，今日仍有买入操作。是否确认强行买入？";
+      modal.hidden = false;
+    
+      let left = s.risk.fomoCountdown || 10;
+      okBtn.disabled = true;
+      cd.innerHTML = `${left}<small>秒后可确认</small>`;
+      if (ui.countdown) clearInterval(ui.countdown);
+      ui.countdown = setInterval(() => {
+        left -= 1;
+        if (left <= 0) {
+          clearInterval(ui.countdown);
+          ui.countdown = null;
+          cd.innerHTML = `0<small>可确认</small>`;
+          okBtn.disabled = false;
+          return;
+        }
+        cd.innerHTML = `${left}<small>秒后可确认</small>`;
+      }, 1000);
+    
+      const close = () => {
+        modal.hidden = true;
+        if (ui.countdown) clearInterval(ui.countdown);
+        ui.countdown = null;
+        try {
+          localStorage.setItem(FOMO_KEY, today);
+        } catch (_) {}
+      };
+      $("fomo-cancel").onclick = close;
+      okBtn.onclick = () => close();
+    }
+    
+    /* Webhook：强共振 / 熔断时静默推一次，同日同事件去重 */
+    async function maybePush(s) {
+      const url = (() => {
+        try {
+          return localStorage.getItem(HOOK_KEY) || CONFIG.webhookUrl || "";
+        } catch (_) {
+          return CONFIG.webhookUrl || "";
+        }
+      })();
+      if (!url) return;
+    
+      const events = [];
+      if (s.decision && s.decision.scenario === "resonance_short") events.push("RESONANCE_SHORT");
+      if (s.decision && s.decision.scenario === "resonance_long") events.push("RESONANCE_LONG");
+      if (s.grid && s.grid.fuse) events.push("GRID_FUSE");
+      if (!events.length) return;
+    
+      const day = new Date(s.now).toISOString().slice(0, 10);
+      for (const ev of events) {
+        const key = `xau_copilot_hook_${ev}_${day}`;
+        try {
+          if (localStorage.getItem(key)) continue;
+          localStorage.setItem(key, "1");
+        } catch (_) {}
+        const payload = {
+          app: "XAU Copilot",
+          event: ev,
+          ts: new Date(s.now).toISOString(),
+          price: s.B && s.B.priceUsdOz,
+          ma20: s.B && s.B.ma20UsdOz,
+          rating: s.B && s.B.rating ? s.B.rating.score : null,
+          trendA: s.A && s.A.trend ? s.A.trend.text : null,
+          macro: s.C ? s.C.label : null,
+          confidence: s.decision.conf,
+          headline: s.decision.headline,
+          pnl: s.risk ? s.risk.pnl : null,
+        };
+        try {
+          const ctl = new AbortController();
+          const t = setTimeout(() => ctl.abort(), 5000);
+          await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            signal: ctl.signal,
+            mode: "no-cors",
+          });
+          clearTimeout(t);
+        } catch (e) {
+          console.warn("[copilot] webhook 静默失败：", e.message);
+        }
+      }
+    }
+    
+    /* ── 设置抽屉 ── */
+    function bindUI() {
+      const drawer = $("drawer");
+      const hookInput = $("set-hook");
+    
+      $("btn-refresh")?.addEventListener("click", () => refreshAll());
+    
+      $("btn-settings")?.addEventListener("click", () => {
+        try {
+          hookInput.value = localStorage.getItem(HOOK_KEY) || "";
+        } catch (_) {}
+        drawer.hidden = false;
+      });
+    
+      $("drawer-close")?.addEventListener("click", () => {
+        drawer.hidden = true;
+      });
+      drawer?.addEventListener("click", (e) => {
+        if (e.target === drawer) drawer.hidden = true;
+      });
+    
+      hookInput?.addEventListener("change", () => {
+        const v = hookInput.value.trim();
+        try {
+          if (v) localStorage.setItem(HOOK_KEY, v);
+          else localStorage.removeItem(HOOK_KEY);
+        } catch (_) {}
+      });
+    
+      $("btn-export")?.addEventListener("click", () => {
+        if (!ui.state) return;
+        const blob = new Blob([JSON.stringify(ui.state, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `xau-copilot-${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+    
+      $("btn-clear")?.addEventListener("click", () => {
+        if (!confirm("清除本地缓存（Webhook 配置与 FOMO 记录）？云端数据不受影响。")) return;
+        try {
+          Object.keys(localStorage)
+            .filter((k) => k.startsWith("xau_copilot_"))
+            .forEach((k) => localStorage.removeItem(k));
+        } catch (_) {}
+        alert("已清除。");
+      });
+    
+      // 页面重新可见时刷新（手机切回来不会看到过期数据）
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") refreshAll();
+      });
+    }
+    
+    /* ── 启动 ── */
+    function init() {
+      paintSkeleton();
+      bindUI();
+      refreshAll();
+      // 现价 60 秒刷新；页面隐藏时暂停，省电省流量
+      ui.timer = setInterval(() => {
+        if (document.visibilityState === "visible") refreshAll();
+      }, 60 * 1000);
+    }
+    
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/terminal.test.mjs:193:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 8
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 67.16854

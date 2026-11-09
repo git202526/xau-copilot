@@ -5,9 +5,7 @@ on:
     - cron: "*/15 * * * *"   # 每 15 分钟拉一次老应用私有库快照
   workflow_dispatch:
   push:
-    branches: [main]
-    paths:
-      - "scripts/sync-data.mjs"
+    branches: [main]   # 每次发版也顺带同步一次数据，不完全依赖 schedule
 
 permissions:
   contents: write
@@ -28,8 +26,11 @@ jobs:
         env:
           XAU_DATA_TOKEN: ${{ secrets.XAU_DATA_TOKEN }}
         run: node scripts/sync-data.mjs
-      - name: Sync XAUUSD daily bars → data/xauusd.json
+      - name: Sync XAUUSD daily bars → data/xauusd.json + data/rating.json
         run: node scripts/sync-xau.mjs
+      - name: Sync macro (DXY / 10Y / VIX) → data/macro.json
+        run: node scripts/sync-macro.mjs
+        continue-on-error: true
       - name: Commit snapshot
         run: |
           git config user.name "xau-copilot-bot"
@@ -38,6 +39,6 @@ jobs:
             echo "no changes"
             exit 0
           fi
-          git add data/live.json data/meta.json data/xauusd.json
+          git add data/live.json data/meta.json data/xauusd.json data/rating.json data/macro.json
           git commit -m "chore(data): sync snapshot $(date -u +'%Y-%m-%dT%H:%MZ')"
           git push

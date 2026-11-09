@@ -1,162 +1,169 @@
-/** sourceB.js —— 外部独立行情（XAUUSD 优先，PAXG 仅作最后兜底）
+/**
+ * Source B：外部独立行情 —— 仅 XAUUSD 伦敦金现
  *
- *  历史教训：PAXG 与 GC=F 基差不同，跨源比价会算错趋势。所以这里先按「同一品种」取数：
- *  1) XAUUSD：日线来自 Actions 同步的新浪伦敦金（XAU），现价来自 gold-api（同为 XAU/USD）
- *  2) 兜底：Binance PAXG（标签明确写「代理」，不冒充 XAUUSD）
- *  统一规则：MA20 只用「已收盘」日线；不足 20 根直接降级，绝不凑数。
+ * 通道（同源自洽，绝不跨源混算）：
+ *   1) 日线：data/xauusd.json（Actions 每 15 分钟从新浪全球期货 XAU 抓取并裁剪）
+ *   2) 现价：api.gold-api.com/price/XAU（CORS 开放，无 key，60s 缓存）
+ *   3) 评级：data/rating.json（Actions 侧用 src/core/rating.js 预算，前端只读）
+ *
+ * 不使用任何加密资产代币作为黄金代理。
  */
-import { CONFIG } from "./config.js";
-import { ma, atr, round, toCnyGram, dayKey } from "./engine.js";
 
-const num = (v) => (Number.isFinite(+v) ? +v : null);
+import { withTTL, QUOTE_TTL, MACRO_TTL, STALE_MS } from "./core/sanitize.js";
 
-/* ---------- Provider 1：XAUUSD ---------- */
-async function loadXau(opt) {
-  const { fetchImpl, config, now } = opt;
-  const r = await fetchImpl(`${config.xauUrl}${config.xauUrl.includes("?") ? "&" : "?"}t=${now}`, { cache: "no-store" });
-  if (!r || !r.ok) throw new Error("snapshot HTTP " + (r && r.status));
-  const doc = await r.json();
-  if (!doc || !Array.isArray(doc.bars)) throw new Error("snapshot 缺 bars");
+const n = (v) => (v == null || v === "" ? null : Number.isFinite(Number(v)) ? Number(v) : null);
+const round = (v, d = 2) => (v == null ? null : +Number(v).toFixed(d));
 
-  const today = dayKey(now, 8);
-  const closed = doc.bars
-    .map((b) => ({ t: Date.parse(b.d + "T00:00:00Z"), o: +b.o, h: +b.h, l: +b.l, c: +b.c, d: b.d }))
-    .filter((b) => [b.o, b.h, b.l, b.c].every((x) => Number.isFinite(x) && x > 0))
-    .filter((b) => b.d < today); // 当日未收盘 K 剔除
+function maOf(closes, p) {
+  if (closes.length < p) return null;
+  return closes.slice(-p).reduce((a, b) => a + b, 0) / p;
+}
 
-  if (closed.length < config.maPeriod) throw new Error(`已收盘仅 ${closed.length} 根`);
+/** 剔除当日未收盘的最后一根（UTC+0 日界，收盘价未定不参与均线） */
+function dropUnclosed(bars, now) {
+  if (!bars.length) return bars;
+  const last = bars[bars.length - 1];
+  const d = String(last.d || last.date || "");
+  const today = new Date(now).toISOString().slice(0, 10);
+  if (d !== today) return bars;
+  const h = new Date(now).getUTCHours();
+  return h >= 23 ? bars : bars.slice(0, -1);
+}
+
+async function getJSON(fetchImpl, url, opts = {}) {
+  const res = await fetchImpl(url, { cache: "no-store", ...opts });
+  if (!res || !res.ok) throw new Error(`HTTP ${res ? res.status : "?"}`);
+  return res.json();
+}
+
+export async function loadB(ctx = {}) {
+  const fetchImpl = ctx.fetchImpl || globalThis.fetch;
+  const now = ctx.now || Date.now();
+  const cfg = ctx.config || {};
+  const base = cfg.baseUrl || "";
+
+  const errs = [];
+  let snap = null;
+  let ratingDoc = null;
+
+  try {
+    snap = await withTTL("b:snap", MACRO_TTL, () =>
+      getJSON(fetchImpl, `${base}${cfg.xauUrl || "data/xauusd.json"}?t=${now}`)
+    );
+  } catch (e) {
+    errs.push(`日线快照 ${e.message || e}`);
+  }
+
+  try {
+    ratingDoc = await getJSON(fetchImpl, `${base}${cfg.ratingUrl || "data/rating.json"}?t=${now}`);
+  } catch (e) {
+    errs.push(`评级 ${e.message || e}`);
+  }
 
   let spot = null;
-  let spotSource = "close";
-  try {
-    const sr = await fetchImpl(config.xauSpotUrl, { cache: "no-store" });
-    if (sr && sr.ok) {
-      const sj = await sr.json();
-      const p = num(sj && sj.price);
-      if (p && p > 0) {
-        spot = p;
+  let spotAt = null;              // 本次实时抓取的时间戳（缓存命中时保留原抓取时刻）
+  let spotSource = "snapshot";
+  if (cfg.xauSpotUrl) {
+    try {
+      const q = await withTTL("b:spot", QUOTE_TTL, async () => {
+        const j = await getJSON(fetchImpl, cfg.xauSpotUrl);
+        return { price: n(j && j.price), at: now };
+      });
+      if (q && q.price && q.price > 100) {
+        spot = q.price;
+        spotAt = q.at;
         spotSource = "gold-api";
       }
-    }
-  } catch (_) {}
-  if (!spot) {
-    spot = num(doc.spot) || closed[closed.length - 1].c;
-    spotSource = doc.spotSource || "sina-close";
-  }
-
-  return {
-    key: "xau",
-    label: "XAUUSD 伦敦金现",
-    instrument: "XAUUSD",
-    bars: closed,
-    spot,
-    spotSource,
-    atrUsd: atr(closed, config.atrPeriod),
-    asOf: doc.asOf ? Date.parse(doc.asOf) : closed[closed.length - 1].t,
-  };
-}
-
-/* ---------- Provider 2/3：PAXG（兜底） ---------- */
-function parseBinance(rows) {
-  if (!Array.isArray(rows)) throw new Error("bad payload");
-  const out = rows
-    .map((r) => ({ t: +r[0], o: +r[1], h: +r[2], l: +r[3], c: +r[4], ct: +r[6] }))
-    .filter((b) => [b.o, b.h, b.l, b.c].every((x) => Number.isFinite(x) && x > 0));
-  if (!out.length) throw new Error("no bars");
-  return out;
-}
-
-async function loadPaxg(opt, url, key, label) {
-  const { fetchImpl, config, now } = opt;
-  const r = await fetchImpl(url);
-  if (!r || !r.ok) throw new Error("HTTP " + (r && r.status));
-  const bars = parseBinance(await r.json()).filter((b) => b.ct <= now);
-  if (bars.length < config.maPeriod + 1) throw new Error(`已收盘 ${bars.length} 根，不足 ${config.maPeriod + 1}`);
-  return {
-    key, label, instrument: "PAXG",
-    bars, spot: bars[bars.length - 1].c, spotSource: "binance",
-    atrUsd: atr(bars, config.atrPeriod), asOf: bars[bars.length - 1].ct,
-  };
-}
-
-/* ---------- 汇率（只用于展示换算成元/克，不参与趋势判定） ---------- */
-async function loadFx(fetchImpl, config) {
-  try {
-    const r = await fetchImpl(config.fxUrl);
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const j = await r.json();
-    const rate = num(j && j.rates && j.rates.CNY);
-    if (!rate || rate <= 0) throw new Error("no CNY");
-    return { rate, ok: true, err: null };
-  } catch (e) {
-    return { rate: config.fxFallback, ok: false, err: String((e && e.message) || e) };
-  }
-}
-
-export async function loadB(opt = {}) {
-  const config = opt.config || CONFIG;
-  const fetchImpl = opt.fetchImpl || globalThis.fetch;
-  const now = Number(opt.now) || Date.now();
-  const ctx = { fetchImpl, config, now };
-
-  const fxP = loadFx(fetchImpl, config);
-  const errs = [];
-  let pick = null;
-
-  const attempts = [
-    () => loadXau(ctx),
-    () => loadPaxg(ctx, config.binanceUrl, "binance", "PAXG · Binance（代理）"),
-    () => loadPaxg(ctx, config.binanceAltUrl, "binance-alt", "PAXG · Binance 备用（代理）"),
-  ];
-  for (const attempt of attempts) {
-    try {
-      pick = await attempt();
-      break;
     } catch (e) {
-      errs.push((e && e.message) || String(e));
+      errs.push(`实时现价 ${e.message || e}`);
     }
   }
+  if (spot == null && snap && n(snap.spot) != null) {
+    spot = n(snap.spot);
+    spotSource = "snapshot";
+    errs.push("实时现价不可用，回退快照价");
+  }
 
-  const fxInfo = await fxP;
-
-  if (!pick) {
+  if (!snap || !Array.isArray(snap.bars) || snap.bars.length < 21) {
     return {
-      ok: false, source: null, sourceLabel: null, instrument: null, err: errs.join(" | "), bars: 0,
-      fx: fxInfo.rate, fxOk: fxInfo.ok,
-      priceUsdOz: null, priceCnyGram: null, ma20UsdOz: null, ma20CnyGram: null,
-      devPct: null, trend: null, atrUsdOz: null, atrCnyGram: null, degradedReason: "all-providers-failed",
-      asOf: null, closes: [], maSeries: [],
+      ok: false, instrument: "XAUUSD", sourceLabel: "XAUUSD 伦敦金现",
+      err: errs.join("；") || "日线不足 21 根", ts: null, rating: null, ratingOk: false, trend: 0,
     };
   }
 
-  const closes = pick.bars.map((b) => b.c);
-  const ma20 = ma(closes, config.maPeriod);
-  const dz = (config.deadZonePct || 0.05) / 100;
-  const price = pick.spot;
-  const trend = price > ma20 * (1 + dz) ? 1 : price < ma20 * (1 - dz) ? -1 : 0;
+  const bars = dropUnclosed(snap.bars, now);
+  const closes = bars.map((b) => n(b.c ?? b.close)).filter((v) => v != null);
+  if (closes.length < 21) {
+    return { ok: false, instrument: "XAUUSD", sourceLabel: "XAUUSD 伦敦金现", err: "剔除未收盘后不足 21 根", ts: null, rating: null, ratingOk: false, trend: 0 };
+  }
+
+  const ma20 = maOf(closes, 20);
+  const lastClose = closes[closes.length - 1];
+  const prevClose = closes[closes.length - 2];
+  const price = spot != null ? spot : lastClose;
+
+  const devPct = ma20 ? ((price - ma20) / ma20) * 100 : null;
+  const dayPct = prevClose ? ((price - prevClose) / prevClose) * 100 : null;
+
+  const dead = n(cfg.deadZonePct) ?? 0.05;
+  let trend = 0;
+  if (ma20 && devPct != null) {
+    if (devPct > dead) trend = 1;
+    else if (devPct < -dead) trend = -1;
+  }
+
+  let atr14 = null;
+  if (bars.length >= 15) {
+    const trs = [];
+    for (let i = 1; i < bars.length; i++) {
+      const h = n(bars[i].h ?? bars[i].high), l = n(bars[i].l ?? bars[i].low);
+      const pc = n(bars[i - 1].c ?? bars[i - 1].close);
+      if (h != null && l != null && pc != null) trs.push(Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)));
+    }
+    if (trs.length >= 14) atr14 = trs.slice(-14).reduce((a, b) => a + b, 0) / 14;
+  }
+
+  const ratingOk = Boolean(ratingDoc && ratingDoc.ok && n(ratingDoc.score) != null);
+  /* 新鲜度锚点：实时现价成功 → 用本次抓取时刻；否则回退日线快照写入时刻。
+     注意快照里 spotAt/asOf 是 ISO 字符串，不能用 Number() 解析（会静默变成 null）。 */
+  const parseTs = (v) => {
+    if (v == null || v === "") return null;
+    const num = Number(v);
+    if (Number.isFinite(num) && num > 0) return num;
+    const dp = Date.parse(v);
+    return Number.isFinite(dp) ? dp : null;
+  };
+  const snapTs = parseTs(snap.spotAt) ?? parseTs(snap.asOf);
+  const ts = spotSource === "gold-api" && spotAt != null ? spotAt : snapTs;
+  const stale = ts != null ? now - ts > STALE_MS : false;
 
   return {
     ok: true,
-    source: pick.key,
-    sourceLabel: pick.label,
-    instrument: pick.instrument,
-    err: errs.length ? errs.join(" | ") : null,
-    bars: pick.bars.length,
-    fx: fxInfo.rate,
-    fxOk: fxInfo.ok,
-    priceUsdOz: round(price, 2),
-    priceCnyGram: round(toCnyGram(price, fxInfo.rate), 2),
-    ma20UsdOz: round(ma20, 2),
-    ma20CnyGram: round(toCnyGram(ma20, fxInfo.rate), 2),
-    devPct: round((price / ma20 - 1) * 100, 2),
+    instrument: "XAUUSD",
+    sourceLabel: "XAUUSD 伦敦金现",
+    priceUsdOz: round(price),
+    ma20UsdOz: round(ma20),
+    devPct: round(devPct),
+    dayPct: round(dayPct),
+    lastClose: round(lastClose),
     trend,
-    atrUsdOz: pick.atrUsd ? round(pick.atrUsd, 1) : null,
-    atrCnyGram: pick.atrUsd ? round(toCnyGram(pick.atrUsd, fxInfo.rate), 2) : null,
-    spotSource: pick.spotSource,
-    asOf: pick.asOf,
-    prevClose: round(closes[closes.length - 1], 2),
-    dayPct: round((price / closes[closes.length - 1] - 1) * 100, 2),
+    bars: closes.length,
+    atr14: round(atr14, 1),
     closes: closes.slice(-30),
-    maSeries: closes.map((_, i) => (i + 1 >= config.maPeriod ? ma(closes.slice(0, i + 1), config.maPeriod) : null)).slice(-30),
+    maSeries: closes
+      .map((_, i) => (i + 1 >= 20 ? maOf(closes.slice(0, i + 1), 20) : null))
+      .map((v) => (v == null ? null : +v.toFixed(2)))
+      .slice(-30),
+    spotSource,
+    asOf: snap.asOf || null,
+    ts,
+    stale,
+    ratingOk,
+    rating: ratingOk
+      ? { score: n(ratingDoc.score), label: ratingDoc.label, buy: ratingDoc.buy, sell: ratingDoc.sell, neutral: ratingDoc.neutral, at: ratingDoc.at || null }
+      : null,
+    err: errs.length ? errs.join("；") : null,
   };
 }
+
+export { dropUnclosed };

@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: T1 外部行情全挂：不白屏，决策降级为「外部校验失败，置信度降级」
+ok 1 - T1 外部行情全挂：不白屏，决策降级为「外部校验失败，置信度降级」
+  ---
+  duration_ms: 3.460812
+  ...
+# Subtest: T1b 老应用数据挂、外部正常：内部降级但不崩
+ok 2 - T1b 老应用数据挂、外部正常：内部降级但不崩
+  ---
+  duration_ms: 0.582072
+  ...
+# Subtest: T2 多源背离：A 看空 + B 站上 MA20 → 黄色「多源背离」，徽章「低」
+ok 3 - T2 多源背离：A 看空 + B 站上 MA20 → 黄色「多源背离」，徽章「低」
+  ---
+  duration_ms: 3.966107
+  ...
+# Subtest: T3 强共振做空：A 看空 + B 跌破 MA20 → 红色，徽章「高」
+ok 4 - T3 强共振做空：A 看空 + B 跌破 MA20 → 红色，徽章「高」
+  ---
+  duration_ms: 1.495524
+  ...
+# Subtest: T3b 强共振做多：双多 → 绿底
+ok 5 - T3b 强共振做多：双多 → 绿底
+  ---
+  duration_ms: 0.647479
+  ...
+# Subtest: T5 强共振触发 Webhook：POST 一次，载荷正确，同日去重
+ok 6 - T5 强共振触发 Webhook：POST 一次，载荷正确，同日去重
+  ---
+  duration_ms: 3.950978
+  ...
+# Subtest: T5b 非共振不推送；推送失败静默不抛
+ok 7 - T5b 非共振不推送；推送失败静默不抛
+  ---
+  duration_ms: 1.236462
+  ...
+# Subtest: T5c 载荷结构固定（防回归）
+ok 8 - T5c 载荷结构固定（防回归）
+  ---
+  duration_ms: 0.530474
+  ...
+# Subtest: T4 逆势加仓扣分：单边下跌 + 今日 BUY → 红色纪律扣分
+ok 9 - T4 逆势加仓扣分：单边下跌 + 今日 BUY → 红色纪律扣分
+  ---
+  duration_ms: 3.989606
+  ...
+# Subtest: T4b 纪律良好：下跌但今日无 BUY
+ok 10 - T4b 纪律良好：下跌但今日无 BUY
+  ---
+  duration_ms: 1.381117
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 54.364252

@@ -1,6 +1,6 @@
 {
   "name": "xau-copilot",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "type": "module",
   "description": "XAU Copilot — 多源印证 AI 决策指挥中心（无 K 线主图）",
@@ -9,5 +9,7 @@
     "serve": "python3 -m http.server 8080",
     "sync": "node scripts/sync-data.mjs"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  }
 }

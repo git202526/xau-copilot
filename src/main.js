@@ -1,107 +1,242 @@
-/** main.js —— 唯一入口：load → paint → 静默推送。渲染函数之间不互调。 */
-import { loadAll } from "./app.js";
-import { paint } from "./render.js";
-import { sendAlert } from "./webhook.js";
-
-const HOOK_KEY = "xau_copilot_hook_url";
-const state = { loading: false, last: null, timer: null };
+/**
+ * main.js —— 唯一调度入口
+ *
+ * 调用链严格单向：init → refreshAll → (buildState → renderAll) → 副作用
+ * 七个 render 函数之间零互调，任何交互都走 refreshAll 统一刷新。
+ */
+import { CONFIG } from "./config.js";
+import { buildState } from "./app.js";
+import { renderAll, renderFailSafe } from "./render.js";
 
 const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const HOOK_KEY = "xau_copilot_hook_url";
+const FOMO_KEY = "xau_copilot_fomo_dismissed";
 
-function toast(msg) {
-  const el = $("toast");
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add("on");
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => el.classList.remove("on"), 2200);
+const ui = { state: null, timer: null, countdown: null, busy: false };
+
+/* ── 骨架屏：只填充各容器内部，绝不替换容器本身（否则渲染层找不到挂载点） ── */
+function paintSkeleton() {
+  const sk = (h, w, mb = 7) => `<div class="skel" style="height:${h}px;width:${w};margin-bottom:${mb}px"></div>`;
+  const m0 = $("m0");
+  if (m0) {
+    m0.innerHTML = `<section class="bubble"><div class="b-head"><span class="tag">AI 研判</span><time>加载中</time></div>${sk(16, "92%")}${sk(16, "64%", 0)}</section>`;
+  }
+  const titles = ["宏观雷达", "共振决策", "账户体检", "网格效率", "再平衡", "纪律复盘"];
+  titles.forEach((t, i) => {
+    const el = $(`m${i + 1}`);
+    if (!el) return;
+    el.innerHTML = `<section class="card" style="--bar:#333">
+      <div class="c-head"><span class="c-no">0${i + 1}</span><span class="c-title">${t}</span></div>
+      ${sk(13, "74%")}${sk(13, "46%", 0)}</section>`;
+  });
 }
 
-function failSafe(err) {
-  document.body.classList.add("ready");
-  const box = $("briefing");
-  if (!box) return;
-  box.innerHTML = `<section class="bubble rise" id="card-briefing">
-    <div class="b-head"><span class="tag">降级处理</span><span class="sep"></span><time>本地兜底</time></div>
-    <p class="b-text">源数据异常，降级处理：${esc((err && err.message) || err)}。页面未中断，点右上角刷新可重试。</p>
-    <div class="b-foot"><span class="chip warn">降级模式</span><span class="chip">七张卡暂停</span></div>
-  </section>`;
-}
-
-async function refreshAll(reason) {
-  if (state.loading) return;
-  state.loading = true;
-  document.body.classList.add("is-loading");
-  const btn = $("btn-refresh");
-  if (btn) btn.disabled = true;
+/* ── 统一刷新（唯一入口） ── */
+async function refreshAll() {
+  if (ui.busy) return;
+  ui.busy = true;
+  const dot = $("live-dot");
+  if (dot) dot.className = "dot warn";
   try {
-    const st = await loadAll({});
-    state.last = st;
-    paint(document, st);
-    const hook = safeGet(HOOK_KEY);
-    if (hook) {
-      // 静默：失败不影响任何 UI
-      sendAlert(st, { webhookUrl: hook, storage: localStorage }).catch(() => {});
-    }
-    if (reason === "manual") toast(st.meta.degraded.length ? "已刷新（降级模式）" : "已刷新");
+    const next = await buildState({});
+    ui.state = next;
+    renderAll(next);
+    afterRender(next);
   } catch (e) {
-    failSafe(e);
+    console.error("[copilot] refresh failed", e);
+    renderFailSafe(e);
+    if (dot) dot.className = "dot bad";
   } finally {
-    state.loading = false;
-    document.body.classList.remove("is-loading");
-    if (btn) btn.disabled = false;
+    ui.busy = false;
   }
 }
 
-function safeGet(k) {
-  try { return localStorage.getItem(k) || ""; } catch (_) { return ""; }
-}
-function safeSet(k, v) {
-  try { localStorage.setItem(k, v); } catch (_) {}
-}
-
-function exportSnapshot() {
-  if (!state.last) return toast("还没有可取的数据");
-  const blob = new Blob([JSON.stringify(state.last, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `xau-copilot-${new Date().toISOString().slice(0, 10)}.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-  toast("已导出当前决策快照");
+/* ── 渲染后的副作用：FOMO 锁 + Webhook ── */
+function afterRender(s) {
+  maybeFomo(s);
+  maybePush(s);
 }
 
-function boot() {
-  const hook = $("hook-url");
-  if (hook) hook.value = safeGet(HOOK_KEY);
-  const btnHook = $("btn-hook");
-  if (btnHook) btnHook.addEventListener("click", () => {
-    const v = (hook.value || "").trim();
-    if (v && !/^https?:\/\//i.test(v)) return toast("Webhook 需以 http(s):// 开头");
-    safeSet(HOOK_KEY, v);
-    toast(v ? "已保存，触发时静默推送" : "已清空 Webhook");
+/* FOMO 锁：同日只弹一次，10 秒倒计时后才允许「强行买入」 */
+function maybeFomo(s) {
+  if (!s.risk || !s.risk.fomoLock) return;
+  const today = new Date(s.now).toISOString().slice(0, 10);
+  let dismissed = null;
+  try {
+    dismissed = localStorage.getItem(FOMO_KEY);
+  } catch (_) {}
+  if (dismissed === today) return;
+
+  const modal = $("fomo");
+  const txt = $("fomo-text");
+  const cd = $("fomo-cd");
+  const okBtn = $("fomo-ok");
+  if (!modal || !txt || !cd || !okBtn) return;
+
+  txt.textContent = s.risk.fomoText || "当前处于多源背离区间，今日仍有买入操作。是否确认强行买入？";
+  modal.hidden = false;
+
+  let left = s.risk.fomoCountdown || 10;
+  okBtn.disabled = true;
+  cd.innerHTML = `${left}<small>秒后可确认</small>`;
+  if (ui.countdown) clearInterval(ui.countdown);
+  ui.countdown = setInterval(() => {
+    left -= 1;
+    if (left <= 0) {
+      clearInterval(ui.countdown);
+      ui.countdown = null;
+      cd.innerHTML = `0<small>可确认</small>`;
+      okBtn.disabled = false;
+      return;
+    }
+    cd.innerHTML = `${left}<small>秒后可确认</small>`;
+  }, 1000);
+
+  const close = () => {
+    modal.hidden = true;
+    if (ui.countdown) clearInterval(ui.countdown);
+    ui.countdown = null;
+    try {
+      localStorage.setItem(FOMO_KEY, today);
+    } catch (_) {}
+  };
+  $("fomo-cancel").onclick = close;
+  okBtn.onclick = () => close();
+}
+
+/* Webhook：强共振 / 熔断时静默推一次，同日同事件去重 */
+async function maybePush(s) {
+  const url = (() => {
+    try {
+      return localStorage.getItem(HOOK_KEY) || CONFIG.webhookUrl || "";
+    } catch (_) {
+      return CONFIG.webhookUrl || "";
+    }
+  })();
+  if (!url) return;
+
+  const events = [];
+  if (s.decision && s.decision.scenario === "resonance_short") events.push("RESONANCE_SHORT");
+  if (s.decision && s.decision.scenario === "resonance_long") events.push("RESONANCE_LONG");
+  if (s.grid && s.grid.fuse) events.push("GRID_FUSE");
+  if (!events.length) return;
+
+  const day = new Date(s.now).toISOString().slice(0, 10);
+  for (const ev of events) {
+    const key = `xau_copilot_hook_${ev}_${day}`;
+    try {
+      if (localStorage.getItem(key)) continue;
+      localStorage.setItem(key, "1");
+    } catch (_) {}
+    const payload = {
+      app: "XAU Copilot",
+      event: ev,
+      ts: new Date(s.now).toISOString(),
+      price: s.B && s.B.priceUsdOz,
+      ma20: s.B && s.B.ma20UsdOz,
+      rating: s.B && s.B.rating ? s.B.rating.score : null,
+      trendA: s.A && s.A.trend ? s.A.trend.text : null,
+      macro: s.C ? s.C.label : null,
+      confidence: s.decision.conf,
+      headline: s.decision.headline,
+      pnl: s.risk ? s.risk.pnl : null,
+    };
+    try {
+      const ctl = new AbortController();
+      const t = setTimeout(() => ctl.abort(), 5000);
+      try {
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: ctl.signal,
+          mode: "no-cors",
+        });
+      } finally {
+        clearTimeout(t); // 成功或异常都必须释放超时器
+      }
+    } catch (e) {
+      console.warn("[copilot] webhook 静默失败：", e.message);
+    }
+  }
+}
+
+/* ── 设置抽屉 ── */
+function bindUI() {
+  const drawer = $("drawer");
+  const hookInput = $("set-hook");
+
+  $("btn-refresh")?.addEventListener("click", () => refreshAll());
+
+  $("btn-settings")?.addEventListener("click", () => {
+    try {
+      hookInput.value = localStorage.getItem(HOOK_KEY) || "";
+    } catch (_) {}
+    drawer.hidden = false;
   });
-  const bExp = $("btn-export");
-  if (bExp) bExp.addEventListener("click", exportSnapshot);
-  const bRe = $("btn-reload");
-  if (bRe) bRe.addEventListener("click", () => refreshAll("manual"));
-  const bRe2 = $("btn-refresh");
-  if (bRe2) bRe2.addEventListener("click", () => refreshAll("manual"));
 
-  refreshAll("boot");
+  $("drawer-close")?.addEventListener("click", () => {
+    drawer.hidden = true;
+  });
+  drawer?.addEventListener("click", (e) => {
+    if (e.target === drawer) drawer.hidden = true;
+  });
 
-  // 5 分钟自动刷新（可见时才拉，省流量）
-  state.timer = setInterval(() => {
-    if (document.visibilityState === "visible") refreshAll("auto");
-  }, 5 * 60 * 1000);
+  hookInput?.addEventListener("change", () => {
+    const v = hookInput.value.trim();
+    try {
+      if (v) localStorage.setItem(HOOK_KEY, v);
+      else localStorage.removeItem(HOOK_KEY);
+    } catch (_) {}
+  });
+
+  $("btn-export")?.addEventListener("click", () => {
+    if (!ui.state) return;
+    const blob = new Blob([JSON.stringify(ui.state, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `xau-copilot-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  $("btn-clear")?.addEventListener("click", () => {
+    if (!confirm("清除本地缓存（Webhook 配置与 FOMO 记录）？云端数据不受影响。")) return;
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("xau_copilot_"))
+        .forEach((k) => localStorage.removeItem(k));
+    } catch (_) {}
+    alert("已清除。");
+  });
+
+  // 页面重新可见时刷新（手机切回来不会看到过期数据）
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") refreshAll("auto");
+    if (document.visibilityState === "visible") refreshAll();
+  });
+}
+
+/* ── 启动 ── */
+function init() {
+  paintSkeleton();
+  bindUI();
+  refreshAll();
+  // 现价 60 秒刷新；页面隐藏时暂停，省电省流量
+  ui.timer = setInterval(() => {
+    if (document.visibilityState === "visible") refreshAll();
+  }, 60 * 1000);
+
+  // 页面卸载 / 进入 bfcache：清理全部定时器，防后台泄漏
+  window.addEventListener("pagehide", () => {
+    if (ui.timer) clearInterval(ui.timer);
+    if (ui.countdown) clearInterval(ui.countdown);
+    ui.timer = null;
+    ui.countdown = null;
   });
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", boot);
+  document.addEventListener("DOMContentLoaded", init);
 } else {
-  boot();
+  init();
 }
