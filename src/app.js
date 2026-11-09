@@ -72,6 +72,12 @@ export async function buildState(ctx = {}) {
 
   /* 僵尸数据须在印证前判定：超 15 分钟的外部数据直接废弃方向结论 */
   const staleB = isStale(B.ts, now, cfg.staleMinutes * 60 * 1000);
+
+  /* 时间维度对齐（规范 §3）：
+     B1 外部日线评级 → bRating；B2 外部盘中异动 → intradayPct。
+     B2 只在「实时现价可用」时启用：源回退到快照时，现价并非盘中真实异动，
+     此时不得据此判定反抽（避免用日内噪声冒充盘中急拉）。 */
+  const intradayPct = B.ok && B.spotSource === "gold-api" ? B.dayPct : null;
   const decision = decide({
     aSign: A.trend ? A.trend.sign : 0,
     bRating: B.ratingOk && B.rating ? B.rating.score : null,
@@ -79,6 +85,8 @@ export async function buildState(ctx = {}) {
     vixSpike: C.mode === "risk_off",
     bMissing: !B.ratingOk,
     stale: B.ok ? staleB : false,
+    intradayPct,
+    surgePct: cfg.intradaySurgePct,
   });
 
   const risk = assess({

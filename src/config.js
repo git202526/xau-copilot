@@ -17,6 +17,7 @@ export const CONFIG = {
   deadZonePct: 0.05,               // MA20 贴线死区 ±0.05%
   stressDrop: 0.05,                // 压力测试跌幅
   rebalanceSpreadPct: 3,           // 账户成本价差阈值
+  intradaySurgePct: 1.0,           // 时间对齐：盘中异动(B2) 判定为「强反抽」的涨跌阈值 %
 
   /* 风控阈值 */
   staleMinutes: 15,                // 超过即判僵尸数据

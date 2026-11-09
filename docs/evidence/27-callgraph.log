@@ -1,0 +1,14 @@
+=== 精确调用链：7 个渲染函数之间零互调（renderAll 为调度器，允许调用）===
+叶渲染函数: 8 个
+叶函数之间互调: 无（符合单向 DAG）
+main.js 唯一刷新入口 refreshAll: 存在
+refreshAll 调用 renderAll: 是
+=== 浏览器能力探测 ===
+playwright: 未安装
+puppeteer: 未安装
+/usr/bin/chromium
+chromium-browser not found
+/usr/bin/google-chrome
+chromium-1208
+chromium_headless_shell-1208
+ffmpeg-1011

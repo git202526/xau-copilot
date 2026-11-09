@@ -1,0 +1,21 @@
+########## 红灯 B：全量回归（老 12 应仍绿，新增 11 应红）##########
+  ...
+# Subtest: T11 pagehide 清理 ui.timer 与 ui.countdown
+ok 22 - T11 pagehide 清理 ui.timer 与 ui.countdown
+  ---
+  duration_ms: 0.739435
+  ...
+# Subtest: T12 实时现价新鲜不判僵尸；实时挂掉且旧快照回退才判僵尸
+ok 23 - T12 实时现价新鲜不判僵尸；实时挂掉且旧快照回退才判僵尸
+  ---
+  duration_ms: 2.107545
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 17
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 66.195593

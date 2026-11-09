@@ -1,0 +1,10 @@
+=== 远端 tag 唯一性复核(打 tag 前,禁止重复) ===
+--- 本地 tags ---
+v1.0.0
+v1.0.1
+v2.0.0
+v2.1.0
+--- 远端 tags(v2.2.0 应为空) ---
+--- gh api 查 v2.2.0(404=UNIQUE) ---
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/git/refs#get-a-reference","status":"404"}gh: Not Found (HTTP 404)
+=== 远端 main 当前 sha ===

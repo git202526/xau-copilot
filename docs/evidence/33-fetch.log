@@ -1,0 +1,17 @@
+=== fetch 远端最新(30s 上限) ===
+From https://github.com/git202526/xau-copilot
+ * branch            main       -> FETCH_HEAD
+   a81526f..82de5d0  main       -> origin/main
+fetch exit: 
+=== 更新后的本地/远端差异 ===
+本地 HEAD: a81526f | FETCH_HEAD: 82de5d0
+3	0
+=== 远端已含的 19 报告 vs 本地未跟踪副本 ===
+内容一致 → 本地副本为重复,可从远端取
+=== 远端 3 个领先提交改了哪些文件 ===
+ data/live.json                     |  84 ++++++++++++++--------------
+ data/macro.json                    |   2 +-
+ data/meta.json                     |   6 +-
+ data/xauusd.json                   |   8 +--
+ docs/evidence/19-release-v2.1.0.md | 112 +++++++++++++++++++++++++++++++++++++
+ 5 files changed, 162 insertions(+), 50 deletions(-)

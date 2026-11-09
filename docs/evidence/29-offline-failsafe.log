@@ -1,0 +1,10 @@
+=== 断源降级终验（全部 fetch reject）===
+{
+  "cards": 7,
+  "text": "XAU Copilot\nDECISION DECK\nAI 研判\n11-10 01:15 · A×B×C 融合\n\n早上好。内部趋势缺失，但外部校验失败；宏观方向分歧。区间中轴，不必动手。\n\n内部 --\n外部 降级\n宏观 中性\n置信 降级\n外部僵尸 · 印证作废\n结构数据陈旧\n源异常\n01\n宏观与双轨雷达\n宏观\n--\n国际 · XAUUSD\n--$/oz\n未评级\n国内 · 折算克价\n--元/克\n数据缺失\n溢价率 --\n缺少国内参考价\n02\n",
+  "hasDegChip": true,
+  "appExists": true,
+  "notBlank": true
+}
+JS errors: 0
+[OFFLINE PASS] 断源降级不白屏、无 JS 异常

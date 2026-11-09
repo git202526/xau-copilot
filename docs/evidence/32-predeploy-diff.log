@@ -1,0 +1,12 @@
+=== 远端 main 与本地差异 ===
+本地 HEAD: a81526f573834094349cde5a06206070ac593ca2 | origin/main(追踪): a81526f573834094349cde5a06206070ac593ca2
+--- 远端 main 最新提交(用 gh api,避免 ls-remote 抖动) ---
+sha=82de5d033348  msg=chore(data): sync snapshot 2026-11-09T15:49Z
+--- 本地 main 相对远端追踪的领先/落后 ---
+0	0
+--- 远端最近 5 次提交 ---
+82de5d033348  chore(data): sync snapshot 2026-11-09T15:49Z
+75d298c1db5a  docs(evidence): v2.1.0 全流程自动化运行报告
+5558c6fdeea5  chore(data): sync snapshot 2026-11-09T15:39Z
+a81526f57383  feat(v2.1.0): 终极重构 — XAUUSD 单一行情源 + 老应用全量解析 + 像素级 UI
+bc137f7bb179  feat(v2.0.0): 视觉重构 + 行情源切换为 XAUUSD

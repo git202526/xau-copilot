@@ -1,0 +1,66 @@
+########## 绿灯 A：新增时间对齐用例 ##########
+TAP version 13
+# Subtest: T13 盘中强反抽：日线共振做空但盘中急拉 → 反抽预警，绝不判真背离
+ok 1 - T13 盘中强反抽：日线共振做空但盘中急拉 → 反抽预警，绝不判真背离
+  ---
+  duration_ms: 0.84704
+  ...
+# Subtest: T14 真背离：内部日线空 + 外部日线多 + 盘中大涨 → 仍是真背离
+ok 2 - T14 真背离：内部日线空 + 外部日线多 + 盘中大涨 → 仍是真背离
+  ---
+  duration_ms: 0.669788
+  ...
+# Subtest: T15 异常边界 intradayPct=null → 不触发反抽，回退日线共振
+ok 3 - T15 异常边界 intradayPct=null → 不触发反抽，回退日线共振
+  ---
+  duration_ms: 0.105261
+  ...
+# Subtest: T16 向后兼容：未传 intradayPct → 保持旧版共振结论
+ok 4 - T16 向后兼容：未传 intradayPct → 保持旧版共振结论
+  ---
+  duration_ms: 0.085751
+  ...
+# Subtest: T17 异常边界 盘中 +0.3%（小于阈值）→ 不触发反抽
+ok 5 - T17 异常边界 盘中 +0.3%（小于阈值）→ 不触发反抽
+  ---
+  duration_ms: 0.117329
+  ...
+# Subtest: T18 异常边界 stale=true + 盘中大涨 → 仍判僵尸·印证作废
+ok 6 - T18 异常边界 stale=true + 盘中大涨 → 仍判僵尸·印证作废
+  ---
+  duration_ms: 0.075746
+  ...
+# Subtest: T19 异常边界 共振做空 + 盘中顺势大跌 -2.5% → 不误报反抽
+ok 7 - T19 异常边界 共振做空 + 盘中顺势大跌 -2.5% → 不误报反抽
+  ---
+  duration_ms: 0.145434
+  ...
+# Subtest: T20 异常边界 bMissing=true + 盘中大涨 → 外部校验失败降级
+ok 8 - T20 异常边界 bMissing=true + 盘中大涨 → 外部校验失败降级
+  ---
+  duration_ms: 0.07137
+  ...
+# Subtest: T21 共振做多 + 盘中急跌 → 盘中回踩预警，文案不得出现『追空』
+ok 9 - T21 共振做多 + 盘中急跌 → 盘中回踩预警，文案不得出现『追空』
+  ---
+  duration_ms: 0.211925
+  ...
+# Subtest: T22 render.js 的 M2 含 intraday_rebound 黄色警示渲染分支
+ok 10 - T22 render.js 的 M2 含 intraday_rebound 黄色警示渲染分支
+  ---
+  duration_ms: 4.645741
+  ...
+# Subtest: T23 app.js 将 B.dayPct 作为盘中维度传入 decide
+ok 11 - T23 app.js 将 B.dayPct 作为盘中维度传入 decide
+  ---
+  duration_ms: 0.490984
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 44.853732

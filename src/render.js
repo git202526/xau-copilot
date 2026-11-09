@@ -58,13 +58,15 @@ function briefingText(s) {
   const tail =
     d.scenario === "divergence"
       ? "多源背离，建议暂停建仓。"
-      : d.scenario === "resonance_short"
-        ? "方向共振向下，按计划减仓。"
-        : d.scenario === "resonance_long"
-          ? "方向共振向上，可分批建仓。"
-          : d.scenario === "risk_off"
-            ? "多看少动，先保命。"
-            : "区间中轴，不必动手。";
+      : d.scenario === "intraday_rebound"
+        ? "日线共振但盘中强反抽，防范诱空，暂缓追单。"
+        : d.scenario === "resonance_short"
+          ? "方向共振向下，按计划减仓。"
+          : d.scenario === "resonance_long"
+            ? "方向共振向上，可分批建仓。"
+            : d.scenario === "risk_off"
+              ? "多看少动，先保命。"
+              : "区间中轴，不必动手。";
 
   return { hi, body: `${hi}。${aTxt}，但${bTxt}；${macroTxt}。${tail}` };
 }
@@ -79,6 +81,7 @@ export function renderBriefing(s) {
     `<span class="chip">外部 ${s.B && s.B.rating ? s.B.rating.label : "降级"}</span>`,
     `<span class="chip">宏观 ${s.C.mode === "risk_off" ? "避险" : s.C.label || "--"}</span>`,
     `<span class="chip ${d.conf === "high" ? "bad" : d.conf === "degraded" ? "" : "warn"}">置信 ${BADGE[d.conf] ? BADGE[d.conf].text : "--"}</span>`,
+    d.scenario === "intraday_rebound" ? `<span class="chip warn">盘中强反抽 · 时间错配</span>` : "",
     s.meta && s.meta.staleB ? `<span class="chip bad">外部僵尸 · 印证作废</span>` : "",
     s.meta && s.meta.staleA ? `<span class="chip warn">结构数据陈旧</span>` : "",
     s.meta && s.meta.degraded ? `<span class="chip bad">源异常</span>` : "",
@@ -166,9 +169,18 @@ export function renderDecision(s) {
   const bTxt = bSign == null ? "— 降级" : bSign > 0 ? "↑ 多头" : bSign < 0 ? "↓ 空头" : "→ 中性";
   const bCls = bSign == null ? "" : bSign > 0 ? "up" : bSign < 0 ? "dn" : "";
 
-  const midCls = d.scenario === "divergence" ? "bad" : d.scenario.startsWith("resonance") ? "ok" : "bad";
+  const isRebound = d.scenario === "intraday_rebound";
+  const midCls = d.scenario === "divergence" || isRebound ? "bad" : d.scenario.startsWith("resonance") ? "ok" : "bad";
   const midTxt =
-    d.scenario === "divergence" ? "背离" : d.scenario.startsWith("resonance") ? "共振" : d.scenario === "risk_off" ? "避险" : "中轴";
+    isRebound ? "⚠️ 盘中强反抽"
+      : d.scenario === "divergence" ? "背离"
+        : d.scenario.startsWith("resonance") ? "共振"
+          : d.scenario === "risk_off" ? "避险" : "中轴";
+
+  /* 盘中反抽：中间黄色图标之外，再补一条独立警示条（规范要求「切忌盲目追空」显式可见） */
+  const reboundStrip = isRebound
+    ? `<div class="alert-strip amber">${ico.warn}<span>${esc(d.text)}</span></div>`
+    : "";
 
   box.innerHTML = `<section class="card rise" data-tone="${d.tone}">
     <div class="c-head"><span class="c-no">02</span><span class="c-title">多源共振决策</span>
@@ -180,7 +192,7 @@ export function renderDecision(s) {
       <div class="mid ${midCls}">${midTxt}</div>
       <div class="side"><div class="k">外部评级</div><div class="v ${bCls}">${bTxt}</div></div>
     </div>
-    <p class="note">${esc(d.text)}</p>
+    ${isRebound ? reboundStrip : `<p class="note">${esc(d.text)}</p>`}
     ${d.detail ? `<div style="margin-top:8px"><span class="chip">${esc(d.detail)}</span></div>` : ""}
   </section>`;
 }

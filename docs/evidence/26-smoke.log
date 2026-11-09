@@ -1,0 +1,13 @@
+=== 语法检查：所有 src 模块可解析 ===
+[syntax] 全部通过（无输出即无语法错误）
+=== 冒烟：函数调用链单向检查（render 函数互不调用）===
+render 函数: renderBriefing, renderRadar, renderDecision, renderAccount, renderGrid, renderRebalance, renderDiscipline, renderTopbar, renderAll, renderFailSafe
+渲染层内部互调: renderAll→renderBriefing, renderAll→renderRadar, renderAll→renderDecision, renderAll→renderAccount, renderAll→renderGrid, renderAll→renderRebalance, renderAll→renderDiscipline, renderAll→renderTopbar
+=== 冒烟：端到端装配 buildState（mock 五源，构造日线共振+盘中急拉）===
+aSign(内部日线) = -1
+B1 外部日线评级 = 20 → bSign = -1
+B2 盘中异动 dayPct = 2.53 → intraday = {"surge":1,"pct":2.53}
+decision.scenario = intraday_rebound
+decision.headline = 盘中强反抽
+risk.fomoLock = false (反抽应为 false，不触发绝对警报/FOMO)
+[E2E PASS] 端到端时间对齐生效

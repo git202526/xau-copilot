@@ -1,0 +1,17 @@
+=== 390px 浏览器终验（反抽场景）===
+{
+  "cards": 6,
+  "m2HasRebound": true,
+  "m2HasAmberStrip": true,
+  "m2HasWarnIcon": true,
+  "m2Headline": "盘中强反抽",
+  "m2Tone": "amber",
+  "chipRebound": true,
+  "scrollWidth": 390,
+  "bodyText": "XAU Copilot\nDECISION DECK\nAI 研判\n11-10 01:14 · A×B×C 融合\n\n早上好。内部日线下行，但外部站上 MA20（4,015.50）；宏观强支撑。日线共振但盘中强反抽，防范诱空，暂缓追单。\n\n内部 下行\n外部 Sell\n宏观 强支撑\n置信 低\n盘中强反抽 · 时间错配\n01\n宏观与双轨雷达\nDXY\n102.20↓\nTNX\n4.84↓\nVIX\n17.20↓\n",
+  "hasPAXG": false
+}
+HTTP >=400 资源: 0
+console/page errors: 0
+screenshot: /workspace/xau-copilot-v2.2.0-rebound-390.png
+[BROWSER PASS] 反抽 UI 真实渲染、无白屏、无报错

@@ -1,3 +1,5 @@
 node_modules/
 .DS_Store
 *.log
+# 红绿/回归凭证必须入库，放行 evidence 目录下的日志
+!docs/evidence/*.log

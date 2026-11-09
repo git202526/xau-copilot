@@ -1,0 +1,15 @@
+########## 绿灯 B：全量回归 ##########
+# Subtest: T12 实时现价新鲜不判僵尸；实时挂掉且旧快照回退才判僵尸
+ok 23 - T12 实时现价新鲜不判僵尸；实时挂掉且旧快照回退才判僵尸
+  ---
+  duration_ms: 2.209291
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 66.105554
