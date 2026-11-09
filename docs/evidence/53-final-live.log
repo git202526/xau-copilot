@@ -1,0 +1,18 @@
+=== 最终线上反抽场景 0-error 终验 ===
+=== 线上 v2.2.0 反抽场景终验 ===
+URL: https://git202526.github.io/xau-copilot/
+{
+  "title": "XAU Copilot · 决策指挥中心",
+  "cards": 6,
+  "m2Headline": "盘中强反抽",
+  "m2HasRebound": true,
+  "m2AmberStrip": true,
+  "m2WarnText": true,
+  "m2Tone": "amber",
+  "m0Chip": true,
+  "scrollWidth": 390,
+  "hasPAXG": false
+}
+errors: 0
+screenshot: /workspace/xau-copilot-v2.2.0-live-390.png
+[LIVE PASS] 线上反抽预警真实生效、无白屏、无报错

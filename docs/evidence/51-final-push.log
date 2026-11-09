@@ -1,0 +1,10 @@
+=== 推送收尾提交(HTTP/1.1,fast-forward) ===
+To https://github.com/git202526/xau-copilot.git
+   404d62a..6d3ed7e  main -> main
+push exit: 
+--- 远端核实 ---
+6d3ed7e99ca7  fix(v2.2.0): 内联 SVG favicon 消除站点 404 console error + 回填部署凭证报告
+=== 变基后全量回归(收尾) ===
+# tests 23
+# pass 23
+# fail 0

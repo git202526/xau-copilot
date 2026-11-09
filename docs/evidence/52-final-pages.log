@@ -1,0 +1,11 @@
+=== 等待 Pages 重发(轮询) ===
+[1] in_progress|running|42666820250|6d3ed7e
+[2] in_progress|running|42666820250|6d3ed7e
+[3] queued|running|42666867456|c482264
+[4] in_progress|running|42666867456|c482264
+[5] in_progress|running|42666867456|c482264
+[6] in_progress|running|42666867456|c482264
+[7] completed|success|42666867456|c482264
+Pages 成功
+=== 线上 index.html 是否已含内联 favicon ===
+1
