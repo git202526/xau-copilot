@@ -129,6 +129,7 @@ export function statusHTML(state) {
   const m = state.meta;
   const items = [
     `数据快照 <b>${fmtTime(m.dataUpdatedAt)}</b>`,
+    m.syncAt ? `GitHub 同步 <b>${fmtTime(m.syncAt)}</b>` : "",
     m.bSource ? `行情源 <b>${m.bSourceLabel || m.bSource}</b>` : `行情源 <b class="warn">离线</b>`,
     m.fxFallbackUsed ? `汇率 <b class="warn">兜底 ${Number(m.fx).toFixed(2)}</b>` : `汇率 <b>${Number(m.fx).toFixed(4)}</b>`,
     m.dataStale ? `<b class="warn">离线快照</b>` : "",

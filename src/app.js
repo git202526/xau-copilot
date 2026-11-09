@@ -38,6 +38,7 @@ export function buildState({ a, b, now, config = CONFIG }) {
       fxFallbackUsed: !(B && B.fxOk),
       degraded: [!A.ok ? "A" : null, !B.ok ? "B" : null].filter(Boolean),
       dataUrl: config.dataUrl,
+      syncAt: (a && a.syncAt) || null,
     },
   };
   return state;
