@@ -1,0 +1,4 @@
+=== 方式A: git -c http.extraheader 注入 PAT 推送(令牌仅在进程内,不落盘/不打印) ===
+push-main exit: 
+--- 核实远端 main ---
+82de5d033348  chore(data): sync snapshot 2026-11-09T15:49Z

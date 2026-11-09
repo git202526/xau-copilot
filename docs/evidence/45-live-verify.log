@@ -1,0 +1,21 @@
+=== 线上终验(真实 HTTP) ===
+200  /
+404  /src/confidence.js
+200  /src/core/confidence.js
+200  /src/render.js
+200  /src/app.js
+200  /src/config.js
+200  /data/live.json
+200  /data/xauusd.json
+200  /data/rating.json
+200  /data/macro.json
+200  /data/meta.json
+=== 线上代码与本地字节级比对(加 cache-buster) ===
+一致 OK  src/core/confidence.js (7008 bytes)
+一致 OK  src/render.js (18213 bytes)
+一致 OK  src/app.js (5490 bytes)
+一致 OK  src/config.js (1521 bytes)
+=== 线上 confidence.js 是否含新引擎 ===
+7
+=== 远端 Release / tag 最终核实 ===
+Release: v2.2.0  https://github.com/git202526/xau-copilot/releases/tag/v2.2.0

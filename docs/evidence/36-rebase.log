@@ -1,0 +1,10 @@
+=== rebase 到 origin/main(82de5d0,含云端数据快照,我的改动纯代码零冲突) ===
+Rebasing (1/1)[KSuccessfully rebased and updated refs/heads/main.
+rebase exit: 
+=== rebase 后 HEAD 与基线 ===
+HEAD: 5aa3de0 | origin/main: 82de5d0
+领先 origin/main 的提交数: 1
+=== 变基后全量回归(必须仍 23/23) ===
+# tests 23
+# pass 23
+# fail 0

@@ -1,0 +1,12 @@
+=== 最近的 workflow runs ===
+pages build and deployment | in_progress | running | 2026-11-09T17:31:20Z | 404d62a | run=42665424085
+sync-data | completed | success | 2026-11-09T17:30:49Z | 5aa3de0 | run=42665336878
+pages build and deployment | completed | cancelled | 2026-11-09T17:30:49Z | 5aa3de0 | run=42665336441
+pages build and deployment | completed | success | 2026-11-09T15:50:01Z | 82de5d0 | run=42648612788
+sync-data | completed | success | 2026-11-09T15:49:45Z | 75d298c | run=42648570781
+pages build and deployment | completed | cancelled | 2026-11-09T15:49:44Z | 75d298c | run=42648567788
+pages build and deployment | completed | success | 2026-11-09T15:39:48Z | 5558c6f | run=42646923097
+pages build and deployment | completed | cancelled | 2026-11-09T15:39:32Z | a81526f | run=42646879572
+=== 创建 Release v2.2.0 ===
+https://github.com/git202526/xau-copilot/releases/tag/v2.2.0
+release exit: 0

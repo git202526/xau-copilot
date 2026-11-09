@@ -1,0 +1,17 @@
+=== 线上 v2.2.0 反抽场景终验 ===
+URL: https://git202526.github.io/xau-copilot/
+{
+  "title": "XAU Copilot · 决策指挥中心",
+  "cards": 6,
+  "m2Headline": "盘中强反抽",
+  "m2HasRebound": true,
+  "m2AmberStrip": true,
+  "m2WarnText": true,
+  "m2Tone": "amber",
+  "m0Chip": true,
+  "scrollWidth": 390,
+  "hasPAXG": false
+}
+errors: ["console.error: Failed to load resource: the server responded with a status of 404 ()"]
+screenshot: /workspace/xau-copilot-v2.2.0-live-390.png
+[LIVE FAIL]

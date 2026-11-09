@@ -1,0 +1,7 @@
+=== 远端真实状态核实(gh api) ===
+--- 远端 main ---
+sha=82de5d033348  chore(data): sync snapshot 2026-11-09T15:49Z
+--- 远端 tag v2.2.0(404=尚未推上) ---
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/git/refs#get-a-reference","status":"404"}gh: Not Found (HTTP 404)
+--- 本地 HEAD / tag ---
+HEAD=5aa3de0 tag=5aa3de0

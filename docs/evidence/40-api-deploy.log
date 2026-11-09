@@ -1,0 +1,29 @@
+=== 本地提交树信息 ===
+HEAD=5aa3de084b44f34a6ad97bbed87c4fcb6129ceef tree=e1470519e8d3c47c593d53f1166e8f852d480176 parent=82de5d033348a87153c6298ebc660658fdf3a1e7
+=== 本次提交相对父提交的变更文件 ===
+M	.gitignore
+A	docs/evidence/20-version-calc.log
+A	docs/evidence/21-red-intraday.log
+A	docs/evidence/22-red-full.log
+A	docs/evidence/23-green-intraday.log
+A	docs/evidence/24-green-full.log
+A	docs/evidence/25-mutation-intraday.log
+A	docs/evidence/26-smoke.log
+A	docs/evidence/27-callgraph.log
+A	docs/evidence/28-browser-rebound.log
+A	docs/evidence/29-offline-failsafe.log
+A	docs/evidence/30-deploy-probe.log
+A	docs/evidence/31-tag-unique-check.log
+A	docs/evidence/32-predeploy-diff.log
+A	docs/evidence/33-fetch.log
+A	docs/evidence/34-release-v2.2.0.md
+A	docs/evidence/35-commit.log
+M	index.html
+M	package.json
+M	src/app.js
+M	src/config.js
+M	src/core/confidence.js
+M	src/render.js
+A	tests/intraday.test.mjs
+=== 远端 base tree(main=82de5d0) ===
+82de5d033348a87153c6298ebc660658fdf3a1e7

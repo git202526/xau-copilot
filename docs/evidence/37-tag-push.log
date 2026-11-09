@@ -1,0 +1,7 @@
+=== 打 annotated tag v2.2.0 ===
+tag -> f76b1e3
+=== fast-forward 推送 main(40s 上限) ===
+push-main exit: 
+=== 推送 tag v2.2.0(40s 上限) ===
+fatal: could not read Username for 'https://github.com': No such device or address
+push-tag exit: 

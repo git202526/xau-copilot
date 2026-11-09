@@ -1,0 +1,7 @@
+=== 推送 annotated tag v2.2.0(HTTP/1.1) ===
+To https://github.com/git202526/xau-copilot.git
+ * [new tag]         v2.2.0 -> v2.2.0
+--- 远端 tag 核实 ---
+f76b1e302bcc75eb4798c38a9bf19e2fbd250094  type=tag
+--- tag 解引用后的 commit ---
+5aa3de084b44f34a6ad97bbed87c4fcb6129ceef

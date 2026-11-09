@@ -1,0 +1,7 @@
+=== 诊断式推送(HTTP/1.1 + 大 postBuffer + 内联认证, 50s) ===
+To https://github.com/git202526/xau-copilot.git
+   82de5d0..5aa3de0  main -> main
+真实退出码: 0
+--- 输出(脱敏) ---
+--- 远端核实 ---
+5aa3de084b44

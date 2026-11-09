@@ -1,0 +1,7 @@
+=== 线上 favicon.ico 是否 404 ===
+favicon.ico -> 404
+favicon.png -> 404
+=== index.html 当前是否声明 icon ===
+无 icon 声明 → 浏览器会自动请求 /favicon.ico 导致 404
+=== 浏览器精确捕获 404 的 URL ===
+404 资源: 0

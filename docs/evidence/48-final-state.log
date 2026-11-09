@@ -1,0 +1,11 @@
+=== 远端 main 当前(数据同步是否已领先) ===
+From https://github.com/git202526/xau-copilot
+ * branch            main       -> FETCH_HEAD
+   5aa3de0..404d62a  main       -> origin/main
+FETCH_HEAD: 404d62a | 本地 HEAD: 5aa3de0 | tag: f76b1e3
+本地相对 FETCH_HEAD 领先/落后: 1	0
+--- 远端最近提交 ---
+404d62aa3677  chore(data): sync snapshot 2026-11-09T17:31Z
+5aa3de084b44  feat(v2.2.0): 时间维度对齐引擎 — B1 日线评级 / B2 盘中异动 分离判定 + 盘中强反抽预警
+82de5d033348  chore(data): sync snapshot 2026-11-09T15:49Z
+75d298c1db5a  docs(evidence): v2.1.0 全流程自动化运行报告
