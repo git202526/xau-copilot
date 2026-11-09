@@ -3,9 +3,10 @@ export const CONFIG = {
   dataUrl: "data/live.json",            // GitHub 上的数据副本（由 Action 定时从私有库同步）
   fxUrl: "https://open.er-api.com/v6/latest/USD",
   fxFallback: 7.1,                      // 汇率兜底（仅外部接口失败时使用，界面会标注）
+  xauUrl: "data/xauusd.json",                  // XAUUSD 日线快照（Actions 每 15 分钟更新，仅日线变化才提交）
+  xauSpotUrl: "https://api.gold-api.com/price/XAU", // XAU/USD 实时现价（CORS 开放，无 key）
   binanceUrl: "https://data-api.binance.vision/api/v3/klines?symbol=PAXGUSDT&interval=1d&limit=26",
   binanceAltUrl: "https://api.binance.com/api/v3/klines?symbol=PAXGUSDT&interval=1d&limit=26",
-  coingeckoUrl: "https://api.coingecko.com/api/v3/coins/pax-gold/market_chart?vs_currency=usd&days=30&interval=daily",
   maPeriod: 20,
   atrPeriod: 14,
   deadZonePct: 0.05,                    // MA20 贴线死区 ±0.05%

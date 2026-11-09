@@ -28,6 +28,8 @@ jobs:
         env:
           XAU_DATA_TOKEN: ${{ secrets.XAU_DATA_TOKEN }}
         run: node scripts/sync-data.mjs
+      - name: Sync XAUUSD daily bars → data/xauusd.json
+        run: node scripts/sync-xau.mjs
       - name: Commit snapshot
         run: |
           git config user.name "xau-copilot-bot"
@@ -36,6 +38,6 @@ jobs:
             echo "no changes"
             exit 0
           fi
-          git add data/live.json data/meta.json
+          git add data/live.json data/meta.json data/xauusd.json
           git commit -m "chore(data): sync snapshot $(date -u +'%Y-%m-%dT%H:%MZ')"
           git push

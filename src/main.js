@@ -19,11 +19,13 @@ function toast(msg) {
 }
 
 function failSafe(err) {
+  document.body.classList.add("ready");
   const box = $("briefing");
   if (!box) return;
-  box.innerHTML = `<section class="bubble" style="border-color:rgba(239,68,68,.35)">
-    <div class="bubble-top"><span class="dot" style="background:#ef4444"></span><span class="bubble-label">降级处理</span></div>
-    <p class="bubble-text">源数据异常，降级处理：${esc((err && err.message) || err)}。页面未中断，可点右上角刷新重试。</p>
+  box.innerHTML = `<section class="bubble rise" id="card-briefing">
+    <div class="b-head"><span class="tag">降级处理</span><span class="sep"></span><time>本地兜底</time></div>
+    <p class="b-text">源数据异常，降级处理：${esc((err && err.message) || err)}。页面未中断，点右上角刷新可重试。</p>
+    <div class="b-foot"><span class="chip warn">降级模式</span><span class="chip">七张卡暂停</span></div>
   </section>`;
 }
 
