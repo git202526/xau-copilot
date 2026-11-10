@@ -106,9 +106,28 @@
 
 ## 5. 部署执行结果
 
-> 本节在报告生成时刻为**占位**：Tag / 推送 / Release / Actions / 线上资源与浏览器终验尚未执行。按与 `69-release-v2.3.0.md` 相同的流程，上线后将据实回填本节并补齐 `98+` 凭证索引。**未执行即不填写结果，不伪造任何步骤。**
+**结论：v2.3.1 已真实上线，全链路凭证可复核，未伪造任何步骤。**
 
-**状态：部署执行中（报告生成时刻 2026-11-10 13:02 GMT+8）。**
+| 步骤 | 执行结果 | 凭证 |
+|---|---|---|
+| 功能提交与变基 | `cd1d748 fix(v2.3.1): 配色语义分层（红涨绿跌）+ 账户数据口径修正`，24 文件 / 1047 insertions / 76 deletions（含 `88–99` 凭证）；远端多 2 个数据提交（`b5bc3f9` / `1165ad2`，仅改 `data/*`），rebase 无冲突，变基后 **80/80 全绿**、语法 OK | `99-commit-rebase.log` |
+| 打 Tag 前唯一性终核 | `package.json=2.3.1`；本地 tag 数量 0；远端 `refs/tags/v2.3.1` 空；Release `not found`；再次 fetch 后 `ahead=1 / behind=0` | `100-tag-create.log` |
+| 创建 annotated tag | `v2.3.1` → 功能提交 `cd1d748`，tag 对象 `f3347b7`（`git cat-file -t` = `tag`） | `100` |
+| 推送 main + tag | 首次把 5 个 `-c` 拼进单个 shell 变量，zsh 不做单词拆分导致 `unknown option` / `RC=129`（**零副作用**，远端核实 `main` 仍为 `1165ad2`、tag ref 为空）；改用逐项 `-c` 重试：`1165ad2..cd1d748 main -> main`、`* [new tag] v2.3.1 -> v2.3.1`，两次 exit=0，令牌脱敏不落盘 | `101-push.log` |
+| 创建 Release | https://github.com/git202526/xau-copilot/releases/tag/v2.3.1 ，`isDraft=false`、`isPrerelease=false`、`publishedAt=2026-11-10T05:12:57Z` | `102-release.log` |
+| Actions 监控 | `sync-data @ cd1d748 → success`、`pages build and deployment @ 6782247 → success`；并发的 `cd1d748` 旧 pages run 自动 cancelled | `103-actions-monitor.log` |
+| 远端状态 | `main=6782247`（`chore(data): sync snapshot 2026-11-10T05:12Z`）；tags 与 Releases 均以 `v2.3.1` 置顶 | `103` |
+| 线上资源 + 字节级一致 | **18 个核心代码文件全部 200 且 sha256 与本地逐字节一致**；5 个数据文件全部 200；线上 `indicators.ok=true`（RSI14 51.05 / MACD 柱 20.58 / %B 0.733 / price 4140.94 / bars 60）；账户快照顶层 46 键、资金/余额字段 **0 处**、`hasTOTAL=true` | `104-live-assets.log` |
+| 线上 390px 浏览器配色终验 | 6 卡 + 1 气泡 = 7 模块；浮亏 `-28,430.11` 呈绿 `rgb(63,214,140)`；M2「外部技术面偏多」琥珀 `rgb(245,166,35)`；`judge` 3 格全中性、`chg` 3 格红涨绿跌；`tone` / `strip` 无红绿；预算口径标注齐全、无「可用资金」、零双印证、无 PAXG；`scrollWidth=390`、0 console error、0 个 4xx | `105-live-browser-offline.log` |
+| 线上断源降级 | 全部 fetch reject：`textLen=709` 不白屏、M2 明确降级、0 JS 异常、无双印证残留、`scrollWidth=390` | `105` |
+| 视觉确认 | 390px 截图人工复核：浮亏绿、结论琥珀、判断类琥珀、M3「剩余可买 2.12 克」与「非账户余额」标注、琥珀预算告警、无溢出 | `/workspace/xau-copilot-v2.3.1-live-390.png`、`106-final-state.log` |
+
+- **线上地址**：https://git202526.github.io/xau-copilot/ （GitHub Pages）
+- 推送后 `sync-data` 工作流自动产出 `chore(data): sync snapshot 2026-11-10T05:12Z`（`6782247`）并触发 Pages 重发，最终线上部署以该快照提交为准；`v2.3.1` tag 固定指向功能提交 `cd1d748`，不受后续数据提交推移。
+- 线上账户真实浮亏为 `-28,430.11 元`（05:15Z 云端快照），本地端到端凭证为 `-27,680.74 元`，均为各自时刻的云端真实快照，非固定值。
+- **如实记录的工具层错误**：首次 push 因 zsh 变量不做单词拆分而 `RC=129`，输出中出现过令牌明文；已在 `101` 日志统一脱敏为 `ghp_[REDACTED]`，未跳过、未伪造任何一步。安全建议同前：尽快把明文 PAT 轮换为细粒度只读 PAT，并更新 Secret `XAU_DATA_TOKEN` 与本地 `/root/.secrets/gh_token`。
+- **如实记录的网络抖动**：`101` 中归档核实阶段的 `ls-remote` 先后报 `RC=124` 超时与 `GnuTLS recv error (-110)` / `RC=128`，重试仍 `RC=124`；但同期 `gh api`、`curl` 线上资源、`gh run list` 全部正常，判定为 git over HTTPS 通道瞬时抖动（与 v2.3.0 同源）。改用 `gh api` 通道交叉核实远端 refs：`heads/main=6782247`、`tags/v2.3.1=f3347b7 (tag)`，与推送成功输出一致，未跳过核实、未伪造结果。
+- **云端快照随时间刷新**：`105` 归档时刻（05:28Z）线上浮亏为 `-28,141.11 元`，报告成文时（05:15Z）为 `-28,430.11 元`，本地端到端凭证为 `-27,680.74 元`，均为各自时刻云端真实快照，非固定值；浏览器终验按数值符号判定红涨绿跌，不受数值变化影响。
 
 ## 6. 回退预案
 
@@ -129,4 +148,4 @@
 
 ## 附：全流程凭证索引
 
-`88` 版本计算与 P0 基线 · `89` 首轮红灯 · `90` 绿灯 53 条替换 · `91` B11 补充红灯 · `92` 绿灯收口 80/80 · `93` 调用链 DAG + E2E · `94` 变异测试 · `95` 390px 浏览器 + 断源 · `96` 发版前基线复核 · 本报告 `97` · 部署阶段 `98+` 待回填
+`88` 版本计算与 P0 基线 · `89` 首轮红灯 · `90` 绿灯 53 条替换 · `91` B11 补充红灯 · `92` 绿灯收口 80/80 · `93` 调用链 DAG + E2E · `94` 变异测试 · `95` 本地 390px 浏览器 + 断源 · `96` 发版前基线复核 · 本报告 `97` · `98` 发版前远端状态与 Tag 唯一性终核 · `99` 提交与变基 · `100` 打 Tag 前唯一性终核 + 创建 annotated tag · `101` 推送 main + tag（含失败重试、令牌脱敏、网络抖动与 API 交叉核实）· `102` Release 创建与远端 API 核实 · `103` Actions 监控与远端状态 · `104` 线上资源 + 字节级一致 · `105` 线上 390px 浏览器配色 + 断源降级 · `106` 最终状态与交付

@@ -1,0 +1,40 @@
+=== v2.3.1 打 Tag 前唯一性终核 + 创建 annotated tag ===
+归档说明：以下为 2026-11-10T05:10:46Z 打 Tag 阶段真实终端输出，转录自 /tmp/v231-tag-precheck.log 与 /tmp/v231-tag-create-stdout.log。
+
+=== v2.3.1 打 Tag 前唯一性终核 ===
+UTC: 2026-11-10T05:10:46Z
+--- HEAD / version ---
+cd1d748b9f93426f3fe2f446570385c7324a3834
+  "version": "2.3.1",
+--- 本地 tag v2.3.1 数量（应为 0）---
+0
+--- 远端 refs/tags/v2.3.1（应为空）---
+--- Release 查询（应 not found）---
+release not found
+--- 再次 fetch 远端 main（防自动数据提交分叉）---
+fetch RC=0
+--- ahead/behind (左=仅本地, 右=仅远端) ---
+1	0
+>>> 远端未前进，无需 rebase
+
+=== 创建 annotated tag v2.3.1 ===
+tag RC=0
+--- tag 对象类型（应为 tag 而非 commit）---
+tag
+--- tag 对象内容 ---
+object cd1d748b9f93426f3fe2f446570385c7324a3834
+type commit
+tag v2.3.1
+tagger XAU Copilot Agent <agent@xau-copilot.local> 1794287449 +0800
+
+XAU Copilot v2.3.1 — 配色语义分层（红涨绿跌）+ 账户数据口径修正
+--- tag 解引用到的提交 ---
+cd1d748b9f93426f3fe2f446570385c7324a3834
+cd1d748 fix(v2.3.1): 配色语义分层（红涨绿跌）+ 账户数据口径修正
+--- 当前 HEAD ---
+cd1d748 fix(v2.3.1): 配色语义分层（红涨绿跌）+ 账户数据口径修正
+--- 本地 tags 置顶 ---
+v2.3.1
+v2.3.0
+v2.2.0
+v2.1.0

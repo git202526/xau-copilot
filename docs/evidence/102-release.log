@@ -1,0 +1,10 @@
+=== v2.3.1 Release 创建与远端 API 核实 ===
+UTC: 2026-11-10T05:27:39Z
+--- 远端提交 cd1d748 ---
+cd1d748 fix(v2.3.1): 配色语义分层（红涨绿跌）+ 账户数据口径修正
+--- tag 对象 ---
+f3347b7 tag
+--- Release 视图（支持字段）---
+{"isDraft":false,"isPrerelease":false,"name":"v2.3.1 配色语义分层 + 账户数据口径修正","publishedAt":"2026-11-10T05:12:57Z","tagName":"v2.3.1","targetCommitish":"main","url":"https://github.com/git202526/xau-copilot/releases/tag/v2.3.1"}
+--- Release API ---
+v2.3.1	v2.3.1 配色语义分层 + 账户数据口径修正	false	false	2026-11-10T05:12:57Z

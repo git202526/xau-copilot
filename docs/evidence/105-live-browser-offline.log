@@ -1,0 +1,71 @@
+=== v2.3.1 · 线上 390px 浏览器配色语义终验（真实云端数据）===
+{
+  "url": "https://git202526.github.io/xau-copilot/index.html",
+  "cards": 6,
+  "bubbles": 1,
+  "modules": 7,
+  "pnlText": "-28,141.11",
+  "pnlNum": -28141.11,
+  "pnlColor": "rgb(63, 214, 140)",
+  "pnlColorOk": true,
+  "m2Headline": "外部技术面偏多",
+  "m2Color": "rgb(245, 166, 35)",
+  "m2IsNeutral": true,
+  "judgeCount": 3,
+  "judgeColors": [
+    "rgb(245, 166, 35)",
+    "rgb(245, 166, 35)",
+    "rgb(245, 166, 35)"
+  ],
+  "judgeAllNeutral": true,
+  "chgCount": 3,
+  "chgColors": [
+    "rgb(255, 93, 82)",
+    "rgb(255, 93, 82)",
+    "rgb(255, 93, 82)"
+  ],
+  "chgOnlyRedGreenOrGray": true,
+  "toneAttrs": [
+    "gray",
+    "amber",
+    "amber",
+    "gray",
+    "amber",
+    "gray"
+  ],
+  "toneHasRedGreen": false,
+  "stripCls": [
+    "alert-strip warn",
+    "alert-strip gray",
+    "alert-strip calm"
+  ],
+  "stripHasRedGreen": false,
+  "hasBudgetNote": true,
+  "noFakeFunds": true,
+  "hasBannedText": false,
+  "hasPAXG": false,
+  "hasPnl": true,
+  "hasRebalance": true,
+  "hasDiscipline": true,
+  "scrollWidth": 390,
+  "footText": "账户数据 ok  ·  外部行情 实时  ·  宏观 ok  ·  汇率 6.6866  ·  数据 212 分钟前（账户数据陈旧）  ·  云端同步 68 分钟前  ·  账户同步超 15 分钟"
+}
+HTTP >=400 资源: 0
+console/page errors: 0
+screenshot: /workspace/xau-copilot-v2.3.1-live-390.png
+[LIVE BROWSER PASS] 浮亏按符号红涨绿跌 / 判断类中性 / 预算口径标注 / 0 报错 / 无溢出
+=== v2.3.1 · 线上断源降级终验（全部 fetch reject）===
+{
+  "textLen": 709,
+  "notBlank": true,
+  "hasSourceError": true,
+  "m2HasDegraded": true,
+  "hasBanned": false,
+  "appExists": true,
+  "cards": 6,
+  "bubbles": 1,
+  "scrollWidth": 390
+}
+JS errors: 0
+[LIVE OFFLINE PASS] 断源降级不白屏、M2 明确降级、无 JS 异常、无双印证残留
+browser RC=0

@@ -1,0 +1,32 @@
+=== v2.3.1 推送 main + tag ===
+UTC: 2026-11-10T05:21:54Z
+--- 首次尝试（失败，零副作用）---
+命令把 5 个 -c 参数拼进单个 shell 变量；zsh 不对未引用变量做单词拆分，git 收到单个 unknown option，RC=129（push main 与 push tag 均失败）。
+报错输出含令牌明文，此处不重录，统一脱敏为 ghp_[REDACTED]；首次失败输出未单独落盘（仅工具终端可见）。
+失败后远端核实：refs/heads/main=1165ad247caab4c0c4b40174162c327ac9b013c2，refs/tags/v2.3.1 为空 → 确认零副作用。
+
+--- 重试（逐项 -c，成功）---
+[push main]
+To https://github.com/git202526/xau-copilot.git
+   1165ad2..cd1d748  main -> main
+push main RC=0
+[push tag]
+To https://github.com/git202526/xau-copilot.git
+ * [new tag]         v2.3.1 -> v2.3.1
+push tag RC=0
+
+--- 远端 refs 核实（真实重跑）---
+ls-remote RC=124
+
+--- 附：上方 ls-remote 首轮网络抖动 RC=124（如实记录），重试核实 ---
+UTC: 2026-11-10T05:24:38Z
+fatal: unable to access 'https://github.com/git202526/xau-copilot.git/': GnuTLS recv error (-110): The TLS connection was non-properly terminated.
+retry RC=128
+
+--- 附2：git over HTTPS 抖动诊断 + API 通道交叉核实 ---
+UTC: 2026-11-10T05:31:23Z
+gh api 通道（同期正常）：
+6782247  heads/main
+f3347b7  tags/v2.3.1  tag
+--- ls-remote 再重试（HTTP/1.1 + postBuffer + lowSpeedTime）---
+retry2 RC=124

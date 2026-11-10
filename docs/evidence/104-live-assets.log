@@ -1,0 +1,46 @@
+=== v2.3.1 线上资源 200 + 字节级一致 ===
+UTC: 2026-11-10T05:27:58Z
+OK   src/app.js  http=200  sha=4ba5807643319e18
+OK   src/config.js  http=200  sha=5d58f1bcbf9a71d7
+OK   src/core/confidence.js  http=200  sha=17459430aa535996
+OK   src/core/discipline.js  http=200  sha=ec700b711e165848
+OK   src/core/grid.js  http=200  sha=59ca11a654f8c295
+OK   src/core/indicators.js  http=200  sha=8ba8118430f8781d
+OK   src/core/macro.js  http=200  sha=7c147c61b5bc7dfc
+OK   src/core/normalize.js  http=200  sha=4db5fbcd4e352807
+OK   src/core/rating.js  http=200  sha=8c1d9dce23e677ff
+OK   src/core/rebalance.js  http=200  sha=dad1e23ad4543dde
+OK   src/core/risk.js  http=200  sha=b7478d42cf1f2cfc
+OK   src/core/sanitize.js  http=200  sha=3e6af6e1f234dbcc
+OK   src/core/technical.js  http=200  sha=1ebdfcf7731d5aec
+OK   src/main.js  http=200  sha=9f07a3aea5f51f2c
+OK   src/render.js  http=200  sha=8044330dc751ab32
+OK   src/sourceB.js  http=200  sha=4b5f4efb9839f5f3
+OK   src/sourceC.js  http=200  sha=a58e3b786a273fd5
+OK   index.html  http=200  sha=55d90ce8b575879c
+核心代码文件数: 18
+=== 数据文件 200 ===
+data/live.json  http=200
+data/macro.json  http=200
+data/meta.json  http=200
+data/rating.json  http=200
+data/xauusd.json  http=200
+=== 线上 indicators 结构 ===
+{
+  "ok": true,
+  "rsi14": 51.05,
+  "macdHist": 20.58,
+  "pctB": 0.733,
+  "price": 4140.94,
+  "spot": 4113.700195,
+  "bars": 60
+}
+=== 线上账户数据口径（顶层不得有资金/余额字段）===
+{
+  "topKeys": 46,
+  "badFundKeys": [],
+  "hasTOTAL": true
+}
+=== 结论 ===
+[LIVE ASSETS PASS]
+script RC=0

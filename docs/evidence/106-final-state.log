@@ -1,0 +1,43 @@
+=== XAU Copilot v2.3.1 最终状态与交付凭证 ===
+UTC: 2026-11-10T05:36:14Z
+
+--- 本地版本与提交 ---
+package version: 2.3.1
+branch: main
+功能提交(v2.3.1 tag 固定指向): cd1d748 fix(v2.3.1): 配色语义分层（红涨绿跌）+ 账户数据口径修正
+HEAD: cd1d748 fix(v2.3.1): 配色语义分层（红涨绿跌）+ 账户数据口径修正
+tag 对象: v2.3.1 -> f3347b7 (tag)
+
+--- 全量回归 ---
+test RC=0
+# tests 80
+# pass 80
+# fail 0
+# skipped 0
+# todo 0
+
+--- 语法 ---
+SYNTAX OK
+
+--- 线上资源（GitHub Pages）---
+index.html  http=200
+src/render.js  http=200
+src/core/technical.js  http=200
+src/core/risk.js  http=200
+data/live.json  http=200
+data/xauusd.json  http=200
+data/meta.json  http=200
+
+--- 运行时零双印证 + 配色口径守卫 ---
+双印证残留: (none)
+M3 剩余可买标注: 1 处 / 非账户余额: 2 处
+禁用 PAXG (运行时): 0 处
+
+--- 交付物 ---
+在线地址: https://git202526.github.io/xau-copilot/
+Release: https://github.com/git202526/xau-copilot/releases/tag/v2.3.1
+运行报告: docs/evidence/97-release-v2.3.1.md
+线上截图: /workspace/xau-copilot-v2.3.1-live-390.png
+
+--- 结论 ---
+[FINAL STATE] v2.3.1 已上线；功能提交 cd1d748 固定为 tag v2.3.1；80/80 全绿；线上资源与字节级一致；390px 配色语义 + 断源降级均 PASS；报告第 5 节已据实回填。
