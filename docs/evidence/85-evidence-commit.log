@@ -1,0 +1,134 @@
+=== [提交 A] 凭证入库与运行报告回填 ===
+UTC: 2026-11-10T01:33:08Z
+--- 待入库凭证（未跟踪）---
+docs/evidence/73-rebase.log
+docs/evidence/74-rebase-resolve.log
+docs/evidence/75-post-rebase-regression.log
+docs/evidence/76-tag-unique-final.log
+docs/evidence/77-tag-create.log
+docs/evidence/78-push.log
+docs/evidence/79-remote-verify.log
+docs/evidence/80-release.log
+docs/evidence/81-actions-monitor.log
+docs/evidence/82-live-assets.log
+docs/evidence/83-live-browser.log
+docs/evidence/84-live-offline.log
+docs/evidence/85-evidence-commit.log
+--- 报告第 5 节已回填（占位已替换）---
+83:**结论：v2.3.0 已真实上线，全链路凭证可复核，未伪造任何步骤。**
+--- git add（仅 docs/evidence，不动代码与数据）---
+ docs/evidence/69-release-v2.3.0.md          | 23 ++++++++-
+ docs/evidence/73-rebase.log                 | 16 ++++++
+ docs/evidence/74-rebase-resolve.log         | 77 +++++++++++++++++++++++++++++
+ docs/evidence/75-post-rebase-regression.log | 20 ++++++++
+ docs/evidence/76-tag-unique-final.log       | 23 +++++++++
+ docs/evidence/77-tag-create.log             | 19 +++++++
+ docs/evidence/78-push.log                   | 15 ++++++
+ docs/evidence/79-remote-verify.log          | 19 +++++++
+ docs/evidence/80-release.log                | 59 ++++++++++++++++++++++
+ docs/evidence/81-actions-monitor.log        | 16 ++++++
+ docs/evidence/82-live-assets.log            | 34 +++++++++++++
+ docs/evidence/83-live-browser.log           | 37 ++++++++++++++
+ docs/evidence/84-live-offline.log           | 13 +++++
+ 13 files changed, 369 insertions(+), 2 deletions(-)
+--- git commit ---
+[main f403c44] docs(evidence): 补齐 v2.3.0 部署与线上终验凭证，回填运行报告第 5 节
+ 13 files changed, 369 insertions(+), 2 deletions(-)
+ create mode 100644 docs/evidence/73-rebase.log
+ create mode 100644 docs/evidence/74-rebase-resolve.log
+ create mode 100644 docs/evidence/75-post-rebase-regression.log
+ create mode 100644 docs/evidence/76-tag-unique-final.log
+ create mode 100644 docs/evidence/77-tag-create.log
+ create mode 100644 docs/evidence/78-push.log
+ create mode 100644 docs/evidence/79-remote-verify.log
+ create mode 100644 docs/evidence/80-release.log
+ create mode 100644 docs/evidence/81-actions-monitor.log
+ create mode 100644 docs/evidence/82-live-assets.log
+ create mode 100644 docs/evidence/83-live-browser.log
+ create mode 100644 docs/evidence/84-live-offline.log
+commit exit=0
+--- 提交后 HEAD ---
+f403c44ba2b244bc662c6be65d720a91e9701475 docs(evidence): 补齐 v2.3.0 部署与线上终验凭证，回填运行报告第 5 节
+
+=== fetch 远端最新并对齐（云端每 15 分钟可能有新数据提交）===
+UTC: 2026-11-10T01:33:08Z
+From https://github.com/git202526/xau-copilot
+ * branch            main       -> FETCH_HEAD
+   b9dcff0..c7d3446  main       -> origin/main
+fetch exit=0
+--- origin/main / 本地 HEAD ---
+c7d34468943f8c23e2438224cbaedf25bc1917c0
+f403c44ba2b244bc662c6be65d720a91e9701475
+--- rebase origin/main ---
+Rebasing (1/1)[KSuccessfully rebased and updated refs/heads/main.
+rebase exit=0
+--- rebase 后状态 ---
+## main...origin/main [ahead 1]
+?? docs/evidence/85-evidence-commit.log
+4703434 docs(evidence): 补齐 v2.3.0 部署与线上终验凭证，回填运行报告第 5 节
+c7d3446 chore(data): sync snapshot 2026-11-10T01:18Z
+b9dcff0 feat(v2.3.0): 应用去掉内外部双印证，改为纯外部技术面判断（全卡片同步 + RSI/MACD/布林/均线排列服务端指标）
+
+=== 变基后全量回归（基于云端最新数据 c7d3446）===
+UTC: 2026-11-10T01:35:35Z
+--- data/xauusd.json indicators 摘要（rebase 后已切换为云端最新）---
+{"ok":true,"rsi14":51.05,"macdHist":20.58,"pctB":0.733,"align":"mixed","price":4140.94,"bars":60,"spot":4133.93,"asOf":"2026-11-10T01:18:24.748Z"}
+--- npm test ---
+ok 52 - T11 pagehide 清理 ui.timer 与 ui.countdown
+  ---
+  duration_ms: 0.98492
+  ...
+# Subtest: T12 实时现价新鲜不判僵尸；实时挂掉且旧快照回退才判僵尸
+ok 53 - T12 实时现价新鲜不判僵尸；实时挂掉且旧快照回退才判僵尸
+  ---
+  duration_ms: 2.579859
+  ...
+1..53
+# tests 53
+# suites 0
+# pass 53
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 96.942937
+test exit=0
+--- 浏览器二次终验（本地最新 data 快照，390px）---
+=== v2.3.0 · 390px 浏览器终验（纯外部技术面全局架构）===
+{
+  "cards": 6,
+  "bubbles": 1,
+  "modules": 7,
+  "m2Title": "外部技术面决策",
+  "m2Headline": "外部技术面偏多",
+  "m2Tone": "green",
+  "techCells": 10,
+  "techLabels": [
+    "伦敦金现 $/oz",
+    "MA20 偏离",
+    "日内涨跌",
+    "ATR14 $/oz",
+    "RSI14",
+    "MACD 柱",
+    "布林 %B",
+    "均线排列",
+    "技术评级",
+    "宏观风向"
+  ],
+  "hasBannedText": false,
+  "bannedHits": [],
+  "hasPnl": true,
+  "hasRebalance": true,
+  "hasDiscipline": true,
+  "scrollWidth": 390,
+  "hasPAXG": false,
+  "footText": "账户数据 ok  ·  外部行情 实时  ·  宏观 ok  ·  汇率 6.6800  ·  数据 571 分钟前  ·  云端同步 1 分钟前",
+  "bodyLen": 1113
+}
+HTTP >=400 资源: 0
+console/page errors: 0
+screenshot: /workspace/xau-copilot-v2.3.0-global-390.png
+[BROWSER PASS] 7 卡全渲染、M2 指标网格、全局零双印证、账户事实保留、无报错、无溢出
+browser exit=0
+--- 结论 ---
+[POST-REBASE PASS] 53/53 全绿 + 浏览器终验 PASS，代码字节未变、仅云端数据刷新

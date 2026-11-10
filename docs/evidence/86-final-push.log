@@ -1,0 +1,21 @@
+=== [最终推送] 凭证提交 A 推送 + 远端核实 ===
+UTC: 2026-11-10T01:37:28Z
+本地 HEAD（提交 A）: 4703434ae996209f6ff96be0fa0bac22a2b6aa5c
+--- push origin main ---
+fatal: unable to access 'https://github.com/git202526/xau-copilot.git/': GnuTLS recv error (-110): The TLS connection was non-properly terminated.
+push exit=128
+--- gh api 核实远端 main ---
+main=c7d34468943f8c23e2438224cbaedf25bc1917c0 | chore(data): sync snapshot 2026-11-10T01:18Z
+--- tag v2.3.0 ---
+ref=refs/tags/v2.3.0 | object=0bf6efb918185b8c4750460ce1cd6a7416e5412a
+--- latest Release ---
+tag=v2.3.0 | published=2026-11-10T01:22:03Z
+--- 线上站点可达性 ---
+index.html http=200
+technical.js http=200
+--- 本地状态（85/86 待随后 docs 提交归档）---
+## main...origin/main [ahead 1]
+?? docs/evidence/85-evidence-commit.log
+?? docs/evidence/86-final-push.log
+
+注：85/86 两个凭证由紧随其后的 docs 提交归档；最终状态以 GitHub API 复核为准。
