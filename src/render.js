@@ -3,7 +3,9 @@
  * 铁律：七个 render 函数互不调用，统一由 main.js 的 refreshAll() 调度。
  *
  * v2.3.0：应用不再做内部/外部双印证，唯一判断源为 s.technical（纯外部行情指标）。
- * 账户事实数据（真实浮亏 / 均价 / 克重 / 资金 / 多账户 / 档距）仍来自 Source A 并保留展示。
+ * v2.3.1：红绿只表数值涨跌（红涨绿跌）；方向判断/状态类用 amber/violet/indigo/gray。
+ * 账户事实数据（真实浮亏 / 均价 / 克重 / 预算额度 / 多账户 / 档距）仍来自 Source A 并保留展示；
+ * 老应用无资金字段，「额度」为预算克重派生估算，页面已标注非账户余额。
  */
 import { BADGE } from "./core/technical.js";
 
@@ -159,14 +161,16 @@ export function renderDecision(s) {
 
   const cells = (t.signals || [])
     .map((it) => {
-      const cls = it.dir > 0 ? "up" : it.dir < 0 ? "dn" : "flat";
+      const cls = it.kind === "change"
+        ? (it.dir > 0 ? "chg-up" : it.dir < 0 ? "chg-dn" : "flat")
+        : (it.dir > 0 ? "bull" : it.dir < 0 ? "bear" : "flat");
       return `<div class="tc"><div class="k">${esc(it.label)}</div><div class="v ${cls}">${esc(it.value)}</div><div class="n">${esc(it.note)}</div></div>`;
     })
     .join("");
 
   const strip =
     t.scenario === "degraded" || t.scenario === "risk_off"
-      ? `<div class="alert-strip ${t.scenario === "risk_off" ? "amber" : "gray"}">${ico.warn}<span>${esc(t.text)}</span></div>`
+      ? `<div class="alert-strip ${t.scenario === "risk_off" ? "warn" : "gray"}">${ico.warn}<span>${esc(t.text)}</span></div>`
       : `<p class="note">${esc(t.text)}</p>`;
 
   box.innerHTML = `<section class="card rise" data-tone="${t.tone}">
@@ -191,9 +195,9 @@ export function renderAccount(s) {
   const pnlShow = r.pnl == null ? "数据缺失" : `${r.pnl > 0 ? "+" : ""}${num(r.pnl)}`;
 
   const depleted = r.depleted;
-  const stripCls = r.depletedTone === "red" ? "red" : r.depletedTone === "green" ? "green" : "gray";
+  const stripCls = r.depletedTone === "amber" ? "warn" : r.depletedTone === "indigo" ? "calm" : "gray";
 
-  box.innerHTML = `<section class="card rise" data-tone="${depleted ? "red" : "gray"}">
+  box.innerHTML = `<section class="card rise" data-tone="${r.depletedTone}">
     <div class="c-head"><span class="c-no">03</span><span class="c-title">账户真实体检</span>
       ${pos.grams != null ? `<span class="badge b-deg" style="margin-left:auto">${num(pos.grams)} g</span>` : ""}
     </div>
@@ -201,7 +205,7 @@ export function renderAccount(s) {
       <div class="pnl-cap">当前真实浮亏</div>
       <div class="pnl ${pnlCls}">${pnlShow}</div>
       <div class="pnl-sub">
-        ${r.pnlPct != null ? `收益率 <b style="color:${r.pnlPct < 0 ? "var(--red)" : "var(--green)"}">${pct(r.pnlPct)}</b>` : "收益率 <b>--</b>"}
+        ${r.pnlPct != null ? `收益率 <b style="color:${r.pnlPct < 0 ? "var(--green)" : "var(--red)"}">${pct(r.pnlPct)}</b>` : "收益率 <b>--</b>"}
         <span style="color:var(--tx-3)"> | </span>
         均价 <b>${pos.avgCost != null ? num(pos.avgCost) : "--"}</b> 元/克
       </div>
@@ -209,13 +213,14 @@ export function renderAccount(s) {
     <div class="grid2">
       <div>
         <div class="k">再跌 5%</div>
-        <div class="v" style="color:var(--red)">${r.stressLoss != null ? `-${wan(r.stressLoss)} 万` : "--"}</div>
+        <div class="v" style="color:var(--green)">${r.stressLoss != null ? `-${wan(r.stressLoss)} 万` : "--"}</div>
       </div>
       <div>
-        <div class="k">可用资金</div>
-        <div class="v">${r.remainingFunds != null ? `${r.remainingFunds.toFixed(2)} 万` : "--"}</div>
+        <div class="k">剩余可买（预算估算）</div>
+        <div class="v">${r.remainingGrams != null ? `${num(r.remainingGrams)} <span class="mini">克</span>` : "--"}</div>
       </div>
     </div>
+    <div class="src-note">额度由预算克重 TOTAL − 已持克重 × 现价折算，为计划参数派生估算值，非账户余额</div>
     <div class="alert-strip ${stripCls}">
       ${depleted ? ico.warn : ico.info}
       <span>${esc(r.depletedText)}</span>
@@ -229,7 +234,7 @@ export function renderGrid(s) {
   if (!box) return;
   const g = s.grid;
   const fuse = g.fuse;
-  const barTone = fuse ? "red" : g.tone;
+  const barTone = fuse ? "amber" : g.tone;
 
   const levels = (g.levels || [])
     .map((lv) => {
@@ -249,7 +254,7 @@ export function renderGrid(s) {
       <div class="row"><span class="k">档距 / 高点</span><span class="v" style="color:var(--tx-2);font-size:11px">${g.gearCount ? `${g.gearCount} 档 · 高点 $${g.highBase}` : "--"}</span></div>
     </div>
     ${levels ? `<div class="levels">${levels}</div>` : ""}
-    <div class="alert-strip ${fuse ? "red" : g.tone === "amber" ? "red" : "gray"}" style="${fuse ? "" : "background:rgba(255,255,255,.04);border-color:var(--line);color:var(--tx-2)"}">
+    <div class="alert-strip ${fuse || g.tone === "amber" ? "warn" : "gray"}">
       ${fuse ? ico.warn : ico.info}
       <span>${esc(g.text)}</span>
     </div>
@@ -305,7 +310,7 @@ export function renderDiscipline(s) {
     <div class="c-head"><span class="c-no">06</span><span class="c-title">纪律复盘教练</span>
       <span class="badge ${d.state === "violation" ? "b-high" : "b-mid"}" style="margin-left:auto">${d.state === "violation" ? "扣分" : "良好"}</span>
     </div>
-    <div class="alert-strip ${d.state === "violation" ? "red" : "green"}">
+    <div class="alert-strip ${d.state === "violation" ? "warn" : "calm"}">
       ${d.state === "violation" ? ico.warn : ico.check}
       <span>${esc(d.head)}</span>
     </div>

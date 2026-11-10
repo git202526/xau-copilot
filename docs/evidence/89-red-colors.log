@@ -1,0 +1,67 @@
+=== v2.3.1 红灯：配色语义分层 + 数据口径修正 ===
+UTC: 2026-11-10T04:30:30Z
+--- 语法检查 ---
+SYNTAX OK
+
+--- 单独运行 tests/colors.test.mjs（预期失败）---
+colors exit=1
+# tests 26
+# pass 5
+# fail 21
+失败用例：
+  not ok 1 - A1 浮亏（跌/负）用绿，不得用红
+  not ok 2 - A2 浮盈（涨/正）用红，不得用绿
+  not ok 4 - A4 render.js 数值类严格红涨绿跌（收益率 / 压力测试 / 溢价）
+  not ok 5 - A5 index.html 保留数值类红绿，并新增 change / judge 分层类
+  not ok 6 - A6 buildSignals 标注 kind：只有纯数值涨跌项才允许红绿
+  not ok 7 - B1 tech_bull「偏多」tone 不得用绿色
+  not ok 8 - B2 tech_bear「偏空」tone 不得用红色
+  not ok 9 - B3 异常边界②：降级 / 避险 / 指标缺失 / 中性 tone 全为中性
+  not ok 10 - B4 置信徽章对应 CSS 规则禁用红绿
+  not ok 11 - B5 额度枯竭告警 tone 禁用红绿
+  not ok 12 - B6 网格熔断 tone 禁用红绿
+  not ok 13 - B7 纪律违规 tone 禁用红绿
+  not ok 14 - B8 index.html 判断类 CSS 规则整体禁用红绿
+  not ok 15 - B9 render.js 不得残留判断类红绿与误导性资金文案
+  not ok 16 - B10 判断类 tone 赋值全局收敛（数值类 pnlTone 除外）
+  not ok 18 - C2 assess 暴露 remainingGrams（真实底层字段）并保留 remainingFunds 兼容
+  not ok 19 - C3 risk.js 额度文案改预算口径，不得再宣称「资金枯竭」
+  not ok 20 - C4 render.js M3 不再出现「可用资金」，并标注非账户余额
+  not ok 24 - D3 端到端：浮亏绿 + 偏多非绿 + 额度中性 可同时成立
+  not ok 25 - E1 CSS 注释不得再把「偏多/偏空判断」与「涨跌红绿」混用
+  not ok 26 - E2 M2 指标网格按 kind 分层：change 用 chg-*，judge 用 bull/bear
+
+--- 全量回归（旧 53 条应仍全绿，新增用例失败）---
+  ...
+1..79
+# tests 79
+# suites 0
+# pass 58
+# fail 21
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 81.751076
+full exit=1
+全量失败用例：
+  not ok 1 - A1 浮亏（跌/负）用绿，不得用红
+  not ok 2 - A2 浮盈（涨/正）用红，不得用绿
+  not ok 4 - A4 render.js 数值类严格红涨绿跌（收益率 / 压力测试 / 溢价）
+  not ok 5 - A5 index.html 保留数值类红绿，并新增 change / judge 分层类
+  not ok 6 - A6 buildSignals 标注 kind：只有纯数值涨跌项才允许红绿
+  not ok 7 - B1 tech_bull「偏多」tone 不得用绿色
+  not ok 8 - B2 tech_bear「偏空」tone 不得用红色
+  not ok 9 - B3 异常边界②：降级 / 避险 / 指标缺失 / 中性 tone 全为中性
+  not ok 10 - B4 置信徽章对应 CSS 规则禁用红绿
+  not ok 11 - B5 额度枯竭告警 tone 禁用红绿
+  not ok 12 - B6 网格熔断 tone 禁用红绿
+  not ok 13 - B7 纪律违规 tone 禁用红绿
+  not ok 14 - B8 index.html 判断类 CSS 规则整体禁用红绿
+  not ok 15 - B9 render.js 不得残留判断类红绿与误导性资金文案
+  not ok 16 - B10 判断类 tone 赋值全局收敛（数值类 pnlTone 除外）
+  not ok 18 - C2 assess 暴露 remainingGrams（真实底层字段）并保留 remainingFunds 兼容
+  not ok 19 - C3 risk.js 额度文案改预算口径，不得再宣称「资金枯竭」
+  not ok 20 - C4 render.js M3 不再出现「可用资金」，并标注非账户余额
+  not ok 24 - D3 端到端：浮亏绿 + 偏多非绿 + 额度中性 可同时成立
+  not ok 25 - E1 CSS 注释不得再把「偏多/偏空判断」与「涨跌红绿」混用
+  not ok 26 - E2 M2 指标网格按 kind 分层：change 用 chg-*，judge 用 bull/bear

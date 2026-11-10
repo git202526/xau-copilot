@@ -32,7 +32,7 @@ export function assessGrid({ A, atrUsdOz, fx, priceUsdOz, techDir = 0 }) {
 
   if (techDir < 0) {
     state = "fuse";
-    tone = "red";
+    tone = "amber";
     title = "熔断警告";
     text = "外部技术面偏空，继续按网格自动买入等于持续接飞刀。建议暂停后续自动买入，等技术面转为中性再恢复。";
   } else if (ratio != null && ratio < 0.7) {

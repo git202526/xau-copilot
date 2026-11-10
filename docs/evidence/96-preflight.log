@@ -1,0 +1,19 @@
+=== v2.3.1 发版前基线复核 ===
+UTC: 2026-11-10T05:02:07Z
+--- 全量回归 node --test tests/*.test.mjs ---
+# tests 80
+# pass 80
+# fail 0
+# skipped 0
+# todo 0
+# duration_ms 84.716729
+test exit=0
+失败用例：
+(none)
+--- 语法检查（src / core / scripts / tests）---
+SYNTAX OK
+--- 版本与文档一致性 ---
+  "version": "2.3.1",
+127:npm test          # 80 条用例，必须全绿
+--- 运行时零双印证守卫 ---
+(none)

@@ -1,0 +1,73 @@
+=== v2.3.1 · 390px 浏览器配色语义终验 ===
+UTC: 2026-11-10T04:50:11Z
+=== v2.3.1 · 390px 浏览器配色语义终验 ===
+{
+  "cards": 6,
+  "bubbles": 1,
+  "modules": 7,
+  "pnlText": "-27,680.74",
+  "pnlColor": "rgb(63, 214, 140)",
+  "pnlIsGreen": true,
+  "pnlIsRed": false,
+  "m2Headline": "外部技术面偏多",
+  "m2Color": "rgb(245, 166, 35)",
+  "m2IsNeutral": true,
+  "judgeCount": 3,
+  "judgeColors": [
+    "rgb(245, 166, 35)",
+    "rgb(245, 166, 35)",
+    "rgb(245, 166, 35)"
+  ],
+  "judgeAllNeutral": true,
+  "chgCount": 3,
+  "chgColors": [
+    "rgb(255, 93, 82)",
+    "rgb(255, 93, 82)",
+    "rgb(255, 93, 82)"
+  ],
+  "chgAllRedGreen": true,
+  "toneAttrs": [
+    "gray",
+    "amber",
+    "amber",
+    "gray",
+    "amber",
+    "gray"
+  ],
+  "toneHasRedGreen": false,
+  "stripCls": [
+    "alert-strip warn",
+    "alert-strip gray",
+    "alert-strip calm"
+  ],
+  "stripHasRedGreen": false,
+  "hasBudgetNote": true,
+  "noFakeFunds": true,
+  "hasBannedText": false,
+  "hasPAXG": false,
+  "hasPnl": true,
+  "hasRebalance": true,
+  "hasDiscipline": true,
+  "scrollWidth": 390,
+  "footText": "账户数据 ok  ·  外部行情 实时  ·  宏观 ok  ·  汇率 6.6800  ·  数据 765 分钟前  ·  云端同步 1 分钟前"
+}
+HTTP >=400 资源: 0
+console/page errors: 0
+screenshot: /workspace/xau-copilot-v2.3.1-390.png
+[BROWSER PASS] 浮亏绿 / 偏多中性 / 判断类中性 / 涨跌红绿 / 预算口径标注 / 0 报错 / 无溢出
+browser exit=0
+
+=== 断源降级终验（全部 fetch reject）===
+=== v2.3.0 断源降级终验（全部 fetch reject）===
+{
+  "cards": 7,
+  "text": "XAU Copilot\nDECISION DECK\nAI 研判\n11-10 12:50 · 外部指标融合\n\n下午好。外部行情未就绪，指标预算中；宏观方向分歧。外部源数据异常，本次判断作废。\n\n技术面 外部行情不可用\n评级 未评级\n宏观 中性\n置信 降级\n外部行情陈旧 · 判断作废\n账户数据陈旧\n源异常\n01\n宏观与双轨雷达\n宏观\n--\n国际 · XAUUSD\n--$/oz\n未评级\n国内 · 折算克价\n--元/克\n外部行情不可用\n国内溢价",
+  "hasDegChip": true,
+  "m2HasDegraded": true,
+  "hasBanned": false,
+  "appExists": true,
+  "notBlank": true
+}
+JS errors: 0
+[OFFLINE PASS] 断源降级不白屏、M2 明确降级、无 JS 异常、无双印证残留
+offline exit=0

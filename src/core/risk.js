@@ -1,7 +1,7 @@
 /**
  * 实战风控与账户体检
  * - 真实浮亏强制暴露（优先 S 派生值，绝不静默归零）
- * - 资金枯竭防线（剩余额度 < 1.5 倍下一档 → 红色最高级告警）
+ * - 预算额度防线（剩余额度 < 1.5 倍下一档 → 琥珀告警；额度为预算克重派生估算，非账户余额）
  * - 反人性锁（外部技术面偏空 + 今日买入 → FOMO 拦截）
  *
  * v2.3.0：判断源统一为外部方向 techDir，账户事实数据仍来自 Source A。
@@ -35,7 +35,7 @@ export function assess(input = {}) {
   else if (grams != null && avgCost != null && price > 0) pnl = (price - avgCost) * grams;
 
   const pnlText = pnl == null ? "数据缺失" : `${pnl < 0 ? "" : "+"}${money(pnl)} 元`;
-  const pnlTone = pnl == null ? "gray" : pnl < 0 ? "red" : pnl > 0 ? "green" : "gray";
+  const pnlTone = pnl == null ? "gray" : pnl < 0 ? "green" : pnl > 0 ? "red" : "gray";
   const pnlPct =
     pnl != null && avgCost > 0 && grams > 0 && price > 0
       ? ((price - avgCost) / avgCost) * 100
@@ -46,16 +46,16 @@ export function assess(input = {}) {
   const target = price > 0 ? price * (1 - stressDrop) : null;
   const stressLoss = grams != null && target != null ? grams * (price - target) : null;
 
-  /* 资金枯竭 */
+  /* 预算额度：TOTAL 预算克重派生的估算值，老应用 Source A 无资金/余额字段 */
   const ratio = n(plan.ratio);
   const depleted = ratio != null && ratio < 1.5;
   const depletedText =
     ratio == null
       ? "计划数据不可得，无法评估补仓能力"
       : depleted
-        ? `资金枯竭：剩余额度仅够 ${ratio.toFixed(2)} 档，不足 1.5 倍安全垫`
-        : `资金充足：剩余额度可覆盖 ${Math.floor(ratio)} 档`;
-  const depletedTone = ratio == null ? "gray" : depleted ? "red" : "green";
+        ? `预算额度不足（估算）：剩余额度仅够 ${ratio.toFixed(2)} 档，不足 1.5 倍安全垫`
+        : `预算额度充足（估算）：剩余额度可覆盖 ${Math.floor(ratio)} 档`;
+  const depletedTone = ratio == null ? "gray" : depleted ? "amber" : "gray";
 
   /* 反人性锁：外部技术面偏空（techDir<0）仍逆势买入 → 10 秒拦截 */
   const buys = ((A && A.todayActions) || []).filter((x) => x.type === "BUY");
@@ -80,6 +80,7 @@ export function assess(input = {}) {
     target,
     stressLoss,
     stressText: stressLoss == null ? "数据缺失" : `-${wan(stressLoss)} 万`,
+    remainingGrams: n(plan.remainingGrams),
     remainingFunds: n(plan.remainingFunds),
     nextBuyAmount: n(plan.nextBuyAmount),
     ratio,

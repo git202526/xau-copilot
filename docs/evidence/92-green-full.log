@@ -1,0 +1,26 @@
+=== v2.3.1 绿灯收口：全量回归 ===
+UTC: 2026-11-10T04:42:01Z
+--- 语法 ---
+SYNTAX OK
+--- 全量回归 ---
+  ...
+1..80
+# tests 80
+# suites 0
+# pass 80
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 84.279105
+test exit=0
+失败用例：
+(none)
+
+--- 全局红绿引用终查（应只剩数值类合法引用）---
+  18:  --red:#FF5D52; --green:#3FD68C; --amber:#F5A623; --gray:#6B7280;
+  176:.tech-grid .tc .v.chg-up{color:var(--red)}    /* 数值涨跌：涨红 */
+  177:.tech-grid .tc .v.chg-dn{color:var(--green)}  /* 数值涨跌：跌绿 */
+  188:.pnl.red{color:var(--red)}
+  189:.pnl.green{color:var(--green)}
+  220:.row .v.red{color:var(--red)} .row .v.green{color:var(--green)} .row .v.amber{color:var(--amber)}

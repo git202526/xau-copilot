@@ -57,7 +57,8 @@ function sign(v) {
 /**
  * 构造外部指标清单（供 M2 网格展示 + 加权投票）
  * 每项：{ key, label, value(展示文本), dir(-1|0|1), note, weight }
- * 涨跌方向色沿用国内习惯：dir=+1 用 up(红/涨)，dir=-1 用 dn(绿/跌)。
+ * v2.3.1 配色语义分层：kind=change（纯数值涨跌）用红涨绿跌；
+ *   kind=judge（方向判断）用红绿以外的中性色；kind=neutral 不着色。
  */
 function buildSignals(B, C, cfg) {
   const th = resolveThresholds(cfg);
@@ -70,8 +71,12 @@ function buildSignals(B, C, cfg) {
   const fx = (v, d = 2) => (v == null ? "--" : Number(v).toFixed(d));
 
   const list = [];
+  /* kind 由指标语义决定，调用方无需改动：纯数值涨跌 / 方向判断 / 中性展示 */
+  const CHANGE_KEYS = new Set(["ma20", "day", "macd"]);
+  const NEUTRAL_KEYS = new Set(["price", "atr"]);
+  const kindOf = (key) => NEUTRAL_KEYS.has(key) ? "neutral" : CHANGE_KEYS.has(key) ? "change" : "judge";
   const add = (key, label, value, dir, note, weight = 1) =>
-    list.push({ key, label, value, dir, note: note || "", weight });
+    list.push({ key, label, value, dir, note: note || "", kind: kindOf(key), weight });
 
   /* 1 现价（$/oz）—— 中性展示位 */
   add("price", "伦敦金现 $/oz", B.priceUsdOz == null ? "--" : Number(B.priceUsdOz).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 0, B.spotSource === "gold-api" ? "实时现价" : "快照价", 0);
@@ -179,7 +184,7 @@ export function decideTechnical({ B = null, C = null, stale = false, cfg = {} } 
 
   if (score >= th.bullScore) {
     return {
-      scenario: "tech_bull", conf, tone: "green", dir: 1, score,
+      scenario: "tech_bull", conf, tone: "amber", dir: 1, score,
       headline: "外部技术面偏多",
       text: `${bull.toFixed(1)} / ${total.toFixed(1)} 权重的外部指标同向偏多，价格站上均线、动能与评级一致。按计划分批参与，不追高。`,
       detail: `外部指标得分 ${score} / 100`, signals,
@@ -187,7 +192,7 @@ export function decideTechnical({ B = null, C = null, stale = false, cfg = {} } 
   }
   if (score <= th.bearScore) {
     return {
-      scenario: "tech_bear", conf, tone: "red", dir: -1, score,
+      scenario: "tech_bear", conf, tone: "indigo", dir: -1, score,
       headline: "外部技术面偏空",
       text: `${bear.toFixed(1)} / ${total.toFixed(1)} 权重的外部指标同向偏空，均线压制、动能转弱。减少逆势补仓，等信号收敛。`,
       detail: `外部指标得分 ${score} / 100`, signals,

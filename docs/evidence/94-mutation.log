@@ -1,0 +1,31 @@
+=== v2.3.1 变异测试 ===
+UTC: 2026-11-10T04:48:09Z
+=== v2.3.1 变异测试（4 次，配色与口径各至少 1 次）===
+[CAUGHT] M1 浮亏配色翻回红（违反红涨绿跌） | rc=1 | restored=true
+   not ok 1 - A1 浮亏（跌/负）用绿，不得用红
+   not ok 2 - A2 浮盈（涨/正）用红，不得用绿
+   not ok 25 - D3 端到端：浮亏绿 + 偏多非绿 + 额度中性 可同时成立
+[CAUGHT] M2 偏多 judgment 翻回绿（用户明确反对） | rc=1 | restored=true
+   not ok 7 - B1 tech_bull「偏多」tone 不得用绿色
+   not ok 9 - B3 异常边界②：降级 / 避险 / 指标缺失 / 中性 tone 全为中性
+   not ok 16 - B10 判断类 tone 赋值全局收敛（数值类 pnlTone 除外）
+   not ok 25 - D3 端到端：浮亏绿 + 偏多非绿 + 额度中性 可同时成立
+[CAUGHT] M3 M3 文案改回「可用资金」（冒充账户余额） | rc=1 | restored=true
+   not ok 15 - B9 render.js 不得残留判断类红绿与误导性资金文案
+   not ok 21 - C4 render.js M3 不再出现「可用资金」，并标注非账户余额
+[CAUGHT] M4 判断类 CSS 回流绿色 | rc=1 | restored=true
+   not ok 14 - B8 index.html 判断类 CSS 规则整体禁用红绿
+[MUTATION PASS] 4 次变异全部被红灯捕获，且 4 个文件字节级还原
+mutation exit=0
+
+=== 变异还原后全量回归（必须 80/80）===
+1..80
+# tests 80
+# suites 0
+# pass 80
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 81.225049
+test exit=0

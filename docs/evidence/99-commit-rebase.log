@@ -1,0 +1,39 @@
+=== v2.3.1 提交与变基凭证 ===
+UTC: 2026-11-10T05:09:10Z
+--- 功能提交（在 6524e85 之上）---
+[main 1b3ddd2] fix(v2.3.1): 配色语义分层（红涨绿跌）+ 账户数据口径修正
+ 23 files changed, 1008 insertions(+), 76 deletions(-)
+ create mode 100644 docs/evidence/88-version-calc.log
+ create mode 100644 docs/evidence/89-red-colors.log
+ create mode 100644 docs/evidence/90-green-colors.log
+ create mode 100644 docs/evidence/91-red-dirty-actions.log
+ create mode 100644 docs/evidence/92-green-full.log
+ create mode 100644 docs/evidence/93-e2e-callgraph.log
+ create mode 100644 docs/evidence/94-mutation.log
+ create mode 100644 docs/evidence/95-browser-offline.log
+ create mode 100644 docs/evidence/96-preflight.log
+ create mode 100644 docs/evidence/97-release-v2.3.1.md
+ create mode 100644 docs/evidence/98-predeploy-state.log
+ create mode 100644 tests/colors.test.mjs
+--- rebase origin/main ---
+Rebasing (1/1)[KSuccessfully rebased and updated refs/heads/main.
+--- 变基后提交链（amend 前）---
+ab543ee fix(v2.3.1): 配色语义分层（红涨绿跌）+ 账户数据口径修正
+1165ad2 chore(data): sync snapshot 2026-11-10T04:21Z
+b5bc3f9 chore(data): sync snapshot 2026-11-10T01:55Z
+6524e85 docs(evidence): v2.3.0 最终状态与线上复核凭证
+--- 变基后全量回归 ---
+# tests 80
+# pass 80
+# fail 0
+# skipped 0
+# todo 0
+test RC=0
+--- 变基后语法 ---
+SYNTAX OK
+--- 变基后工作区 ---
+clean (git status -s 为空)
+--- 分叉说明 ---
+远端独有 2 个提交（b5bc3f9 / 1165ad2）仅改 data/live.json, data/macro.json, data/meta.json, data/xauusd.json；本版不改 data 结构，rebase 无冲突。
+--- 归档说明 ---
+本凭证以 git commit --amend --no-edit 并入功能提交；功能提交初始 sha 1b3ddd2，rebase 后 ab543ee，amend 后最终 sha 见 100-tag-create.log。

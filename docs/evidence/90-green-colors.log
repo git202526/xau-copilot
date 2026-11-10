@@ -1,0 +1,84 @@
+=== v2.3.1 绿灯：批量最小改动（逐条唯一性校验）===
+UTC: 2026-11-10T04:37:21Z
+[OK] risk-doc @ src/core/risk.js
+[OK] risk-pnlTone @ src/core/risk.js
+[OK] risk-depleted @ src/core/risk.js
+[OK] risk-remainingGrams @ src/core/risk.js
+[OK] tech-doc @ src/core/technical.js
+[OK] tech-add-kind @ src/core/technical.js
+[OK] tech-bull-tone @ src/core/technical.js
+[OK] tech-bear-tone @ src/core/technical.js
+[OK] grid-fuse-tone @ src/core/grid.js
+[OK] disc-tone @ src/core/discipline.js
+[OK] normalize-doc @ src/core/normalize.js
+[OK] render-doc @ src/render.js
+[OK] m2-cells-kind @ src/render.js
+[OK] m2-strip @ src/render.js
+[OK] m3-pnlPct @ src/render.js
+[OK] m3-stress @ src/render.js
+[OK] m3-funds-cell @ src/render.js
+[OK] m3-src-note @ src/render.js
+[OK] m3-data-tone @ src/render.js
+[OK] m3-stripCls @ src/render.js
+[OK] m4-barTone @ src/render.js
+[OK] m4-strip @ src/render.js
+[OK] m6-strip @ src/render.js
+[OK] css-vars @ index.html
+[OK] css-dot @ index.html
+[OK] css-btext @ index.html
+[OK] css-chip @ index.html
+[OK] css-card-tone @ index.html
+[OK] css-badge @ index.html
+[OK] css-pill @ index.html
+[OK] css-sig @ index.html
+[OK] css-verdict @ index.html
+[OK] css-vs @ index.html
+[OK] css-vs-ok @ index.html
+[OK] css-tech-grid @ index.html
+[OK] css-src-note @ index.html
+[OK] css-alert @ index.html
+[OK] css-levels @ index.html
+[OK] css-tag2 @ index.html
+[OK] css-disc @ index.html
+[OK] css-modal-border @ index.html
+[OK] css-modal-ico @ index.html
+[OK] css-modal-ico-svg @ index.html
+[OK] css-modal-h3 @ index.html
+[OK] css-modal-cd @ index.html
+[OK] css-modal-danger @ index.html
+[OK] t5-pnlTone @ tests/terminal.test.mjs
+[OK] t6-head @ tests/terminal.test.mjs
+[OK] t6-assert @ tests/terminal.test.mjs
+[OK] readme-core @ README.md
+[OK] readme-plan-row @ README.md
+[OK] readme-risk @ README.md
+[OK] readme-tests @ README.md
+[WRITE] src/core/risk.js
+[WRITE] src/core/technical.js
+[WRITE] src/core/grid.js
+[WRITE] src/core/discipline.js
+[WRITE] src/core/normalize.js
+[WRITE] src/render.js
+[WRITE] index.html
+[WRITE] tests/terminal.test.mjs
+[WRITE] README.md
+[DONE] replacements=53 files=9
+apply exit=0
+
+=== 全量语法检查 ===
+SYNTAX OK (all files)
+
+=== 全量回归 ===
+  ...
+1..79
+# tests 79
+# suites 0
+# pass 78
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 91.403362
+test exit=1
+失败用例：
+not ok 13 - B7 纪律违规 tone 禁用红绿

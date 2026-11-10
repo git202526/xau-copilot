@@ -96,7 +96,7 @@ test("T4 真实浮亏 -30000 → 原样透出，不回退成 0", () => {
   const fake = assess({ A: a, priceCnyGram: 880, macro: { dir: 0, mode: "normal" }, pnlOverride: -30000 });
   assert.equal(fake.pnl, -30000);
   assert.match(fake.pnlText, /-30,000/);
-  assert.equal(fake.pnlTone, "red", "亏损必须是红色（国内习惯）");
+  assert.equal(fake.pnlTone, "green", "浮亏属跌，按红涨绿跌应为绿（v2.3.1 口径改写）");
 });
 
 /* ── T5（v2.3.0 改写）FOMO 锁 ──
@@ -122,14 +122,14 @@ test("T5 外部技术面偏空 + 今日有 BUY → 逆势买入触发 FOMO 锁",
   assert.equal(r.fomoCountdown, 10);
 });
 
-/* ── T6 资金枯竭 ── */
-test("T6 剩余额 < 1.5 倍下一档 → 红色枯竭告警", () => {
+/* ── T6 预算额度不足（v2.3.1 需求变更：老应用无资金字段，改预算口径 + 中性告警色）── */
+test("T6 剩余额 < 1.5 倍下一档 → 琥珀预算额度不足告警", () => {
   const a = normalizeA(rawSample(), { priceCnyGram: 880 });
   assert.ok(a.plan.ratio < 1.5, `实测比值 ${a.plan.ratio} 应小于 1.5`);
   const r = assess({ A: a, priceCnyGram: 880, macro: { dir: 0, mode: "normal" } });
   assert.equal(r.depleted, true);
-  assert.match(r.depletedText, /资金枯竭/);
-  assert.equal(r.depletedTone, "red");
+  assert.match(r.depletedText, /预算额度/);
+  assert.equal(r.depletedTone, "amber");
 });
 
 /* ── T7 宏观极值：VIX 单日暴涨 >20% 强制避险 ── */

@@ -1,0 +1,24 @@
+=== v2.3.1 发版前远端状态与 Tag 唯一性终核 ===
+UTC: 2026-11-10T05:07:23Z
+--- 本地 HEAD / 版本 ---
+6524e85c36c0d263212dcdd1c70a6a5f7d7b1879
+  "version": "2.3.1",
+--- fetch 结果（远端分叉诊断）---
+From https://github.com/git202526/xau-copilot
+   6524e85..1165ad2  main       -> origin/main
+--- ahead/behind (左=仅本地, 右=仅远端) ---
+0	2
+--- 远端独有提交改动文件 ---
+ data/live.json   | 16 ++++++++--------
+ data/macro.json  |  8 ++++----
+ data/meta.json   |  6 +++---
+ data/xauusd.json | 12 ++++++------
+ 4 files changed, 21 insertions(+), 21 deletions(-)
+--- 本地 tag v2.3.1 数量（应为 0）---
+0
+--- 远端 refs/tags/v2.3.1（应为空）---
+ls-remote RC=0
+--- Releases 是否已存在 v2.3.1（应 404）---
+release not found
+--- 线上站点可达性 ---
+index.html http=200

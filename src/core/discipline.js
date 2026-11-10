@@ -6,6 +6,10 @@
  * 不再读取内部趋势，也不再消费双印证结论。
  */
 
+/* 防御性数值：老应用流水可能缺 gram/priceCny，缺失一律显示占位符，绝不抛异常（不白屏） */
+const n = (v) => (v == null || v === "" || !Number.isFinite(Number(v)) ? null : Number(v));
+const g = (v) => (n(v) == null ? "--" : n(v).toFixed(2));
+
 export function discipline({ A, techDir = 0, technical = null } = {}) {
   const actions = (A && A.todayActions) || [];
   const buys = actions.filter((x) => x.type === "BUY");
@@ -21,12 +25,12 @@ export function discipline({ A, techDir = 0, technical = null } = {}) {
     items.push({
       ok: !adverse,
       text:
-        `买入 ${b.gram.toFixed(2)} 克 @ ${b.priceCny.toFixed(2)} 元/克` +
+        `买入 ${g(b.gram)} 克 @ ${g(b.priceCny)} 元/克` +
         (adverse ? " —— 外部技术面偏空期间加仓，属逆势接飞刀。" : " —— 与当前外部技术面不冲突。"),
     });
   }
   for (const s of sells) {
-    items.push({ ok: true, text: `卖出 ${s.gram.toFixed(2)} 克 @ ${s.priceCny.toFixed(2)} 元/克 —— 减仓方向，符合纪律。` });
+    items.push({ ok: true, text: `卖出 ${g(s.gram)} 克 @ ${g(s.priceCny)} 元/克 —— 减仓方向，符合纪律。` });
   }
 
   let head;
@@ -37,11 +41,11 @@ export function discipline({ A, techDir = 0, technical = null } = {}) {
   return {
     ok: true,
     state: adverse ? "violation" : "clean",
-    tone: adverse ? "red" : "green",
+    tone: adverse ? "amber" : "gray",
     head,
     items,
     buyCount: buys.length,
     sellCount: sells.length,
-    buyGrams: buys.reduce((s, x) => s + x.gram, 0),
+    buyGrams: buys.reduce((s, x) => s + (n(x.gram) || 0), 0),
   };
 }

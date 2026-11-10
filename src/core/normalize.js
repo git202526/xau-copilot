@@ -102,8 +102,9 @@ export function calcTodayActions(buys, sells, now = Date.now()) {
  *   档距 = H × (endDrop − startDrop)/100 ÷ (n − 1)
  *   预算 = noCap ? TOTAL : TOTAL − 未标记档位的持仓
  *   剩余可买 = 预算 − 已持克重
- *   剩余资金(万) = 剩余可买 × 现价 ÷ 10000
+ *   预算额度折算(万) = 剩余可买 × 现价 ÷ 10000（派生估算，非账户余额）
  *   下一档克重 = TOTAL × wPct[next]
+ * 注：老应用 Source A 无资金/余额字段，TOTAL 为预算总克重，以上均为计划参数派生量。
  */
 export function calcPlan(raw, grams, priceCnyGram) {
   const n = num(raw.gearCount) || 9;

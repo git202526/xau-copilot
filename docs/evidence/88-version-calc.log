@@ -1,0 +1,48 @@
+=== v2.3.1 P0 基线核验 ===
+UTC: 2026-11-10T04:26:48Z
+--- 当前 package version ---
+2.3.0
+--- git 状态 ---
+## main...origin/main
+?? docs/evidence/88-version-calc.log
+--- 本地 tags ---
+v1.0.0
+v1.0.1
+v2.0.0
+v2.1.0
+v2.2.0
+v2.3.0
+--- 基线全量回归（红灯前应为 53/53）---
+1..53
+# tests 53
+# suites 0
+# pass 53
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 90.700204
+test exit=0
+--- 线上站点可达性 ---
+index.html http=200
+
+=== 版本自动计算（fix：配色与口径修正）===
+{
+  "kind": "fix",
+  "latestTag": "v2.3.0",
+  "oldPackageVersion": "2.3.0",
+  "newVersion": "v2.3.1",
+  "unique": true,
+  "localTagCount": 6,
+  "remoteTagCount": 12,
+  "allKnownTags": [
+    "v1.0.0",
+    "v1.0.1",
+    "v2.0.0",
+    "v2.1.0",
+    "v2.2.0",
+    "v2.3.0"
+  ]
+}
+--- 写入后 package version ---
+2.3.1
