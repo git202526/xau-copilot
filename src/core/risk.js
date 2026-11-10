@@ -2,7 +2,9 @@
  * 实战风控与账户体检
  * - 真实浮亏强制暴露（优先 S 派生值，绝不静默归零）
  * - 资金枯竭防线（剩余额度 < 1.5 倍下一档 → 红色最高级告警）
- * - 反人性锁（背离 + 今日买入 → FOMO 拦截）
+ * - 反人性锁（外部技术面偏空 + 今日买入 → FOMO 拦截）
+ *
+ * v2.3.0：判断源统一为外部方向 techDir，账户事实数据仍来自 Source A。
  */
 
 const n = (v) => (v == null || v === "" ? null : Number.isFinite(Number(v)) ? Number(v) : null);
@@ -16,7 +18,7 @@ export const wan = (v) =>
   v == null || !Number.isFinite(Number(v)) ? "--" : (Number(v) / 10000).toFixed(2);
 
 export function assess(input = {}) {
-  const { A, priceCnyGram, macro, stale = false, divergence = false, pnlOverride = null } = input;
+  const { A, priceCnyGram, macro, stale = false, techDir = 0, pnlOverride = null } = input;
   const price = n(priceCnyGram);
   const pos = (A && A.position) || {};
   const grams = n(pos.grams);
@@ -25,7 +27,7 @@ export function assess(input = {}) {
 
   /* 数据可信度 */
   const trusted = !stale;
-  const notice = stale ? "源数据超过 15 分钟未更新，判定为僵尸数据，本次印证作废（仍展示上次结果）。" : "";
+  const notice = stale ? "源数据超过新鲜度阈值，判定为僵尸数据，本次判断作废（账户事实数据仍展示）。" : "";
 
   /* 真实浮亏：优先外部覆盖值，其次派生，最后才是「数据缺失」 */
   let pnl = null;
@@ -55,11 +57,11 @@ export function assess(input = {}) {
         : `资金充足：剩余额度可覆盖 ${Math.floor(ratio)} 档`;
   const depletedTone = ratio == null ? "gray" : depleted ? "red" : "green";
 
-  /* 反人性锁：背离 + 今日买入 */
+  /* 反人性锁：外部技术面偏空（techDir<0）仍逆势买入 → 10 秒拦截 */
   const buys = ((A && A.todayActions) || []).filter((x) => x.type === "BUY");
-  const fomoLock = Boolean(divergence) && buys.length > 0;
+  const fomoLock = techDir < 0 && buys.length > 0;
   const fomoText = fomoLock
-    ? `纪律扣分：处于多源背离区间仍逆势买入 ${buys.reduce((s, x) => s + x.gram, 0).toFixed(2)} 克，这是在接飞刀。`
+    ? `纪律扣分：外部技术面偏空仍逆势买入 ${buys.reduce((s, x) => s + x.gram, 0).toFixed(2)} 克，这是在接飞刀。`
     : "";
   const fomoCountdown = fomoLock ? 10 : 0;
 

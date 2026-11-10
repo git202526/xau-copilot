@@ -1,0 +1,15 @@
+=== 远端 main 真实状态（gh api）===
+sha=484311f3dcd4  msg=chore(data): sync snapshot 2026-11-09T22:39Z
+--- 远端最近 5 次提交 ---
+484311f3dcd4  chore(data): sync snapshot 2026-11-09T22:39Z
+4a9b3ad1c758  chore(data): sync snapshot 2026-11-09T17:42Z
+cd54158a3f66  docs(evidence): 补齐 v2.2.0 最终部署与线上 0-error 终验凭证
+c482264ee33a  chore(data): sync snapshot 2026-11-09T17:40Z
+6d3ed7e99ca7  fix(v2.2.0): 内联 SVG favicon 消除站点 404 console error + 回填部署凭证报告
+=== 重试 fetch（HTTP/1.1）===
+From https://github.com/git202526/xau-copilot
+ * branch            main       -> FETCH_HEAD
+   cd54158..484311f  main       -> origin/main
+fetch 后 FETCH_HEAD: 484311f
+本地 HEAD: cd54158
+相对 FETCH_HEAD 领先/落后: 2	0

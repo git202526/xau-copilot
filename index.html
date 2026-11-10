@@ -169,6 +169,17 @@ body{
 .vs .mid.ok{color:var(--green);background:rgba(63,214,140,.12);border:1px solid rgba(63,214,140,.28)}
 .note{font-size:12px;line-height:1.6;color:var(--tx-2);margin:0}
 
+/* ── M2 外部技术指标网格 ── */
+.tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.tech-grid .tc{background:var(--card-2);padding:7px 10px;min-width:0}
+.tech-grid .tc .k{font-size:9px;color:var(--tx-3);letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tech-grid .tc .v{font-size:12.5px;font-weight:700;font-family:var(--mono);letter-spacing:-.2px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tech-grid .tc .v.up{color:var(--red)}    /* 国内习惯：偏多/涨 红 */
+.tech-grid .tc .v.dn{color:var(--green)}  /* 偏空/跌 绿 */
+.tech-grid .tc .v.flat{color:var(--tx-2)}
+.tech-grid .tc .n{font-size:9px;color:var(--tx-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:640px){.tech-grid{grid-template-columns:repeat(3,1fr)}}
+
 /* ── M3 体检 ── */
 .pnl-wrap{text-align:center;padding:4px 0 10px}
 .pnl-cap{font-size:10.5px;color:var(--tx-3);letter-spacing:1px;margin-bottom:3px}
@@ -335,7 +346,7 @@ body{
   <main id="app">
     <section id="m0" aria-label="AI 晨报"></section>
     <section id="m1" aria-label="宏观与双轨雷达"></section>
-    <section id="m2" aria-label="多源共振决策"></section>
+    <section id="m2" aria-label="外部技术面决策"></section>
     <section id="m3" aria-label="账户体检"></section>
     <section id="m4" aria-label="网格效率"></section>
     <section id="m5" aria-label="多账户再平衡"></section>
@@ -343,8 +354,8 @@ body{
   </main>
 
   <footer class="foot">
-    <div><b>XAU Copilot</b> · 多源印证决策辅助，不构成投资建议。</div>
-    <div class="src" id="foot-src">数据源：内部结构 A × 外部评级 B × 宏观 C</div>
+    <div><b>XAU Copilot</b> · 外部行情指标决策辅助，不构成投资建议。</div>
+    <div class="src" id="foot-src">数据源：XAUUSD 外部实时行情 · 服务端预算指标 · 宏观</div>
   </footer>
 </div>
 
@@ -354,7 +365,7 @@ body{
       <svg viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
     </div>
     <h3>纪律扣分 · 逆势接飞刀</h3>
-    <p id="fomo-text">当前处于多源背离区间，今日仍有买入操作。是否确认强行买入？</p>
+    <p id="fomo-text">外部技术面偏空，今日仍有买入操作。是否确认强行买入？</p>
     <div class="cd" id="fomo-cd">10<small>秒后可确认</small></div>
     <div class="btns">
       <button id="fomo-cancel">取消（推荐）</button>
@@ -369,7 +380,7 @@ body{
     <div class="fld">
       <label>Webhook 推送地址（可选）</label>
       <input id="set-hook" type="url" inputmode="url" placeholder="https://..." />
-      <div class="hint">触发强共振或熔断时静默 POST 一次，同日去重。留空则关闭推送。</div>
+      <div class="hint">外部技术面转空/转多或熔断时静默 POST 一次，同日去重。留空则关闭推送。</div>
     </div>
     <div class="fld">
       <label>强制刷新间隔</label>

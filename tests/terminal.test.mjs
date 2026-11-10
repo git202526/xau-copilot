@@ -99,21 +99,24 @@ test("T4 真实浮亏 -30000 → 原样透出，不回退成 0", () => {
   assert.equal(fake.pnlTone, "red", "亏损必须是红色（国内习惯）");
 });
 
-/* ── T5 背离 + FOMO 锁 ── */
-test("T5 内部看空 + 外部多头 + 今日有 BUY → 背离卡 + FOMO 锁", () => {
+/* ── T5（v2.3.0 改写）FOMO 锁 ──
+ * 需求变更：应用不再做内部/外部双印证，FOMO 触发源由「背离」改为
+ * 「外部技术面偏空 techDir<0」。账户事实断言（趋势解析、今日 BUY 识别）
+ * 与历史引擎 decide() 测点均保留，仅把 assess 的入参改为 techDir。 */
+test("T5 外部技术面偏空 + 今日有 BUY → 逆势买入触发 FOMO 锁", () => {
   const a = normalizeA(
     rawSample({ buys: [...rawSample().buys, { id: "b9", gram: 5, priceCny: 882, time: "2026-11-09T06:00:00.000Z", gear: null, acct: "a0" }] }),
     { priceCnyGram: 880, now: NOW }
   );
-  assert.equal(a.trend.sign, -1, "「日线 下行」应解析为 -1");
+  assert.equal(a.trend.sign, -1, "「日线 下行」应解析为 -1（账户事实解析仍保留）");
   assert.equal(a.todayActions.filter((x) => x.type === "BUY").length, 1, "今日 BUY 必须被识别");
 
   const d = decide({ aSign: -1, bRating: 80, cDir: 0, vixSpike: false });
-  assert.equal(d.scenario, "divergence");
+  assert.equal(d.scenario, "divergence", "历史引擎夹具保留，仍可独立验证");
   assert.equal(d.conf, "low");
   assert.equal(d.tone, "amber");
 
-  const r = assess({ A: a, priceCnyGram: 880, macro: { dir: 0, mode: "normal" }, divergence: true });
+  const r = assess({ A: a, priceCnyGram: 880, macro: { dir: 0, mode: "normal" }, techDir: -1 });
   assert.equal(r.fomoLock, true);
   assert.match(r.fomoText, /逆势|接飞刀/);
   assert.equal(r.fomoCountdown, 10);

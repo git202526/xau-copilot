@@ -1,8 +1,11 @@
 /**
  * 渲染层：只读 state 拼 HTML，不含任何业务判断。
  * 铁律：七个 render 函数互不调用，统一由 main.js 的 refreshAll() 调度。
+ *
+ * v2.3.0：应用不再做内部/外部双印证，唯一判断源为 s.technical（纯外部行情指标）。
+ * 账户事实数据（真实浮亏 / 均价 / 克重 / 资金 / 多账户 / 档距）仍来自 Source A 并保留展示。
  */
-import { BADGE, ratingLabel } from "./core/confidence.js";
+import { BADGE } from "./core/technical.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -38,52 +41,40 @@ const ico = {
 
 /* ───────────────── M0 晨报 ───────────────── */
 function briefingText(s) {
-  const d = s.decision;
-  const A = s.A, B = s.B, C = s.C;
+  const t = s.technical || {};
+  const B = s.B || {}, C = s.C || {};
   const hour = new Date(s.now).getHours();
   const hi = hour < 11 ? "早上好" : hour < 18 ? "下午好" : "晚上好";
 
-  const aTxt = A && A.trend && A.trend.text ? `内部日线${A.trend.text}` : "内部趋势缺失";
-  const bTxt = !B.ok
-    ? "外部校验失败"
-    : B.trend === 1
-      ? `外部站上 MA20（${num(B.ma20UsdOz)}）`
-      : B.trend === -1
-        ? `外部跌破 MA20（${num(B.ma20UsdOz)}）`
-        : "外部贴 MA20 横走";
-
+  const priceTxt = B.ok && B.priceUsdOz != null ? `伦敦金现 ${num(B.priceUsdOz)} $/oz` : "外部行情未就绪";
+  const rsi = B.indicators ? B.indicators.rsi14 : null;
+  const indTxt = rsi != null ? `RSI14 ${num(rsi, 1)}` : "指标预算中";
   const macroTxt =
     C.mode === "risk_off" ? "VIX 恐慌飙升，已切避险模式" : C.dir === 1 ? "宏观强支撑" : C.dir === -1 ? "宏观强压制" : "宏观方向分歧";
 
   const tail =
-    d.scenario === "divergence"
-      ? "多源背离，建议暂停建仓。"
-      : d.scenario === "intraday_rebound"
-        ? "日线共振但盘中强反抽，防范诱空，暂缓追单。"
-        : d.scenario === "resonance_short"
-          ? "方向共振向下，按计划减仓。"
-          : d.scenario === "resonance_long"
-            ? "方向共振向上，可分批建仓。"
-            : d.scenario === "risk_off"
-              ? "多看少动，先保命。"
-              : "区间中轴，不必动手。";
+    t.scenario === "tech_bull" ? "外部指标同向偏多，可按计划分批参与。"
+      : t.scenario === "tech_bear" ? "外部指标同向偏空，减少逆势补仓。"
+        : t.scenario === "risk_off" ? "宏观避险，多看少动先保命。"
+          : t.scenario === "degraded" ? "外部源数据异常，本次判断作废。"
+            : "外部信号胶着，区间中轴不必动手。";
 
-  return { hi, body: `${hi}。${aTxt}，但${bTxt}；${macroTxt}。${tail}` };
+  return { hi, body: `${hi}。${priceTxt}，${indTxt}；${macroTxt}。${tail}` };
 }
 
 export function renderBriefing(s) {
   const box = $("m0");
   if (!box) return;
-  const { hi, body } = briefingText(s);
-  const d = s.decision;
+  const { body } = briefingText(s);
+  const t = s.technical || {};
   const chips = [
-    `<span class="chip">内部 ${s.A && s.A.trend ? s.A.trend.text || "--" : "--"}</span>`,
-    `<span class="chip">外部 ${s.B && s.B.rating ? s.B.rating.label : "降级"}</span>`,
-    `<span class="chip">宏观 ${s.C.mode === "risk_off" ? "避险" : s.C.label || "--"}</span>`,
-    `<span class="chip ${d.conf === "high" ? "bad" : d.conf === "degraded" ? "" : "warn"}">置信 ${BADGE[d.conf] ? BADGE[d.conf].text : "--"}</span>`,
-    d.scenario === "intraday_rebound" ? `<span class="chip warn">盘中强反抽 · 时间错配</span>` : "",
-    s.meta && s.meta.staleB ? `<span class="chip bad">外部僵尸 · 印证作废</span>` : "",
-    s.meta && s.meta.staleA ? `<span class="chip warn">结构数据陈旧</span>` : "",
+    `<span class="chip">技术面 ${t.headline ? esc(t.headline) : "--"}</span>`,
+    `<span class="chip">评级 ${s.B && s.B.rating ? esc(s.B.rating.label) : "未评级"}</span>`,
+    `<span class="chip">宏观 ${s.C.mode === "risk_off" ? "避险" : esc(s.C.label || "--")}</span>`,
+    `<span class="chip ${t.conf === "high" ? "bad" : t.conf === "degraded" ? "" : "warn"}">置信 ${BADGE[t.conf] ? BADGE[t.conf].text : "--"}</span>`,
+    t.score != null ? `<span class="chip">指标得分 ${t.score}</span>` : "",
+    s.meta && s.meta.staleB ? `<span class="chip bad">外部行情陈旧 · 判断作废</span>` : "",
+    s.meta && s.meta.staleA ? `<span class="chip warn">账户数据陈旧</span>` : "",
     s.meta && s.meta.degraded ? `<span class="chip bad">源异常</span>` : "",
   ].filter(Boolean).join("");
 
@@ -91,7 +82,7 @@ export function renderBriefing(s) {
     <div class="b-head">
       <span class="tag">AI 研判</span>
       <span class="sep"></span>
-      <time>${fmtTime(s.now, true)} · A×B×C 融合</time>
+      <time>${fmtTime(s.now, true)} · 外部指标融合</time>
     </div>
     <p class="b-text">${esc(body)}</p>
     <div class="b-foot">${chips}</div>
@@ -103,8 +94,8 @@ export function renderRadar(s) {
   const box = $("m1");
   if (!box) return;
   const C = s.C || { items: [] };
-  const B = s.B;
-  const A = s.A;
+  const B = s.B || {};
+  const t = s.technical || {};
 
   const pills = (C.items || [])
     .map((it) => {
@@ -120,18 +111,19 @@ export function renderRadar(s) {
   const rateCls = B.ok && B.rating ? (B.rating.score >= 55 ? "buy" : B.rating.score <= 45 ? "sell" : "mid") : "mid";
 
   const domPrice = s.priceCnyGram != null ? num(s.priceCnyGram) : "--";
-  const aTrend = A && A.trend && A.trend.text ? A.trend.text : "数据缺失";
-  const aCls = A && A.trend ? (A.trend.sign < 0 ? "sell" : A.trend.sign > 0 ? "buy" : "mid") : "mid";
+  const techTxt = t.headline || "外部判断未就绪";
+  const techCls = t.dir < 0 ? "sell" : t.dir > 0 ? "buy" : "mid";
+  const techScore = t.score != null ? `得分 ${t.score}` : "";
 
   const p = s.premium || {};
   const premCls = p.frozen ? "prem frozen" : "prem";
   const premTxt =
     p.value == null
-      ? `<span>溢价率 <b style="color:var(--tx-3)">--</b></span><span style="color:var(--tx-3)">缺少国内参考价</span>`
-      : `<span>内外盘溢价率 <b style="color:${p.value > 0 ? "var(--red)" : "var(--green)"}">${pct(p.value)}</b></span>
+      ? `<span>国内溢价 <b style="color:var(--tx-3)">--</b></span><span style="color:var(--tx-3)">缺少国内参考价</span>`
+      : `<span>国内溢价 <b style="color:${p.value > 0 ? "var(--red)" : "var(--green)"}">${pct(p.value)}</b></span>
          <span style="color:var(--tx-3);font-size:10.5px">国内参考 ${num(p.ref)} / 国际折算 ${num(p.intl)}</span>`;
 
-  box.innerHTML = `<section class="card rise" data-tone="${C.mode === "risk_off" ? "violet" : C.dir !== 0 ? "gray" : "gray"}">
+  box.innerHTML = `<section class="card rise" data-tone="${C.mode === "risk_off" ? "violet" : "gray"}">
     <div class="c-head"><span class="c-no">01</span><span class="c-title">宏观与双轨雷达</span>
       ${C.mode === "risk_off" ? `<span class="badge b-low" style="margin-left:auto">避险模式</span>` : C.panic ? `<span class="badge b-low" style="margin-left:auto">恐慌区</span>` : ""}
     </div>
@@ -145,7 +137,7 @@ export function renderRadar(s) {
       <div>
         <div class="lbl">国内 · 折算克价</div>
         <div class="big">${domPrice}<span class="unit">元/克</span></div>
-        <div class="sub"><span class="sig ${aCls}">${esc(aTrend)}</span>${A && A.trend && A.trend.confidence != null ? `<span style="color:var(--tx-3)">置信 ${A.trend.confidence}</span>` : ""}</div>
+        <div class="sub"><span class="sig ${techCls}">${esc(techTxt)}</span>${techScore ? `<span style="color:var(--tx-3)">${techScore}</span>` : ""}</div>
       </div>
     </div>
     <div class="${premCls}">
@@ -155,49 +147,40 @@ export function renderRadar(s) {
   </section>`;
 }
 
-/* ───────────────── M2 多源共振决策 ───────────────── */
+/* ───────────────── M2 外部技术面决策 ───────────────── */
 export function renderDecision(s) {
   const box = $("m2");
   if (!box) return;
-  const d = s.decision;
-  const badge = BADGE[d.conf] || BADGE.degraded;
+  const t = s.technical || {
+    scenario: "degraded", conf: "degraded", tone: "gray", dir: 0, score: null,
+    headline: "外部指标不可用", text: "外部行情指标尚未就绪，本次不出方向结论，请稍后刷新。", detail: "", signals: [],
+  };
+  const badge = BADGE[t.conf] || BADGE.degraded;
 
-  const aSign = d.aSign || 0;
-  const bSign = d.bSign;
-  const aTxt = aSign > 0 ? "↑ 多头" : aSign < 0 ? "↓ 空头" : "→ 中性";
-  const aCls = aSign > 0 ? "up" : aSign < 0 ? "dn" : "";
-  const bTxt = bSign == null ? "— 降级" : bSign > 0 ? "↑ 多头" : bSign < 0 ? "↓ 空头" : "→ 中性";
-  const bCls = bSign == null ? "" : bSign > 0 ? "up" : bSign < 0 ? "dn" : "";
+  const cells = (t.signals || [])
+    .map((it) => {
+      const cls = it.dir > 0 ? "up" : it.dir < 0 ? "dn" : "flat";
+      return `<div class="tc"><div class="k">${esc(it.label)}</div><div class="v ${cls}">${esc(it.value)}</div><div class="n">${esc(it.note)}</div></div>`;
+    })
+    .join("");
 
-  const isRebound = d.scenario === "intraday_rebound";
-  const midCls = d.scenario === "divergence" || isRebound ? "bad" : d.scenario.startsWith("resonance") ? "ok" : "bad";
-  const midTxt =
-    isRebound ? "⚠️ 盘中强反抽"
-      : d.scenario === "divergence" ? "背离"
-        : d.scenario.startsWith("resonance") ? "共振"
-          : d.scenario === "risk_off" ? "避险" : "中轴";
+  const strip =
+    t.scenario === "degraded" || t.scenario === "risk_off"
+      ? `<div class="alert-strip ${t.scenario === "risk_off" ? "amber" : "gray"}">${ico.warn}<span>${esc(t.text)}</span></div>`
+      : `<p class="note">${esc(t.text)}</p>`;
 
-  /* 盘中反抽：中间黄色图标之外，再补一条独立警示条（规范要求「切忌盲目追空」显式可见） */
-  const reboundStrip = isRebound
-    ? `<div class="alert-strip amber">${ico.warn}<span>${esc(d.text)}</span></div>`
-    : "";
-
-  box.innerHTML = `<section class="card rise" data-tone="${d.tone}">
-    <div class="c-head"><span class="c-no">02</span><span class="c-title">多源共振决策</span>
+  box.innerHTML = `<section class="card rise" data-tone="${t.tone}">
+    <div class="c-head"><span class="c-no">02</span><span class="c-title">外部技术面决策</span>
       <span class="badge ${badge.cls}">置信 ${badge.text}</span>
     </div>
-    <div class="verdict"><div class="hl ${d.tone}">${esc(d.headline)}</div></div>
-    <div class="vs">
-      <div class="side"><div class="k">内部结构</div><div class="v ${aCls}">${aTxt}</div></div>
-      <div class="mid ${midCls}">${midTxt}</div>
-      <div class="side"><div class="k">外部评级</div><div class="v ${bCls}">${bTxt}</div></div>
-    </div>
-    ${isRebound ? reboundStrip : `<p class="note">${esc(d.text)}</p>`}
-    ${d.detail ? `<div style="margin-top:8px"><span class="chip">${esc(d.detail)}</span></div>` : ""}
+    <div class="verdict"><div class="hl ${t.tone}">${esc(t.headline)}</div></div>
+    ${cells ? `<div class="tech-grid">${cells}</div>` : `<div class="deg">${ico.info}<span>外部指标清单暂不可用</span></div>`}
+    ${strip}
+    ${t.detail ? `<div style="margin-top:8px"><span class="chip">${esc(t.detail)}</span></div>` : ""}
   </section>`;
 }
 
-/* ───────────────── M3 账户真实体检 ───────────────── */
+/* ───────────────── M3 账户真实体检（账户事实，保留） ───────────────── */
 export function renderAccount(s) {
   const box = $("m3");
   if (!box) return;
@@ -262,7 +245,7 @@ export function renderGrid(s) {
     </div>
     <div class="rows">
       <div class="row"><span class="k">外部 ATR14</span><span class="v">${g.atrCny != null ? `${num(g.atrCny)} <span class="mini">元/克</span>` : "--"}</span></div>
-      <div class="row"><span class="k">当前档距</span><span class="v">${g.spacingCny != null ? `${num(g.spacingCny)} <span class="mini">元/克</span>` : "--"}</span></div>
+      <div class="row"><span class="k">当前档距</span><span class="v">${g.spacingCny != null ? `${num(g.spacingCny)} <span class="mini">元/克</span>` : ""}</span></div>
       <div class="row"><span class="k">档距 / 高点</span><span class="v" style="color:var(--tx-2);font-size:11px">${g.gearCount ? `${g.gearCount} 档 · 高点 $${g.highBase}` : "--"}</span></div>
     </div>
     ${levels ? `<div class="levels">${levels}</div>` : ""}
@@ -273,7 +256,7 @@ export function renderGrid(s) {
   </section>`;
 }
 
-/* ───────────────── M5 多账户再平衡 ───────────────── */
+/* ───────────────── M5 多账户再平衡（账户事实，保留） ───────────────── */
 export function renderRebalance(s) {
   const box = $("m5");
   if (!box) return;
@@ -341,14 +324,14 @@ export function renderTopbar(s) {
   const foot = $("foot-src");
   if (foot) {
     const bits = [];
-    bits.push(`A 结构 ${s.meta.aOk ? "ok" : "失败"}`);
-    bits.push(`B 行情 ${s.meta.bOk ? (s.B.spotSource === "gold-api" ? "实时" : "快照") : "失败"}`);
-    bits.push(`C 宏观 ${s.meta.cOk ? "ok" : "失败"}`);
+    bits.push(`账户数据 ${s.meta.aOk ? "ok" : "失败"}`);
+    bits.push(`外部行情 ${s.meta.bOk ? (s.B.spotSource === "gold-api" ? "实时" : "快照") : "失败"}`);
+    bits.push(`宏观 ${s.meta.cOk ? "ok" : "失败"}`);
     bits.push(`汇率 ${s.meta.fx ? Number(s.meta.fx).toFixed(4) : "--"}${s.meta.fxFallback ? "(兜底)" : ""}`);
-    bits.push(`数据 ${s.meta.dataAgeMin != null ? s.meta.dataAgeMin + " 分钟前" : "--"}${s.meta.staleA ? "（结构陈旧）" : ""}`);
+    bits.push(`数据 ${s.meta.dataAgeMin != null ? s.meta.dataAgeMin + " 分钟前" : "--"}${s.meta.staleA ? "（账户数据陈旧）" : ""}`);
     if (s.meta.syncAgeMin != null) bits.push(`云端同步 ${s.meta.syncAgeMin} 分钟前`);
-    if (s.meta.staleB) bits.push("外部僵尸 · 印证作废");
-    if (s.meta.staleA) bits.push("同步超 15 分钟");
+    if (s.meta.staleB) bits.push("外部行情陈旧 · 判断作废");
+    if (s.meta.staleA) bits.push("账户同步超 15 分钟");
     foot.textContent = bits.join("  ·  ");
   }
 }
@@ -372,7 +355,7 @@ export function renderFailSafe(err) {
   const msg = esc((err && err.message) || err || "未知错误");
   app.innerHTML = `<section class="bubble rise">
     <div class="b-head"><span class="tag">降级处理</span><time>本地兜底</time></div>
-    <p class="b-text">源数据异常，已进入降级模式。页面未中断：${msg}。点右上角刷新可重试。</p>
-    <div class="b-foot"><span class="chip bad">降级模式</span><span class="chip">七张卡暂停</span></div>
+    <p class="b-text">外部行情指标读取失败，已切降级模式：${msg}。请检查网络后刷新。</p>
+    <div class="b-foot"><span class="chip bad">源异常</span><span class="chip">不输出方向结论</span></div>
   </section>`;
 }

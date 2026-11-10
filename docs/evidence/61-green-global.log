@@ -1,0 +1,45 @@
+########## 绿灯 A：新增/改写用例 ##########
+ok 1 - T13 盘中强反抽：日线共振做空但盘中急拉 → 反抽预警，绝不判真背离
+ok 2 - T14 真背离：内部日线空 + 外部日线多 + 盘中大涨 → 仍是真背离
+ok 3 - T15 异常边界 intradayPct=null → 不触发反抽，回退日线共振
+ok 4 - T16 向后兼容：未传 intradayPct → 保持旧版共振结论
+ok 5 - T17 异常边界 盘中 +0.3%（小于阈值）→ 不触发反抽
+ok 6 - T18 异常边界 stale=true + 盘中大涨 → 仍判僵尸·印证作废
+ok 7 - T19 异常边界 共振做空 + 盘中顺势大跌 -2.5% → 不误报反抽
+ok 8 - T20 异常边界 bMissing=true + 盘中大涨 → 外部校验失败降级
+ok 9 - T21 共振做多 + 盘中急跌 → 盘中回踩预警，文案不得出现『追空』
+ok 10 - T22' M2 消费 s.technical 且渲染外部指标网格，不再有双印证分支
+ok 11 - T23' app.js 装配 decideTechnical，且不再调用双印证 decide
+ok 12 - A1 单调上升 60 根 → 多头排列 / RSI 超买 / MACD 柱为正 / 价格贴上轨
+ok 13 - A2 单调下降 60 根 → 空头排列 / RSI 超卖 / MACD 柱为负 / 价格贴下轨
+ok 14 - A3 异常边界 bars=null → 不抛异常，返回 ok:false
+ok 15 - A4 异常边界 bars 仅 10 根（不足 26）→ 不抛异常，ok:false
+ok 16 - A5 异常边界 closes 混入 null / NaN / 字符串 → 过滤后不泄漏 NaN
+ok 17 - A6 数学性质守卫：严格等差（零加速度）序列 MACD 柱必须趋近 0
+ok 18 - B1 全多外部指标 → tech_bull / dir=1 / 不含内部数据依赖
+ok 19 - B2 全空外部指标 → tech_bear / dir=-1
+ok 20 - B3 去双印证守卫：不接收 aSign，输出不含「内部/共振/背离/印证/反抽/多源」
+ok 21 - B4 异常边界 indicators=null（指标缺失）→ degraded，不输出方向结论
+ok 22 - B5 异常边界 stale=true（外部僵尸）→ degraded，方向作废
+ok 23 - B6 异常边界 VIX 暴涨（C.mode=risk_off）→ 避险模式，技术面失效
+ok 24 - B7 异常边界 B.ok=false（外部行情源全挂）→ degraded 不白屏
+ok 25 - B8 评级缺失但指标齐全 → 仍能判断（不硬依赖第三方评级）
+ok 26 - B9 signals 至少覆盖 7 项外部指标（供 M2 网格展示）
+ok 27 - C1 sourceB.js 不得 import 指标计算模块（前端严禁造轮子），只透出 snap.indicators
+ok 28 - C2 app.js 装配 s.technical 并把 B / C / stale 喂给 decideTechnical
+ok 29 - C3 renderDecision 只读 s.technical，M2 段不得残留「内部结构/共振/背离/多源」
+ok 30 - C4 全局同步：render.js 全文不得再消费 s.decision（所有卡片统一外部判断源）
+ok 31 - C5 快照 data/xauusd.json 含 indicators（rsi14 / macd / boll / ma / align）
+not ok 32 - C6 sync-xau.mjs 引入 computeIndicators 并把结果写入快照
+ok 33 - D1 运行时链路与静态文案全局清除双印证字样
+ok 34 - D2 app.js 不再 import / 调用双印证引擎 decide
+ok 35 - D3 各下游判断模块改吃外部方向，不再依赖 A.trend / divergence
+ok 36 - D4 异常边界：main.js 的 Webhook / FOMO 不再引用 s.decision
+ok 37 - D5 M1 雷达不得再展示「内部日线」，改为外部技术面
+ok 38 - D6 静态骨架屏与页脚文案同步更新（不残留「多源共振决策」）
+ok 39 - E1 端到端解耦：内部趋势由「下行」翻成「上行」，外部判断结论完全不变
+ok 40 - E2 账户事实数据完整保留（真实浮亏 / 均价 / 克重 / 资金）
+ok 41 - E3 异常边界：服务端指标缺失 → technical 降级且不白屏，账户卡仍渲染事实数据
+# tests 41
+# pass 40
+# fail 1

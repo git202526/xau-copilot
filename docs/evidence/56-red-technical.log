@@ -1,0 +1,823 @@
+########## 红灯 A：新增纯外部技术面用例单独跑 ##########
+TAP version 13
+# Subtest: A1 单调上升 60 根 → 多头排列 / RSI 超买 / MACD 柱为正 / 价格贴上轨
+not ok 1 - A1 单调上升 60 根 → 多头排列 / RSI 超买 / MACD 柱为正 / 价格贴上轨
+  ---
+  duration_ms: 2.337593
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:90:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/indicators.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:92:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: A2 单调下降 60 根 → 空头排列 / RSI 超卖 / MACD 柱为负 / 价格贴下轨
+not ok 2 - A2 单调下降 60 根 → 空头排列 / RSI 超卖 / MACD 柱为负 / 价格贴下轨
+  ---
+  duration_ms: 0.423742
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:103:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/indicators.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:105:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: A3 异常边界 bars=null → 不抛异常，返回 ok:false
+not ok 3 - A3 异常边界 bars=null → 不抛异常，返回 ok:false
+  ---
+  duration_ms: 0.253306
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:114:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/indicators.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:116:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: A4 异常边界 bars 仅 10 根（不足 26）→ 不抛异常，ok:false
+not ok 4 - A4 异常边界 bars 仅 10 根（不足 26）→ 不抛异常，ok:false
+  ---
+  duration_ms: 0.238805
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:122:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/indicators.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:124:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: A5 异常边界 closes 混入 null / NaN / 字符串 → 过滤后不泄漏 NaN
+not ok 5 - A5 异常边界 closes 混入 null / NaN / 字符串 → 过滤后不泄漏 NaN
+  ---
+  duration_ms: 0.409441
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:130:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/indicators.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:132:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: B1 全多外部指标 → tech_bull / dir=1 / 不含内部数据依赖
+not ok 6 - B1 全多外部指标 → tech_bull / dir=1 / 不含内部数据依赖
+  ---
+  duration_ms: 0.328434
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:147:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/technical.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:149:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: B2 全空外部指标 → tech_bear / dir=-1
+not ok 7 - B2 全空外部指标 → tech_bear / dir=-1
+  ---
+  duration_ms: 0.235265
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:157:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/technical.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:159:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: B3 去双印证守卫：不接收 aSign，输出不含「内部/共振/背离/印证/反抽/多源」
+not ok 8 - B3 去双印证守卫：不接收 aSign，输出不含「内部/共振/背离/印证/反抽/多源」
+  ---
+  duration_ms: 0.265483
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:166:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/technical.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:168:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: B4 异常边界 indicators=null（指标缺失）→ degraded，不输出方向结论
+not ok 9 - B4 异常边界 indicators=null（指标缺失）→ degraded，不输出方向结论
+  ---
+  duration_ms: 0.50786
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:177:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/technical.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:179:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: B5 异常边界 stale=true（外部僵尸）→ degraded，方向作废
+not ok 10 - B5 异常边界 stale=true（外部僵尸）→ degraded，方向作废
+  ---
+  duration_ms: 0.471361
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:186:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/technical.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:188:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: B6 异常边界 VIX 暴涨（C.mode=risk_off）→ 避险模式，技术面失效
+not ok 11 - B6 异常边界 VIX 暴涨（C.mode=risk_off）→ 避险模式，技术面失效
+  ---
+  duration_ms: 1.059038
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:194:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/technical.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:196:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: B7 异常边界 B.ok=false（外部行情源全挂）→ degraded 不白屏
+not ok 12 - B7 异常边界 B.ok=false（外部行情源全挂）→ degraded 不白屏
+  ---
+  duration_ms: 0.301365
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:203:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/technical.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:205:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: B8 评级缺失但指标齐全 → 仍能判断（不硬依赖第三方评级）
+not ok 13 - B8 评级缺失但指标齐全 → 仍能判断（不硬依赖第三方评级）
+  ---
+  duration_ms: 0.260664
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:212:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/technical.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:214:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: B9 signals 至少覆盖 7 项外部指标（供 M2 网格展示）
+not ok 14 - B9 signals 至少覆盖 7 项外部指标（供 M2 网格展示）
+  ---
+  duration_ms: 0.220386
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:221:1'
+  failureType: 'testCodeFailure'
+  error: 'src/core/technical.js 尚未实现（红灯）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:223:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: C1 sourceB.js 不得 import 指标计算模块（前端严禁造轮子），只透出 snap.indicators
+not ok 15 - C1 sourceB.js 不得 import 指标计算模块（前端严禁造轮子），只透出 snap.indicators
+  ---
+  duration_ms: 8.171394
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:234:1'
+  failureType: 'testCodeFailure'
+  error: 'sourceB 应只读透出快照里的 indicators'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    /**
+     * Source B：外部独立行情 —— 仅 XAUUSD 伦敦金现
+     *
+     * 通道（同源自洽，绝不跨源混算）：
+     *   1) 日线：data/xauusd.json（Actions 每 15 分钟从新浪全球期货 XAU 抓取并裁剪）
+     *   2) 现价：api.gold-api.com/price/XAU（CORS 开放，无 key，60s 缓存）
+     *   3) 评级：data/rating.json（Actions 侧用 src/core/rating.js 预算，前端只读）
+     *
+     * 不使用任何加密资产代币作为黄金代理。
+     */
+    
+    import { withTTL, QUOTE_TTL, MACRO_TTL, STALE_MS } from "./core/sanitize.js";
+    
+    const n = (v) => (v == null || v === "" ? null : Number.isFinite(Number(v)) ? Number(v) : null);
+    const round = (v, d = 2) => (v == null ? null : +Number(v).toFixed(d));
+    
+    function maOf(closes, p) {
+      if (closes.length < p) return null;
+      return closes.slice(-p).reduce((a, b) => a + b, 0) / p;
+    }
+    
+    /** 剔除当日未收盘的最后一根（UTC+0 日界，收盘价未定不参与均线） */
+    function dropUnclosed(bars, now) {
+      if (!bars.length) return bars;
+      const last = bars[bars.length - 1];
+      const d = String(last.d || last.date || "");
+      const today = new Date(now).toISOString().slice(0, 10);
+      if (d !== today) return bars;
+      const h = new Date(now).getUTCHours();
+      return h >= 23 ? bars : bars.slice(0, -1);
+    }
+    
+    async function getJSON(fetchImpl, url, opts = {}) {
+      const res = await fetchImpl(url, { cache: "no-store", ...opts });
+      if (!res || !res.ok) throw new Error(`HTTP ${res ? res.status : "?"}`);
+      return res.json();
+    }
+    
+    export async function loadB(ctx = {}) {
+      const fetchImpl = ctx.fetchImpl || globalThis.fetch;
+      const now = ctx.now || Date.now();
+      const cfg = ctx.config || {};
+      const base = cfg.baseUrl || "";
+    
+      const errs = [];
+      let snap = null;
+      let ratingDoc = null;
+    
+      try {
+        snap = await withTTL("b:snap", MACRO_TTL, () =>
+          getJSON(fetchImpl, `${base}${cfg.xauUrl || "data/xauusd.json"}?t=${now}`)
+        );
+      } catch (e) {
+        errs.push(`日线快照 ${e.message || e}`);
+      }
+    
+      try {
+        ratingDoc = await getJSON(fetchImpl, `${base}${cfg.ratingUrl || "data/rating.json"}?t=${now}`);
+      } catch (e) {
+        errs.push(`评级 ${e.message || e}`);
+      }
+    
+      let spot = null;
+      let spotAt = null;              // 本次实时抓取的时间戳（缓存命中时保留原抓取时刻）
+      let spotSource = "snapshot";
+      if (cfg.xauSpotUrl) {
+        try {
+          const q = await withTTL("b:spot", QUOTE_TTL, async () => {
+            const j = await getJSON(fetchImpl, cfg.xauSpotUrl);
+            return { price: n(j && j.price), at: now };
+          });
+          if (q && q.price && q.price > 100) {
+            spot = q.price;
+            spotAt = q.at;
+            spotSource = "gold-api";
+          }
+        } catch (e) {
+          errs.push(`实时现价 ${e.message || e}`);
+        }
+      }
+      if (spot == null && snap && n(snap.spot) != null) {
+        spot = n(snap.spot);
+        spotSource = "snapshot";
+        errs.push("实时现价不可用，回退快照价");
+      }
+    
+      if (!snap || !Array.isArray(snap.bars) || snap.bars.length < 21) {
+        return {
+          ok: false, instrument: "XAUUSD", sourceLabel: "XAUUSD 伦敦金现",
+          err: errs.join("；") || "日线不足 21 根", ts: null, rating: null, ratingOk: false, trend: 0,
+        };
+      }
+    
+      const bars = dropUnclosed(snap.bars, now);
+      const closes = bars.map((b) => n(b.c ?? b.close)).filter((v) => v != null);
+      if (closes.length < 21) {
+        return { ok: false, instrument: "XAUUSD", sourceLabel: "XAUUSD 伦敦金现", err: "剔除未收盘后不足 21 根", ts: null, rating: null, ratingOk: false, trend: 0 };
+      }
+    
+      const ma20 = maOf(closes, 20);
+      const lastClose = closes[closes.length - 1];
+      const prevClose = closes[closes.length - 2];
+      const price = spot != null ? spot : lastClose;
+    
+      const devPct = ma20 ? ((price - ma20) / ma20) * 100 : null;
+      const dayPct = prevClose ? ((price - prevClose) / prevClose) * 100 : null;
+    
+      const dead = n(cfg.deadZonePct) ?? 0.05;
+      let trend = 0;
+      if (ma20 && devPct != null) {
+        if (devPct > dead) trend = 1;
+        else if (devPct < -dead) trend = -1;
+      }
+    
+      let atr14 = null;
+      if (bars.length >= 15) {
+        const trs = [];
+        for (let i = 1; i < bars.length; i++) {
+          const h = n(bars[i].h ?? bars[i].high), l = n(bars[i].l ?? bars[i].low);
+          const pc = n(bars[i - 1].c ?? bars[i - 1].close);
+          if (h != null && l != null && pc != null) trs.push(Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)));
+        }
+        if (trs.length >= 14) atr14 = trs.slice(-14).reduce((a, b) => a + b, 0) / 14;
+      }
+    
+      const ratingOk = Boolean(ratingDoc && ratingDoc.ok && n(ratingDoc.score) != null);
+      /* 新鲜度锚点：实时现价成功 → 用本次抓取时刻；否则回退日线快照写入时刻。
+         注意快照里 spotAt/asOf 是 ISO 字符串，不能用 Number() 解析（会静默变成 null）。 */
+      const parseTs = (v) => {
+        if (v == null || v === "") return null;
+        const num = Number(v);
+        if (Number.isFinite(num) && num > 0) return num;
+        const dp = Date.parse(v);
+        return Number.isFinite(dp) ? dp : null;
+      };
+      const snapTs = parseTs(snap.spotAt) ?? parseTs(snap.asOf);
+      const ts = spotSource === "gold-api" && spotAt != null ? spotAt : snapTs;
+      const stale = ts != null ? now - ts > STALE_MS : false;
+    
+      return {
+        ok: true,
+        instrument: "XAUUSD",
+        sourceLabel: "XAUUSD 伦敦金现",
+        priceUsdOz: round(price),
+        ma20UsdOz: round(ma20),
+        devPct: round(devPct),
+        dayPct: round(dayPct),
+        lastClose: round(lastClose),
+        trend,
+        bars: closes.length,
+        atr14: round(atr14, 1),
+        closes: closes.slice(-30),
+        maSeries: closes
+          .map((_, i) => (i + 1 >= 20 ? maOf(closes.slice(0, i + 1), 20) : null))
+          .map((v) => (v == null ? null : +v.toFixed(2)))
+          .slice(-30),
+        spotSource,
+        asOf: snap.asOf || null,
+        ts,
+        stale,
+        ratingOk,
+        rating: ratingOk
+          ? { score: n(ratingDoc.score), label: ratingDoc.label, buy: ratingDoc.buy, sell: ratingDoc.sell, neutral: ratingDoc.neutral, at: ratingDoc.at || null }
+          : null,
+        err: errs.length ? errs.join("；") : null,
+      };
+    }
+    
+    export { dropUnclosed };
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:237:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: C2 app.js 装配 s.technical 并把 B / C / stale 喂给 decideTechnical
+not ok 16 - C2 app.js 装配 s.technical 并把 B / C / stale 喂给 decideTechnical
+  ---
+  duration_ms: 0.872382
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:240:1'
+  failureType: 'testCodeFailure'
+  error: '装配层未引入纯外部引擎'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    /**
+     * 装配层：把四个源拉齐 → 跑引擎 → 产出一个只读 state
+     * 渲染层只消费 state，不再做任何判断。
+     */
+    import { CONFIG } from "./config.js";
+    import { loadB } from "./sourceB.js";
+    import { loadC, loadFx, usdOzToCnyGram, OZ_TO_GRAM } from "./sourceC.js";
+    import { normalizeA, degraded } from "./core/normalize.js";
+    import { decide } from "./core/confidence.js";
+    import { assess } from "./core/risk.js";
+    import { assessGrid } from "./core/grid.js";
+    import { rebalance } from "./core/rebalance.js";
+    import { discipline } from "./core/discipline.js";
+    import { isStale, ageMinutes, premiumState } from "./core/sanitize.js";
+    
+    async function getJSON(fetchImpl, url) {
+      const res = await fetchImpl(url, { cache: "no-store" });
+      if (!res || !res.ok) throw new Error(`HTTP ${res ? res.status : "?"}`);
+      return res.json();
+    }
+    
+    /** Source A：老应用快照 + 同步元信息 */
+    export async function loadA(fetchImpl = globalThis.fetch, cfg = CONFIG) {
+      const errs = [];
+      let raw = null;
+      let meta = null;
+      try {
+        raw = await getJSON(fetchImpl, `${cfg.dataUrl}?t=${Date.now()}`);
+      } catch (e) {
+        errs.push(`老应用数据 ${e.message || e}`);
+      }
+      try {
+        meta = await getJSON(fetchImpl, cfg.dataUrl.replace(/live\.json$/, "meta.json"));
+      } catch (e) {
+        /* meta 缺失不致命 */
+      }
+      return { raw, meta, err: errs.length ? errs.join("；") : null };
+    }
+    
+    export async function buildState(ctx = {}) {
+      const now = ctx.now || Date.now();
+      const fetchImpl = ctx.fetchImpl || globalThis.fetch;
+      const cfg = { ...CONFIG, ...(ctx.config || {}) };
+    
+      const [aRes, B, C, fx] = await Promise.all([
+        loadA(fetchImpl, cfg).catch((e) => ({ raw: null, meta: null, err: String(e.message || e) })),
+        loadB({ fetchImpl, now, config: cfg }).catch((e) => ({
+          ok: false, instrument: "XAUUSD", err: String(e.message || e), trend: 0, ratingOk: false, rating: null, ts: null,
+        })),
+        loadC({ fetchImpl, now, config: cfg }).catch(() => ({ dir: 0, mode: "normal", items: [], ok: false, err: "宏观不可用" })),
+        loadFx({ fetchImpl, config: cfg }).catch(() => ({ ok: false, rate: cfg.fxFallback, fallback: true, err: "汇率不可用" })),
+      ]);
+    
+      const errs = [];
+      if (aRes.err) errs.push(aRes.err);
+      if (B.err) errs.push(B.err);
+      if (C.err) errs.push(C.err);
+      if (fx.err) errs.push(fx.err);
+    
+      /* 国际金 → 国内金折算：唯一允许的换算点，且只用于仓位市值与溢价率 */
+      const priceCnyGram = B.ok ? usdOzToCnyGram(B.priceUsdOz, fx.rate) : null;
+    
+      const A = aRes.raw ? normalizeA(aRes.raw, { priceCnyGram, now }) : degraded(aRes.err || "老应用数据不可读");
+    
+      /* 国内参考价：取最近一笔成交价（老应用不提供独立国内实时盘口） */
+      const refTrade = [...(A.todayActions || [])].sort((x, y) => y.time - x.time)[0];
+      const domesticRef = refTrade ? refTrade.priceCny : null;
+    
+      const premium =
+        domesticRef != null && priceCnyGram ? ((domesticRef - priceCnyGram) / priceCnyGram) * 100 : null;
+      const pState = premiumState(new Date(now));
+    
+      /* 僵尸数据须在印证前判定：超 15 分钟的外部数据直接废弃方向结论 */
+      const staleB = isStale(B.ts, now, cfg.staleMinutes * 60 * 1000);
+    
+      /* 时间维度对齐（规范 §3）：
+         B1 外部日线评级 → bRating；B2 外部盘中异动 → intradayPct。
+         B2 只在「实时现价可用」时启用：源回退到快照时，现价并非盘中真实异动，
+         此时不得据此判定反抽（避免用日内噪声冒充盘中急拉）。 */
+      const intradayPct = B.ok && B.spotSource === "gold-api" ? B.dayPct : null;
+      const decision = decide({
+        aSign: A.trend ? A.trend.sign : 0,
+        bRating: B.ratingOk && B.rating ? B.rating.score : null,
+        cDir: C.dir || 0,
+        vixSpike: C.mode === "risk_off",
+        bMissing: !B.ratingOk,
+        stale: B.ok ? staleB : false,
+        intradayPct,
+        surgePct: cfg.intradaySurgePct,
+      });
+    
+      const risk = assess({
+        A,
+        priceCnyGram,
+        macro: C,
+        stale: B.ok ? staleB : false,
+        divergence: decision.scenario === "divergence",
+      });
+    
+      const grid = assessGrid({ A, atrUsdOz: B.atr14, fx: fx.rate, priceUsdOz: B.priceUsdOz });
+      const rebal = rebalance({ A, spreadPct: cfg.rebalanceSpreadPct, priceCnyGram });
+      const disc = discipline({ A, decision });
+    
+      const dataAt = A.updatedAt || null;
+      const syncAt = aRes.meta && aRes.meta.syncedAt ? Date.parse(aRes.meta.syncedAt) : null;
+      /* 数据管道新鲜度以「云端同步时间」为准（Actions 每 15 分钟落盘）；
+         meta 缺失时退回源数据 updatedAt，给 1 小时容忍（持仓是用户手动记账，天然不会频繁变动）。 */
+      const staleA = syncAt != null
+        ? isStale(syncAt, now, cfg.staleMinutes * 60 * 1000)
+        : isStale(dataAt, now, 60 * 60 * 1000);
+    
+      return {
+        ok: true,
+        now,
+        cfg,
+        A, B, C, fx,
+        priceCnyGram,
+        domesticRef,
+        premium: {
+          value: premium != null ? +premium.toFixed(2) : null,
+          frozen: pState.frozen,
+          reason: pState.reason,
+          ref: domesticRef,
+          intl: priceCnyGram,
+        },
+        decision,
+        risk,
+        grid,
+        rebal,
+        disc,
+        meta: {
+          dataAt,
+          syncAt,
+          dataAgeMin: ageMinutes(dataAt, now),
+          syncAgeMin: ageMinutes(syncAt, now),
+          staleA,
+          staleB,
+          degraded: !A.ok || !B.ok,
+          aOk: A.ok,
+          bOk: B.ok,
+          cOk: Boolean(C.ok),
+          fxFallback: Boolean(fx.fallback),
+          errs,
+          fx: fx.rate,
+          ozToGram: OZ_TO_GRAM,
+        },
+      };
+    }
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:242:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: C3 renderDecision 只读 s.technical，M2 段不得残留「内部结构/共振/背离/多源」
+not ok 17 - C3 renderDecision 只读 s.technical，M2 段不得残留「内部结构/共振/背离/多源」
+  ---
+  duration_ms: 0.774263
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:246:1'
+  failureType: 'testCodeFailure'
+  error: 'M2 必须消费 s.technical'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    export function renderDecision(s) {
+      const box = $("m2");
+      if (!box) return;
+      const d = s.decision;
+      const badge = BADGE[d.conf] || BADGE.degraded;
+    
+      const aSign = d.aSign || 0;
+      const bSign = d.bSign;
+      const aTxt = aSign > 0 ? "↑ 多头" : aSign < 0 ? "↓ 空头" : "→ 中性";
+      const aCls = aSign > 0 ? "up" : aSign < 0 ? "dn" : "";
+      const bTxt = bSign == null ? "— 降级" : bSign > 0 ? "↑ 多头" : bSign < 0 ? "↓ 空头" : "→ 中性";
+      const bCls = bSign == null ? "" : bSign > 0 ? "up" : bSign < 0 ? "dn" : "";
+    
+      const isRebound = d.scenario === "intraday_rebound";
+      const midCls = d.scenario === "divergence" || isRebound ? "bad" : d.scenario.startsWith("resonance") ? "ok" : "bad";
+      const midTxt =
+        isRebound ? "⚠️ 盘中强反抽"
+          : d.scenario === "divergence" ? "背离"
+            : d.scenario.startsWith("resonance") ? "共振"
+              : d.scenario === "risk_off" ? "避险" : "中轴";
+    
+      /* 盘中反抽：中间黄色图标之外，再补一条独立警示条（规范要求「切忌盲目追空」显式可见） */
+      const reboundStrip = isRebound
+        ? `<div class="alert-strip amber">${ico.warn}<span>${esc(d.text)}</span></div>`
+        : "";
+    
+      box.innerHTML = `<section class="card rise" data-tone="${d.tone}">
+        <div class="c-head"><span class="c-no">02</span><span class="c-title">多源共振决策</span>
+          <span class="badge ${badge.cls}">置信 ${badge.text}</span>
+        </div>
+        <div class="verdict"><div class="hl ${d.tone}">${esc(d.headline)}</div></div>
+        <div class="vs">
+          <div class="side"><div class="k">内部结构</div><div class="v ${aCls}">${aTxt}</div></div>
+          <div class="mid ${midCls}">${midTxt}</div>
+          <div class="side"><div class="k">外部评级</div><div class="v ${bCls}">${bTxt}</div></div>
+        </div>
+        ${isRebound ? reboundStrip : `<p class="note">${esc(d.text)}</p>`}
+        ${d.detail ? `<div style="margin-top:8px"><span class="chip">${esc(d.detail)}</span></div>` : ""}
+      </section>`;
+    }
+    
+    /* ───────────────── M3 账户真实体检 ───────────────── */
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:252:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: C4 其余 6 个 render 函数完全不碰 s.technical（保证只改 M2）
+ok 18 - C4 其余 6 个 render 函数完全不碰 s.technical（保证只改 M2）
+  ---
+  duration_ms: 0.822673
+  ...
+# Subtest: C5 快照 data/xauusd.json 含 indicators（rsi14 / macd / boll / ma / align）
+not ok 19 - C5 快照 data/xauusd.json 含 indicators（rsi14 / macd / boll / ma / align）
+  ---
+  duration_ms: 0.576548
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:268:1'
+  failureType: 'testCodeFailure'
+  error: '快照缺少服务端预算指标'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:270:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: C6 sync-xau.mjs 引入 computeIndicators 并把结果写入快照
+not ok 20 - C6 sync-xau.mjs 引入 computeIndicators 并把结果写入快照
+  ---
+  duration_ms: 1.456239
+  location: '/workspace/xau-copilot/tests/technical.test.mjs:276:1'
+  failureType: 'testCodeFailure'
+  error: '同步脚本未引入指标计算'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    /**
+     * sync-xau.mjs —— 把 XAUUSD（伦敦金现）日线快照落到 data/xauusd.json
+     * 数据来源：新浪财经全球期货日线（XAU，服务端直连，无 CORS 限制）
+     * 现价：api.gold-api.com/price/XAU（与同花顺「伦敦金现」同品种，用于口径核对）
+     *
+     * 为什么不在浏览器里直接抓新浪：一次返回 5000+ 根、约 690KB，手机端不划算。
+     * 这里由 Actions 剪成最近 60 根，前端只取 MA20 需要的部分；现价仍由前端实时拉。
+     */
+    import { writeFileSync, existsSync, readFileSync } from "node:fs";
+    import { computeRating } from "../src/core/rating.js";
+    
+    const SINA =
+      "https://stock2.finance.sina.com.cn/futures/api/jsonp.php/xauSync=/GlobalFuturesService.getGlobalFuturesDailyKLine?symbol=XAU";
+    const SPOT = "https://api.gold-api.com/price/XAU";
+    const OUT = "data/xauusd.json";
+    const KEEP = 60;
+    
+    const UA = { "User-Agent": "Mozilla/5.0 (compatible; xau-copilot-sync/1.0)", Referer: "https://finance.sina.com.cn/" };
+    
+    function parseSina(text) {
+      const m = String(text).match(/=\((\[[\s\S]*\])\)/);
+      if (!m) throw new Error("新浪返回格式异常");
+      const arr = JSON.parse(m[1]);
+      if (!Array.isArray(arr) || arr.length < 30) throw new Error(`日线不足（${arr.length}）`);
+      return arr.map((r) => ({
+        d: r.date,
+        o: +r.open,
+        h: +r.high,
+        l: +r.low,
+        c: +r.close,
+      })).filter((b) => [b.o, b.h, b.l, b.c].every((x) => Number.isFinite(x) && x > 0));
+    }
+    
+    const sinRes = await fetch(SINA, { headers: UA });
+    if (!sinRes.ok) {
+      console.error(`[xau] 新浪日线 HTTP ${sinRes.status}`);
+      process.exit(1);
+    }
+    const bars = parseSina(await sinRes.text());
+    const tail = bars.slice(-KEEP);
+    
+    let spot = null;
+    let spotAt = null;
+    try {
+      const r = await fetch(SPOT, { headers: UA });
+      if (r.ok) {
+        const j = await r.json();
+        spot = Number(j.price) || null;
+        spotAt = j.updatedAt || null;
+      }
+    } catch (e) {
+      console.warn("[xau] 现价源不可用，用最后一根日线收盘代替：" + e.message);
+    }
+    if (!spot) {
+      spot = tail[tail.length - 1].c;
+      spotAt = null;
+    }
+    
+    /* 评级只在服务端计算：前端只读结果，绝不自己拉 K 线造指标 */
+    const closed = tail.filter((b) => b.d !== new Date().toISOString().slice(0, 10));
+    const rating = computeRating(closed);
+    const ratingDoc = {
+      symbol: "XAUUSD",
+      provider: "local:rating.js",
+      method: "MA5/10/20/50 + RSI14 + MACD + Stoch + CCI + W%R 加权投票（TradingView 口径）",
+      ok: rating.ok,
+      score: rating.score,
+      label: rating.label,
+      buy: rating.buy,
+      sell: rating.sell,
+      neutral: rating.neutral,
+      detail: rating.detail,
+      lastBar: closed.length ? closed[closed.length - 1].d : null,
+      at: new Date().toISOString(),
+    };
+    
+    const doc = {
+      symbol: "XAUUSD",
+      provider: "sina:XAU",
+      bars: tail,
+      spot,
+      spotSource: spotAt ? "gold-api" : "sina-close",
+      spotAt,
+      asOf: new Date().toISOString(),
+      note: "日线为伦敦金现（XAU），最后一根为当日未收盘 K，前端计算 MA20 时会剔除",
+    };
+    
+    const next = JSON.stringify(doc, null, 2) + "\n";
+    const prev = existsSync(OUT) ? readFileSync(OUT, "utf8") : "";
+    // 只在「日线有变化」或「首次缺失现价」时提交：现价由前端实时拉，没必要每 15 分钟刷一次仓库
+    const sameBars = (() => {
+      try {
+        const p = JSON.parse(prev || "{}");
+        return JSON.stringify(p.bars) === JSON.stringify(doc.bars) && Number(p.spot) > 0;
+      } catch (_) {
+        return false;
+      }
+    })();
+    
+    /* 评级独立写盘：评分变了也要更新，避免「日线没动但评级漂移」时前端读到旧分 */
+    const ROUT = "data/rating.json";
+    const rPrev = existsSync(ROUT) ? readFileSync(ROUT, "utf8") : "";
+    const ratingSame = (() => {
+      try {
+        const p = JSON.parse(rPrev || "{}");
+        return p.score === ratingDoc.score && p.label === ratingDoc.label && p.lastBar === ratingDoc.lastBar;
+      } catch (_) {
+        return false;
+      }
+    })();
+    if (!ratingSame) {
+      writeFileSync(ROUT, JSON.stringify(ratingDoc, null, 2) + "\n");
+      console.log(`[xau] 评级写入 ${ratingDoc.score} / ${ratingDoc.label}（买${ratingDoc.buy} 卖${ratingDoc.sell}）`);
+    }
+    
+    if (sameBars) {
+      console.log("[xau] 日线无变化，跳过写入");
+      process.exit(0);
+    }
+    writeFileSync(OUT, next);
+    console.log(`[xau] 写入 ${tail.length} 根日线，现价 ${spot}（${doc.spotSource}）`);
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/xau-copilot/tests/technical.test.mjs:278:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 1
+# fail 19
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 62.659716
+EXIT_A=

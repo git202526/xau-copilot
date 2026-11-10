@@ -86,15 +86,33 @@ test("T21 共振做多 + 盘中急跌 → 盘中回踩预警，文案不得出�
   assert.doesNotMatch(d.text, /追空/, "做多方向的反抽不应误用做空话术");
 });
 
-/* ── T22 渲染层守卫：M2 必须有盘中反抽的黄色标记分支 ── */
-test("T22 render.js 的 M2 含 intraday_rebound 黄色警示渲染分支", async () => {
+/* ─────────────────────────────────────────────────────────────────
+ * v2.3.0 需求变更（用户指令）：「应用不要内外部双印证了，只搜集外部
+ * 实时行情指标做出判断，影响到其它卡片同步更新」。
+ *
+ * 原 T22/T23 守护的是 v2.2.0 的双印证渲染分支（intraday_rebound 黄色
+ * 警示 / app.js 把 B.dayPct 喂给 decide），该特性随本次重构整体下线。
+ * 两条守卫如实退役并改写为新架构契约，不删除、不放水：
+ *   T22' 守护 M2 消费 s.technical 且渲染外部指标网格
+ *   T23' 守护 app.js 装配 decideTechnical、且不再调用 decide
+ * 引擎 decide() 本身保留为历史纯函数夹具（T13–T21 继续测它），
+ * 但运行时链路不再 import，避免「测试在、功能已下线」的假绿。
+ * ───────────────────────────────────────────────────────────────── */
+
+/* ── T22'（原 T22 退役改写）渲染层守卫：M2 改为纯外部技术面决策 ── */
+test("T22' M2 消费 s.technical 且渲染外部指标网格，不再有双印证分支", async () => {
   const s = await readFile("src/render.js", "utf8");
-  assert.match(s, /intraday_rebound/, "M2 未处理盘中反抽场景");
-  assert.match(s, /盘中强反抽/, "M2 缺少反抽文案/图标");
+  const start = s.indexOf("export function renderDecision");
+  const end = s.indexOf("export function renderAccount");
+  assert.ok(start > 0 && end > start, "未找到 M2 渲染函数边界");
+  const seg = s.slice(start, end);
+  assert.match(seg, /s\.technical/, "M2 未接入纯外部判断");
+  assert.doesNotMatch(seg, /intraday_rebound|盘中强反抽|共振|背离|内部结构/, "M2 仍残留双印证渲染分支");
 });
 
-/* ── T23 装配层守卫：app.js 必须把外部盘中涨跌 B.dayPct 喂给 decide ── */
-test("T23 app.js 将 B.dayPct 作为盘中维度传入 decide", async () => {
+/* ── T23'（原 T23 退役改写）装配层守卫：app.js 改为 decideTechnical ── */
+test("T23' app.js 装配 decideTechnical，且不再调用双印证 decide", async () => {
   const s = await readFile("src/app.js", "utf8");
-  assert.match(s, /intradayPct/, "装配层未把盘中异动维度喂给决策引擎");
+  assert.match(s, /decideTechnical/, "装配层未引入纯外部引擎");
+  assert.doesNotMatch(s, /\bdecide\s*\(\s*\{/, "装配层仍在调用 decide({...})");
 });

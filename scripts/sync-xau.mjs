@@ -8,6 +8,7 @@
  */
 import { writeFileSync, existsSync, readFileSync } from "node:fs";
 import { computeRating } from "../src/core/rating.js";
+import { computeIndicators } from "../src/core/indicators.js";
 
 const SINA =
   "https://stock2.finance.sina.com.cn/futures/api/jsonp.php/xauSync=/GlobalFuturesService.getGlobalFuturesDailyKLine?symbol=XAU";
@@ -74,6 +75,10 @@ const ratingDoc = {
   at: new Date().toISOString(),
 };
 
+/* 技术指标一律在服务端预算（RSI14 / MACD / 布林带 / 多周期均线排列），
+   前端 sourceB.js 只读 indicators，绝不拉 K 线自己算 —— 严守「严禁前端造轮子」红线。 */
+const indicators = computeIndicators(closed);
+
 const doc = {
   symbol: "XAUUSD",
   provider: "sina:XAU",
@@ -82,7 +87,8 @@ const doc = {
   spotSource: spotAt ? "gold-api" : "sina-close",
   spotAt,
   asOf: new Date().toISOString(),
-  note: "日线为伦敦金现（XAU），最后一根为当日未收盘 K，前端计算 MA20 时会剔除",
+  indicators: indicators,
+  note: "日线为伦敦金现（XAU），最后一根为当日未收盘 K；indicators 由服务端预算，前端只读",
 };
 
 const next = JSON.stringify(doc, null, 2) + "\n";
@@ -91,7 +97,9 @@ const prev = existsSync(OUT) ? readFileSync(OUT, "utf8") : "";
 const sameBars = (() => {
   try {
     const p = JSON.parse(prev || "{}");
-    return JSON.stringify(p.bars) === JSON.stringify(doc.bars) && Number(p.spot) > 0;
+    return JSON.stringify(p.bars) === JSON.stringify(doc.bars)
+      && Number(p.spot) > 0
+      && p.indicators && p.indicators.ok === true;   // 指标缺失也必须重算落盘
   } catch (_) {
     return false;
   }

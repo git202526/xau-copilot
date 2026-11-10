@@ -1,18 +1,17 @@
 /**
- * 纪律复盘
- * 规则：内部趋势偏空（或背离）时今日仍有 BUY → 扣分；否则良好。
+ * 纪律复盘（v2.3.0）
+ *
+ * 规则：外部技术面偏空（techDir<0）时今日仍有 BUY → 逆势加仓，扣分；否则良好。
+ * 判断源只取外部方向 technical.dir；今日操作流水属于账户事实数据，仍来自 Source A。
+ * 不再读取内部趋势，也不再消费双印证结论。
  */
 
-export function discipline({ A, decision }) {
+export function discipline({ A, techDir = 0, technical = null } = {}) {
   const actions = (A && A.todayActions) || [];
   const buys = actions.filter((x) => x.type === "BUY");
   const sells = actions.filter((x) => x.type === "SELL");
-  const aSign = A && A.trend ? A.trend.sign : 0;
-  const scenario = decision ? decision.scenario : "neutral";
-
-  const againstTrend = aSign === -1 && buys.length > 0;
-  const inDivergence = scenario === "divergence" && buys.length > 0;
-  const violation = againstTrend || inDivergence;
+  const dir = technical && typeof technical.dir === "number" ? technical.dir : techDir;
+  const adverse = dir < 0 && buys.length > 0;
 
   const items = [];
   if (!actions.length) {
@@ -20,10 +19,10 @@ export function discipline({ A, decision }) {
   }
   for (const b of buys) {
     items.push({
-      ok: !violation,
+      ok: !adverse,
       text:
         `买入 ${b.gram.toFixed(2)} 克 @ ${b.priceCny.toFixed(2)} 元/克` +
-        (violation ? " —— 趋势偏空/背离期间加仓，属逆势接飞刀。" : " —— 与当前结构不冲突。"),
+        (adverse ? " —— 外部技术面偏空期间加仓，属逆势接飞刀。" : " —— 与当前外部技术面不冲突。"),
     });
   }
   for (const s of sells) {
@@ -31,14 +30,14 @@ export function discipline({ A, decision }) {
   }
 
   let head;
-  if (violation) head = "纪律扣分：逆势加仓";
+  if (adverse) head = "纪律扣分：逆势加仓";
   else if (!actions.length) head = "纪律良好：今日未操作";
   else head = "纪律良好：未发现违规";
 
   return {
     ok: true,
-    state: violation ? "violation" : "clean",
-    tone: violation ? "red" : "green",
+    state: adverse ? "violation" : "clean",
+    tone: adverse ? "red" : "green",
     head,
     items,
     buyCount: buys.length,

@@ -6,7 +6,7 @@ import { CONFIG } from "./config.js";
 import { loadB } from "./sourceB.js";
 import { loadC, loadFx, usdOzToCnyGram, OZ_TO_GRAM } from "./sourceC.js";
 import { normalizeA, degraded } from "./core/normalize.js";
-import { decide } from "./core/confidence.js";
+import { decideTechnical } from "./core/technical.js";
 import { assess } from "./core/risk.js";
 import { assessGrid } from "./core/grid.js";
 import { rebalance } from "./core/rebalance.js";
@@ -70,36 +70,30 @@ export async function buildState(ctx = {}) {
     domesticRef != null && priceCnyGram ? ((domesticRef - priceCnyGram) / priceCnyGram) * 100 : null;
   const pState = premiumState(new Date(now));
 
-  /* 僵尸数据须在印证前判定：超 15 分钟的外部数据直接废弃方向结论 */
+  /* 僵尸数据须在判断前判定：超新鲜度阈值的外部数据直接废弃方向结论 */
   const staleB = isStale(B.ts, now, cfg.staleMinutes * 60 * 1000);
 
-  /* 时间维度对齐（规范 §3）：
-     B1 外部日线评级 → bRating；B2 外部盘中异动 → intradayPct。
-     B2 只在「实时现价可用」时启用：源回退到快照时，现价并非盘中真实异动，
-     此时不得据此判定反抽（避免用日内噪声冒充盘中急拉）。 */
-  const intradayPct = B.ok && B.spotSource === "gold-api" ? B.dayPct : null;
-  const decision = decide({
-    aSign: A.trend ? A.trend.sign : 0,
-    bRating: B.ratingOk && B.rating ? B.rating.score : null,
-    cDir: C.dir || 0,
-    vixSpike: C.mode === "risk_off",
-    bMissing: !B.ratingOk,
+  /* 唯一判断源：只吃外部实时行情指标（B 行情 + 服务端预算指标 + C 宏观），
+     完全不读取老应用 Source A 的任何趋势字段，从架构上杜绝内部/外部双印证。 */
+  const technical = decideTechnical({
+    B,
+    C,
     stale: B.ok ? staleB : false,
-    intradayPct,
-    surgePct: cfg.intradaySurgePct,
+    cfg,
   });
 
+  /* 下游模块统一接收外部方向 technical.dir；账户事实数据（浮亏/均价/资金/档距）仍来自 A */
   const risk = assess({
     A,
     priceCnyGram,
     macro: C,
     stale: B.ok ? staleB : false,
-    divergence: decision.scenario === "divergence",
+    techDir: technical.dir,
   });
 
-  const grid = assessGrid({ A, atrUsdOz: B.atr14, fx: fx.rate, priceUsdOz: B.priceUsdOz });
+  const grid = assessGrid({ A, atrUsdOz: B.atr14, fx: fx.rate, priceUsdOz: B.priceUsdOz, techDir: technical.dir });
   const rebal = rebalance({ A, spreadPct: cfg.rebalanceSpreadPct, priceCnyGram });
-  const disc = discipline({ A, decision });
+  const disc = discipline({ A, techDir: technical.dir, technical });
 
   const dataAt = A.updatedAt || null;
   const syncAt = aRes.meta && aRes.meta.syncedAt ? Date.parse(aRes.meta.syncedAt) : null;
@@ -123,7 +117,7 @@ export async function buildState(ctx = {}) {
       ref: domesticRef,
       intl: priceCnyGram,
     },
-    decision,
+    technical,
     risk,
     grid,
     rebal,

@@ -17,7 +17,14 @@ export const CONFIG = {
   deadZonePct: 0.05,               // MA20 贴线死区 ±0.05%
   stressDrop: 0.05,                // 压力测试跌幅
   rebalanceSpreadPct: 3,           // 账户成本价差阈值
-  intradaySurgePct: 1.0,           // 时间对齐：盘中异动(B2) 判定为「强反抽」的涨跌阈值 %
+
+  /* 纯外部技术面判断阈值（v2.3.0，供 decideTechnical 使用） */
+  techBullScore: 60,               // 加权得分 ≥ 60 → 偏多
+  techBearScore: 40,               // 加权得分 ≤ 40 → 偏空
+  techRsiHigh: 70,                 // RSI 超买线
+  techRsiLow: 30,                  // RSI 超卖线
+  techPctBHigh: 0.8,               // 布林上轨触顶线
+  techPctBLow: 0.2,                // 布林下轨触底线
 
   /* 风控阈值 */
   staleMinutes: 15,                // 超过即判僵尸数据

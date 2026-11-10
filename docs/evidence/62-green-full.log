@@ -1,0 +1,276 @@
+########## 绿灯全量回归（终）##########
+TAP version 13
+# Subtest: T13 盘中强反抽：日线共振做空但盘中急拉 → 反抽预警，绝不判真背离
+ok 1 - T13 盘中强反抽：日线共振做空但盘中急拉 → 反抽预警，绝不判真背离
+  ---
+  duration_ms: 0.933171
+  ...
+# Subtest: T14 真背离：内部日线空 + 外部日线多 + 盘中大涨 → 仍是真背离
+ok 2 - T14 真背离：内部日线空 + 外部日线多 + 盘中大涨 → 仍是真背离
+  ---
+  duration_ms: 0.696456
+  ...
+# Subtest: T15 异常边界 intradayPct=null → 不触发反抽，回退日线共振
+ok 3 - T15 异常边界 intradayPct=null → 不触发反抽，回退日线共振
+  ---
+  duration_ms: 0.110398
+  ...
+# Subtest: T16 向后兼容：未传 intradayPct → 保持旧版共振结论
+ok 4 - T16 向后兼容：未传 intradayPct → 保持旧版共振结论
+  ---
+  duration_ms: 0.073978
+  ...
+# Subtest: T17 异常边界 盘中 +0.3%（小于阈值）→ 不触发反抽
+ok 5 - T17 异常边界 盘中 +0.3%（小于阈值）→ 不触发反抽
+  ---
+  duration_ms: 0.119077
+  ...
+# Subtest: T18 异常边界 stale=true + 盘中大涨 → 仍判僵尸·印证作废
+ok 6 - T18 异常边界 stale=true + 盘中大涨 → 仍判僵尸·印证作废
+  ---
+  duration_ms: 0.099608
+  ...
+# Subtest: T19 异常边界 共振做空 + 盘中顺势大跌 -2.5% → 不误报反抽
+ok 7 - T19 异常边界 共振做空 + 盘中顺势大跌 -2.5% → 不误报反抽
+  ---
+  duration_ms: 0.153156
+  ...
+# Subtest: T20 异常边界 bMissing=true + 盘中大涨 → 外部校验失败降级
+ok 8 - T20 异常边界 bMissing=true + 盘中大涨 → 外部校验失败降级
+  ---
+  duration_ms: 0.08186
+  ...
+# Subtest: T21 共振做多 + 盘中急跌 → 盘中回踩预警，文案不得出现『追空』
+ok 9 - T21 共振做多 + 盘中急跌 → 盘中回踩预警，文案不得出现『追空』
+  ---
+  duration_ms: 0.245774
+  ...
+# Subtest: T22' M2 消费 s.technical 且渲染外部指标网格，不再有双印证分支
+ok 10 - T22' M2 消费 s.technical 且渲染外部指标网格，不再有双印证分支
+  ---
+  duration_ms: 4.805632
+  ...
+# Subtest: T23' app.js 装配 decideTechnical，且不再调用双印证 decide
+ok 11 - T23' app.js 装配 decideTechnical，且不再调用双印证 decide
+  ---
+  duration_ms: 0.591388
+  ...
+# Subtest: A1 单调上升 60 根 → 多头排列 / RSI 超买 / MACD 柱为正 / 价格贴上轨
+ok 12 - A1 单调上升 60 根 → 多头排列 / RSI 超买 / MACD 柱为正 / 价格贴上轨
+  ---
+  duration_ms: 6.128355
+  ...
+# Subtest: A2 单调下降 60 根 → 空头排列 / RSI 超卖 / MACD 柱为负 / 价格贴下轨
+ok 13 - A2 单调下降 60 根 → 空头排列 / RSI 超卖 / MACD 柱为负 / 价格贴下轨
+  ---
+  duration_ms: 0.459801
+  ...
+# Subtest: A3 异常边界 bars=null → 不抛异常，返回 ok:false
+ok 14 - A3 异常边界 bars=null → 不抛异常，返回 ok:false
+  ---
+  duration_ms: 0.230826
+  ...
+# Subtest: A4 异常边界 bars 仅 10 根（不足 26）→ 不抛异常，ok:false
+ok 15 - A4 异常边界 bars 仅 10 根（不足 26）→ 不抛异常，ok:false
+  ---
+  duration_ms: 0.170537
+  ...
+# Subtest: A5 异常边界 closes 混入 null / NaN / 字符串 → 过滤后不泄漏 NaN
+ok 16 - A5 异常边界 closes 混入 null / NaN / 字符串 → 过滤后不泄漏 NaN
+  ---
+  duration_ms: 0.546229
+  ...
+# Subtest: A6 数学性质守卫：严格等差（零加速度）序列 MACD 柱必须趋近 0
+ok 17 - A6 数学性质守卫：严格等差（零加速度）序列 MACD 柱必须趋近 0
+  ---
+  duration_ms: 0.811983
+  ...
+# Subtest: B1 全多外部指标 → tech_bull / dir=1 / 不含内部数据依赖
+ok 18 - B1 全多外部指标 → tech_bull / dir=1 / 不含内部数据依赖
+  ---
+  duration_ms: 11.858559
+  ...
+# Subtest: B2 全空外部指标 → tech_bear / dir=-1
+ok 19 - B2 全空外部指标 → tech_bear / dir=-1
+  ---
+  duration_ms: 0.623606
+  ...
+# Subtest: B3 去双印证守卫：不接收 aSign，输出不含「内部/共振/背离/印证/反抽/多源」
+ok 20 - B3 去双印证守卫：不接收 aSign，输出不含「内部/共振/背离/印证/反抽/多源」
+  ---
+  duration_ms: 0.764725
+  ...
+# Subtest: B4 异常边界 indicators=null（指标缺失）→ degraded，不输出方向结论
+ok 21 - B4 异常边界 indicators=null（指标缺失）→ degraded，不输出方向结论
+  ---
+  duration_ms: 0.474041
+  ...
+# Subtest: B5 异常边界 stale=true（外部僵尸）→ degraded，方向作废
+ok 22 - B5 异常边界 stale=true（外部僵尸）→ degraded，方向作废
+  ---
+  duration_ms: 0.205646
+  ...
+# Subtest: B6 异常边界 VIX 暴涨（C.mode=risk_off）→ 避险模式，技术面失效
+ok 23 - B6 异常边界 VIX 暴涨（C.mode=risk_off）→ 避险模式，技术面失效
+  ---
+  duration_ms: 0.244835
+  ...
+# Subtest: B7 异常边界 B.ok=false（外部行情源全挂）→ degraded 不白屏
+ok 24 - B7 异常边界 B.ok=false（外部行情源全挂）→ degraded 不白屏
+  ---
+  duration_ms: 0.139047
+  ...
+# Subtest: B8 评级缺失但指标齐全 → 仍能判断（不硬依赖第三方评级）
+ok 25 - B8 评级缺失但指标齐全 → 仍能判断（不硬依赖第三方评级）
+  ---
+  duration_ms: 0.287795
+  ...
+# Subtest: B9 signals 至少覆盖 7 项外部指标（供 M2 网格展示）
+ok 26 - B9 signals 至少覆盖 7 项外部指标（供 M2 网格展示）
+  ---
+  duration_ms: 0.238135
+  ...
+# Subtest: C1 sourceB.js 不得 import 指标计算模块（前端严禁造轮子），只透出 snap.indicators
+ok 27 - C1 sourceB.js 不得 import 指标计算模块（前端严禁造轮子），只透出 snap.indicators
+  ---
+  duration_ms: 1.817983
+  ...
+# Subtest: C2 app.js 装配 s.technical 并把 B / C / stale 喂给 decideTechnical
+ok 28 - C2 app.js 装配 s.technical 并把 B / C / stale 喂给 decideTechnical
+  ---
+  duration_ms: 0.531739
+  ...
+# Subtest: C3 renderDecision 只读 s.technical，M2 段不得残留「内部结构/共振/背离/多源」
+ok 29 - C3 renderDecision 只读 s.technical，M2 段不得残留「内部结构/共振/背离/多源」
+  ---
+  duration_ms: 0.683296
+  ...
+# Subtest: C4 全局同步：render.js 全文不得再消费 s.decision（所有卡片统一外部判断源）
+ok 30 - C4 全局同步：render.js 全文不得再消费 s.decision（所有卡片统一外部判断源）
+  ---
+  duration_ms: 1.169586
+  ...
+# Subtest: C5 快照 data/xauusd.json 含 indicators（rsi14 / macd / boll / ma / align）
+ok 31 - C5 快照 data/xauusd.json 含 indicators（rsi14 / macd / boll / ma / align）
+  ---
+  duration_ms: 0.624488
+  ...
+# Subtest: C6 sync-xau.mjs 引入 computeIndicators 并把结果写入快照
+ok 32 - C6 sync-xau.mjs 引入 computeIndicators 并把结果写入快照
+  ---
+  duration_ms: 0.583128
+  ...
+# Subtest: D1 运行时链路与静态文案全局清除双印证字样
+ok 33 - D1 运行时链路与静态文案全局清除双印证字样
+  ---
+  duration_ms: 2.012069
+  ...
+# Subtest: D2 app.js 不再 import / 调用双印证引擎 decide
+ok 34 - D2 app.js 不再 import / 调用双印证引擎 decide
+  ---
+  duration_ms: 0.660196
+  ...
+# Subtest: D3 各下游判断模块改吃外部方向，不再依赖 A.trend / divergence
+ok 35 - D3 各下游判断模块改吃外部方向，不再依赖 A.trend / divergence
+  ---
+  duration_ms: 0.829484
+  ...
+# Subtest: D4 异常边界：main.js 的 Webhook / FOMO 不再引用 s.decision
+ok 36 - D4 异常边界：main.js 的 Webhook / FOMO 不再引用 s.decision
+  ---
+  duration_ms: 0.411292
+  ...
+# Subtest: D5 M1 雷达不得再展示「内部日线」，改为外部技术面
+ok 37 - D5 M1 雷达不得再展示「内部日线」，改为外部技术面
+  ---
+  duration_ms: 0.44365
+  ...
+# Subtest: D6 静态骨架屏与页脚文案同步更新（不残留「多源共振决策」）
+ok 38 - D6 静态骨架屏与页脚文案同步更新（不残留「多源共振决策」）
+  ---
+  duration_ms: 0.667148
+  ...
+# Subtest: E1 端到端解耦：内部趋势由「下行」翻成「上行」，外部判断结论完全不变
+ok 39 - E1 端到端解耦：内部趋势由「下行」翻成「上行」，外部判断结论完全不变
+  ---
+  duration_ms: 9.624395
+  ...
+# Subtest: E2 账户事实数据完整保留（真实浮亏 / 均价 / 克重 / 资金）
+ok 40 - E2 账户事实数据完整保留（真实浮亏 / 均价 / 克重 / 资金）
+  ---
+  duration_ms: 1.006209
+  ...
+# Subtest: E3 异常边界：服务端指标缺失 → technical 降级且不白屏，账户卡仍渲染事实数据
+ok 41 - E3 异常边界：服务端指标缺失 → technical 降级且不白屏，账户卡仍渲染事实数据
+  ---
+  duration_ms: 0.835203
+  ...
+# Subtest: T1 持仓数据缺失 → 不崩溃，盈亏标记为数据缺失而非 0
+ok 42 - T1 持仓数据缺失 → 不崩溃，盈亏标记为数据缺失而非 0
+  ---
+  duration_ms: 2.133797
+  ...
+# Subtest: T2 外部数据延迟 30 分钟 → 判定为僵尸数据并废弃
+ok 43 - T2 外部数据延迟 30 分钟 → 判定为僵尸数据并废弃
+  ---
+  duration_ms: 10.234262
+  ...
+# Subtest: T3 国内凌晨 3:00 休市 → 溢价率冻结
+ok 44 - T3 国内凌晨 3:00 休市 → 溢价率冻结
+  ---
+  duration_ms: 0.316253
+  ...
+# Subtest: T4 真实浮亏 -30000 → 原样透出，不回退成 0
+ok 45 - T4 真实浮亏 -30000 → 原样透出，不回退成 0
+  ---
+  duration_ms: 0.483801
+  ...
+# Subtest: T5 外部技术面偏空 + 今日有 BUY → 逆势买入触发 FOMO 锁
+ok 46 - T5 外部技术面偏空 + 今日有 BUY → 逆势买入触发 FOMO 锁
+  ---
+  duration_ms: 0.613637
+  ...
+# Subtest: T6 剩余额 < 1.5 倍下一档 → 红色枯竭告警
+ok 47 - T6 剩余额 < 1.5 倍下一档 → 红色枯竭告警
+  ---
+  duration_ms: 0.375203
+  ...
+# Subtest: T7 VIX 单日 +69.7% → 强制避险模式
+ok 48 - T7 VIX 单日 +69.7% → 强制避险模式
+  ---
+  duration_ms: 0.318004
+  ...
+# Subtest: T8 全项目不得出现 PAXG 字样
+ok 49 - T8 全项目不得出现 PAXG 字样
+  ---
+  duration_ms: 10.280382
+  ...
+# Subtest: T9 外部数据僵尸（>15min）→ 废弃印证，置信度降级
+ok 50 - T9 外部数据僵尸（>15min）→ 废弃印证，置信度降级
+  ---
+  duration_ms: 0.343792
+  ...
+# Subtest: T10 再平衡整体均价取 A.position.avgCost，不得二次加权造出第二个数字
+ok 51 - T10 再平衡整体均价取 A.position.avgCost，不得二次加权造出第二个数字
+  ---
+  duration_ms: 0.577179
+  ...
+# Subtest: T11 pagehide 清理 ui.timer 与 ui.countdown
+ok 52 - T11 pagehide 清理 ui.timer 与 ui.countdown
+  ---
+  duration_ms: 0.94359
+  ...
+# Subtest: T12 实时现价新鲜不判僵尸；实时挂掉且旧快照回退才判僵尸
+ok 53 - T12 实时现价新鲜不判僵尸；实时挂掉且旧快照回退才判僵尸
+  ---
+  duration_ms: 2.477869
+  ...
+1..53
+# tests 53
+# suites 0
+# pass 53
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 89.871934

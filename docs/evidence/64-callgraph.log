@@ -1,0 +1,5 @@
+=== 调用链：8 个叶渲染函数零互调 + refreshAll 唯一入口 ===
+叶渲染函数: 8 个
+叶函数之间互调: 无（符合单向 DAG）
+main.js 唯一刷新入口 refreshAll: 存在
+refreshAll 调用 renderAll: 是

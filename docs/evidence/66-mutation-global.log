@@ -1,0 +1,44 @@
+########## 变异 1（重做·有效版）：让外部判断是否降级随内部趋势漂移 ##########
+[mutation1 applied] technical 的 stale 被内部趋势污染 → 双印证回流
+--- 预期 E1 端到端解耦失败 ---
+not ok 28 - E1 端到端解耦：内部趋势由「下行」翻成「上行」，外部判断结论完全不变
+# tests 30
+# pass 29
+# fail 1
+
+########## 变异 2：render.js 的 M2 回退消费 s.decision ##########
+[mutation2 applied] M2 回退到 s.decision
+--- 预期 C3/C4/T22 失败 ---
+not ok 10 - T22' M2 消费 s.technical 且渲染外部指标网格，不再有双印证分支
+not ok 29 - C3 renderDecision 只读 s.technical，M2 段不得残留「内部结构/共振/背离/多源」
+not ok 30 - C4 全局同步：render.js 全文不得再消费 s.decision（所有卡片统一外部判断源）
+# tests 41
+# pass 38
+# fail 3
+
+########## 变异 3：runtime 文件重新引入双印证字样 ##########
+[mutation3 applied] risk.js 注入双印证字样
+--- 预期 D1 失败 ---
+not ok 22 - D1 运行时链路与静态文案全局清除双印证字样
+# tests 30
+# pass 29
+# fail 1
+
+########## 变异 4：技术引擎方向判定反转 ##########
+[mutation4 applied] 偏多/偏空阈值条件反转
+--- 预期 B1/B2 失败 ---
+not ok 7 - B1 全多外部指标 → tech_bull / dir=1 / 不含内部数据依赖
+not ok 8 - B2 全空外部指标 → tech_bear / dir=-1
+# tests 30
+# pass 27
+# fail 3
+
+=== 全文件还原 + 字节校验 ===
+app.js OK
+render.js OK
+risk.js OK
+technical.js OK
+=== 还原后全量回归（预期 53/53 全绿）===
+# tests 53
+# pass 53
+# fail 0

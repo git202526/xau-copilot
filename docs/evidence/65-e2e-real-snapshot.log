@@ -1,0 +1,8 @@
+=== 真实快照端到端装配：用线上同款 data/xauusd.json（含 indicators）跑 buildState ===
+B.indicators.ok = true | RSI14 = 48.63
+technical.scenario = tech_bull | dir = 1 | score = 84
+technical.headline = 外部技术面偏多
+signals 项数 = 10
+账户事实: pnl = -29546.834217163523 | grams = 327.8848 | avgCost = 972.011140283771
+grid.state = ok | disc.state = clean | rebal.ok = true
+[E2E PASS] 真实快照装配出有效外部判断，账户事实完整

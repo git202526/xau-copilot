@@ -84,17 +84,22 @@ export async function loadB(ctx = {}) {
     errs.push("实时现价不可用，回退快照价");
   }
 
+  /* 服务端预算指标：前端只读透出，绝不自行计算（严禁前端造轮子）。
+     缺失或降级时置 null，由 decideTechnical 统一判降级，不白屏。 */
+  const indicators = snap && snap.indicators && snap.indicators.ok === true ? snap.indicators : null;
+
   if (!snap || !Array.isArray(snap.bars) || snap.bars.length < 21) {
     return {
       ok: false, instrument: "XAUUSD", sourceLabel: "XAUUSD 伦敦金现",
       err: errs.join("；") || "日线不足 21 根", ts: null, rating: null, ratingOk: false, trend: 0,
+      indicators: null,
     };
   }
 
   const bars = dropUnclosed(snap.bars, now);
   const closes = bars.map((b) => n(b.c ?? b.close)).filter((v) => v != null);
   if (closes.length < 21) {
-    return { ok: false, instrument: "XAUUSD", sourceLabel: "XAUUSD 伦敦金现", err: "剔除未收盘后不足 21 根", ts: null, rating: null, ratingOk: false, trend: 0 };
+    return { ok: false, instrument: "XAUUSD", sourceLabel: "XAUUSD 伦敦金现", err: "剔除未收盘后不足 21 根", ts: null, rating: null, ratingOk: false, trend: 0, indicators: null };
   }
 
   const ma20 = maOf(closes, 20);
@@ -158,6 +163,7 @@ export async function loadB(ctx = {}) {
     asOf: snap.asOf || null,
     ts,
     stale,
+    indicators,
     ratingOk,
     rating: ratingOk
       ? { score: n(ratingDoc.score), label: ratingDoc.label, buy: ratingDoc.buy, sell: ratingDoc.sell, neutral: ratingDoc.neutral, at: ratingDoc.at || null }

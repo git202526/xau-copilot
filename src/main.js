@@ -21,7 +21,7 @@ function paintSkeleton() {
   if (m0) {
     m0.innerHTML = `<section class="bubble"><div class="b-head"><span class="tag">AI 研判</span><time>加载中</time></div>${sk(16, "92%")}${sk(16, "64%", 0)}</section>`;
   }
-  const titles = ["宏观雷达", "共振决策", "账户体检", "网格效率", "再平衡", "纪律复盘"];
+  const titles = ["宏观雷达", "外部技术面", "账户体检", "网格效率", "再平衡", "纪律复盘"];
   titles.forEach((t, i) => {
     const el = $(`m${i + 1}`);
     if (!el) return;
@@ -73,7 +73,7 @@ function maybeFomo(s) {
   const okBtn = $("fomo-ok");
   if (!modal || !txt || !cd || !okBtn) return;
 
-  txt.textContent = s.risk.fomoText || "当前处于多源背离区间，今日仍有买入操作。是否确认强行买入？";
+  txt.textContent = s.risk.fomoText || "外部技术面偏空，今日仍有买入操作。是否确认强行买入？";
   modal.hidden = false;
 
   let left = s.risk.fomoCountdown || 10;
@@ -104,7 +104,7 @@ function maybeFomo(s) {
   okBtn.onclick = () => close();
 }
 
-/* Webhook：强共振 / 熔断时静默推一次，同日同事件去重 */
+/* Webhook：外部技术面转空 / 转多 / 熔断时静默推一次，同日同事件去重 */
 async function maybePush(s) {
   const url = (() => {
     try {
@@ -115,9 +115,11 @@ async function maybePush(s) {
   })();
   if (!url) return;
 
+  const t = s.technical || {};
   const events = [];
-  if (s.decision && s.decision.scenario === "resonance_short") events.push("RESONANCE_SHORT");
-  if (s.decision && s.decision.scenario === "resonance_long") events.push("RESONANCE_LONG");
+  if (t.scenario === "tech_bear") events.push("TECH_BEAR");
+  if (t.scenario === "tech_bull") events.push("TECH_BULL");
+  if (t.scenario === "risk_off") events.push("RISK_OFF");
   if (s.grid && s.grid.fuse) events.push("GRID_FUSE");
   if (!events.length) return;
 
@@ -135,10 +137,11 @@ async function maybePush(s) {
       price: s.B && s.B.priceUsdOz,
       ma20: s.B && s.B.ma20UsdOz,
       rating: s.B && s.B.rating ? s.B.rating.score : null,
-      trendA: s.A && s.A.trend ? s.A.trend.text : null,
+      rsi14: s.B && s.B.indicators ? s.B.indicators.rsi14 : null,
       macro: s.C ? s.C.label : null,
-      confidence: s.decision.conf,
-      headline: s.decision.headline,
+      confidence: t.conf,
+      headline: t.headline,
+      techScore: t.score,
       pnl: s.risk ? s.risk.pnl : null,
     };
     try {
