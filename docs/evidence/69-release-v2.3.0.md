@@ -100,6 +100,7 @@
 - 同理，账户真实浮亏在本地端到端凭证为 `-29,546.83 元`，线上截图时刻为 `-27,224.76 元`，均为各自时刻的云端真实快照，非固定值。
 - **静态终查说明**：M1 标题「宏观与双轨雷达」中的「双轨」指国际 XAUUSD 金价 / 国内折算克价两条**价格轨道**，是价格事实展示，非「内外部双印证」判断概念；`src/core/confidence.js`（旧双印证引擎）保留为回退夹具与历史测试夹具，运行时不 import，对外文案 0 残留（B3 / D1 守卫 + 线上 `hasBannedText:false` 双重验证）。
 - **一次工具层勘误（如实记录）**：`gh release view --json isLatest` 不被当前 gh 版本支持，已在 `80-release.log` 记录报错并改用支持字段重查，未伪造结果。
+- **一次网络抖动与重试（如实记录）**：凭证归档提交的首轮 `git push` 报 `GnuTLS recv error (-110)`（exit 128）、`fetch` 连接 `github.com:443` 超时 135 秒，`86-final-push.log` 完整保留了失败输出；同期 `gh api` 与线上站点 200 均正常，判定为 git over HTTPS 瞬时抖动。经轻量连通性诊断（`gh api` 正常、`ls-remote` 返回 `c7d3446`）后，以 `HTTP/1.1 + postBuffer=524288000 + lowSpeedTime=30` 重试成功：`c7d3446..efa55f7 main -> main`（exit 0），并由 `gh api` 复核远端 `main=efa55f7`。未跳过、未伪造任何一步。
 
 ## 6. 回退预案
 

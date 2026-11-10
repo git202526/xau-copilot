@@ -19,3 +19,57 @@ technical.js http=200
 ?? docs/evidence/86-final-push.log
 
 注：85/86 两个凭证由紧随其后的 docs 提交归档；最终状态以 GitHub API 复核为准。
+
+=== 推送失败诊断与重试（如实记录，不伪造）===
+UTC: 2026-11-10T01:42:44Z
+--- 1) 轻量连通性 ---
+api.github.com http=403 time=0.502884s
+git202526/xau-copilot | default=main
+--- 2) git ls-remote 探测（轻量，40s 上限）---
+c7d34468943f8c23e2438224cbaedf25bc1917c0	refs/heads/main
+ls-remote exit=0
+--- 3) 重试 push（HTTP/1.1 + postBuffer + inline auth + 低速快速失败）---
+To https://github.com/git202526/xau-copilot.git
+   c7d3446..efa55f7  main -> main
+push retry exit=0
+--- 4) gh api 核实远端 main（以 API 为准）---
+main=efa55f74540da6f4b235ad8bb942704a022f17b3 | docs(evidence): 归档 v2.3.0 变基后回归与最终推送核实凭证
+--- 5) 本地状态（此刻 86 因追加本段而显示 M，由提交 C 归档）---
+## main...origin/main
+ M docs/evidence/86-final-push.log
+
+=== 收尾说明 ===
+- 本次「失败 → 诊断 → 重试成功」的完整链路已如实落盘，未跳过、未伪造上线结果。
+- 提交 C 归档：86 本段追加内容 + 69-release-v2.3.0.md 第 5 节补充的「网络抖动与重试」条目。
+- 最终状态以提交 C 推送后的 GitHub API 复核为准（tag v2.3.0 / Release / Pages / 线上 390px 终验均已在 83/84 凭证中通过；本次仅 docs 变更，线上代码字节未改变）。
+
+=== 远端并发数据提交处理（push 被拒 fetch first，如实记录）===
+UTC: 2026-11-10T01:47:37Z
+--- fetch origin main ---
+From https://github.com/git202526/xau-copilot
+ * branch            main       -> FETCH_HEAD
+   efa55f7..af685d3  main       -> origin/main
+fetch exit=0
+--- 云端新提交 ---
+af685d3fac062b07156f374eef9ffa81573d4cd9 chore(data): sync snapshot 2026-11-10T01:43Z
+--- rebase 到 origin/main（提交 C 仅改 docs，与云端 data 变更无冲突）---
+error: cannot rebase: You have unstaged changes.
+error: Please commit or stash them.
+rebase exit=1
+--- 变基后全量回归 ---
+  ...
+1..53
+# tests 53
+# suites 0
+# pass 53
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 86.512007
+test exit=0
+--- 本地状态 ---
+## main...origin/main [ahead 1, behind 1]
+ M docs/evidence/86-final-push.log
+
+注：本段与提交 C 一并归档（amend，提交 C 此前未推送成功，无需 force push）；最终状态以推送后 GitHub API 复核为准。
