@@ -1,0 +1,15 @@
+=== v2.3.0 推送（HTTP/1.1 + postBuffer + inline auth）===
+UTC: 2026-11-10T01:18:08Z
+参数: http.version=HTTP/1.1 | http.postBuffer=524288000 | auth=inline basic (REDACTED，令牌不落盘)
+本地 HEAD: b9dcff0d8c58231768b72fd7ac37f1d01ea6392b
+本地 tag v2.3.0 解引用: b9dcff0d8c58231768b72fd7ac37f1d01ea6392b
+--- [1/2] push origin main ---
+To https://github.com/git202526/xau-copilot.git
+   484311f..b9dcff0  main -> main
+push main exit=0
+--- [2/2] push origin refs/tags/v2.3.0 ---
+To https://github.com/git202526/xau-copilot.git
+ * [new tag]         v2.3.0 -> v2.3.0
+push tag exit=0
+--- 结果摘要 ---
+main_rc=0 tag_rc=0

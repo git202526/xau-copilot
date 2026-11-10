@@ -1,0 +1,16 @@
+=== rebase 到 origin/main(484311f，含云端快照) ===
+Rebasing (1/1)Auto-merging data/xauusd.json
+CONFLICT (content): Merge conflict in data/xauusd.json
+error: could not apply c6926a1... feat(v2.3.0): 应用去掉内外部双印证，改为纯外部技术面判断（全卡片同步 + RSI/MACD/布林/均线排列服务端指标）
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+Could not apply c6926a1... feat(v2.3.0): 应用去掉内外部双印证，改为纯外部技术面判断（全卡片同步 + RSI/MACD/布林/均线排列服务端指标）
+rebase exit: 
+HEAD: 484311f | origin/main: 484311f
+领先 origin/main: 0
+=== 变基后全量回归（必须 53/53）===
+# tests 53
+# pass 52
+# fail 1

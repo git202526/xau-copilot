@@ -1,0 +1,19 @@
+=== 远端推送结果核实（以 GitHub API 为准，不可伪造）===
+UTC: 2026-11-10T01:21:54Z
+--- 远端 main HEAD ---
+sha=c7d34468943f8c23e2438224cbaedf25bc1917c0 | chore(data): sync snapshot 2026-11-10T01:18Z
+--- 功能提交 b9dcff0 是否已在远端（返回 sha 即存在）---
+b9dcff0d8c58231768b72fd7ac37f1d01ea6392b
+--- 远端 ref tags/v2.3.0 ---
+ref=refs/tags/v2.3.0 | object=tag:0bf6efb918185b8c4750460ce1cd6a7416e5412a
+--- annotated tag 对象解引用 ---
+tag=v2.3.0 | -> commit=b9dcff0d8c58231768b72fd7ac37f1d01ea6392b | message=v2.3.0 · 纯外部技术面判断：全局去双印证 + RSI14/MACD/布林/多周期均线排列服务端指标
+--- 本地 HEAD / 本地 tag 解引用 ---
+b9dcff0d8c58231768b72fd7ac37f1d01ea6392b
+b9dcff0d8c58231768b72fd7ac37f1d01ea6392b
+--- 远端最新 5 个 tags ---
+v2.3.0
+v2.2.0
+v2.1.0
+v2.0.0
+v1.0.1

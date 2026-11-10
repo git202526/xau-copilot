@@ -1,0 +1,37 @@
+=== v2.3.0 线上 · 390px 真实数据浏览器终验 ===
+URL: https://git202526.github.io/xau-copilot/
+{
+  "title": "XAU Copilot · 决策指挥中心",
+  "cards": 6,
+  "bubbles": 1,
+  "modules": 7,
+  "m2Title": "外部技术面决策",
+  "m2Headline": "外部技术面偏多",
+  "m2Tone": "green",
+  "techCells": 10,
+  "techLabels": [
+    "伦敦金现 $/oz",
+    "MA20 偏离",
+    "日内涨跌",
+    "ATR14 $/oz",
+    "RSI14",
+    "MACD 柱",
+    "布林 %B",
+    "均线排列",
+    "技术评级",
+    "宏观风向"
+  ],
+  "hasBannedText": false,
+  "bannedHits": [],
+  "hasPnl": true,
+  "hasRebalance": true,
+  "hasDiscipline": true,
+  "hasPAXG": false,
+  "scrollWidth": 390,
+  "footText": "账户数据 ok  ·  外部行情 实时  ·  宏观 ok  ·  汇率 6.6866  ·  数据 561 分钟前  ·  云端同步 8 分钟前",
+  "bodyLen": 1113
+}
+HTTP >=400 资源: 0
+console/page errors: 0
+screenshot: /workspace/xau-copilot-v2.3.0-live-390.png
+[LIVE PASS] 线上真实数据：7 卡全渲染、M2 十格指标网格、全局零双印证、账户事实保留、0 报错、无 4xx、无溢出

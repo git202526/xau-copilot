@@ -1,0 +1,77 @@
+=== 冲突文件清单 ===
+M  CHANGELOG.md
+M  README.md
+UU data/xauusd.json
+A  docs/evidence/55-version-calc.log
+A  docs/evidence/56-red-technical.log
+A  docs/evidence/57-red-full.log
+A  docs/evidence/58-red-global-scope.log
+A  docs/evidence/59-red-global-full.log
+A  docs/evidence/60-recompute-indicators.log
+A  docs/evidence/61-green-global.log
+A  docs/evidence/62-green-full.log
+A  docs/evidence/63-smoke-syntax.log
+A  docs/evidence/64-callgraph.log
+A  docs/evidence/65-e2e-real-snapshot.log
+A  docs/evidence/66-mutation-global.log
+A  docs/evidence/67-browser-global.log
+A  docs/evidence/68-offline-global.log
+A  docs/evidence/69-release-v2.3.0.md
+A  docs/evidence/70-tag-unique-check.log
+A  docs/evidence/71-remote-state.log
+A  docs/evidence/72-commit.log
+M  index.html
+M  package.json
+A  scripts/recompute-indicators.mjs
+M  scripts/sync-xau.mjs
+M  src/app.js
+M  src/config.js
+M  src/core/discipline.js
+M  src/core/grid.js
+A  src/core/indicators.js
+M  src/core/risk.js
+A  src/core/technical.js
+M  src/main.js
+M  src/render.js
+M  src/sourceB.js
+M  tests/intraday.test.mjs
+A  tests/technical.test.mjs
+M  tests/terminal.test.mjs
+?? docs/evidence/73-rebase.log
+?? docs/evidence/74-rebase-resolve.log
+=== 以云端版本为准，保住最新 bars/spot ===
+云端 bars 根数: 60 | spot: 4106.299805 | asOf: 2026-11-09T17:40:07.702Z | 最后一根: 2026-11-09 | indicators: 有
+=== 对云端最新 bars 重算 indicators ===
+[recompute] 写入 60 根已收盘日线的技术指标：
+  RSI14=48.63  MACD.hist=18.01 (none)
+  BOLL %B=0.631  MA排列=mixed
+  MA5/10/20/50=4051.01/4022.68/4063.66/4190.6
+=== 校验：bars 来自云端 + indicators 已重算 ===
+bars: 60 | indicators.ok: true | RSI14: 48.63 | price: 4105.42 | 末收盘: 4105.42
+=== 标记解决并继续 rebase ===
+[detached HEAD b9dcff0] feat(v2.3.0): 应用去掉内外部双印证，改为纯外部技术面判断（全卡片同步 + RSI/MACD/布林/均线排列服务端指标）
+ 38 files changed, 2596 insertions(+), 212 deletions(-)
+ create mode 100644 docs/evidence/55-version-calc.log
+ create mode 100644 docs/evidence/56-red-technical.log
+ create mode 100644 docs/evidence/57-red-full.log
+ create mode 100644 docs/evidence/58-red-global-scope.log
+ create mode 100644 docs/evidence/59-red-global-full.log
+ create mode 100644 docs/evidence/60-recompute-indicators.log
+ create mode 100644 docs/evidence/61-green-global.log
+ create mode 100644 docs/evidence/62-green-full.log
+ create mode 100644 docs/evidence/63-smoke-syntax.log
+ create mode 100644 docs/evidence/64-callgraph.log
+ create mode 100644 docs/evidence/65-e2e-real-snapshot.log
+ create mode 100644 docs/evidence/66-mutation-global.log
+ create mode 100644 docs/evidence/67-browser-global.log
+ create mode 100644 docs/evidence/68-offline-global.log
+ create mode 100644 docs/evidence/69-release-v2.3.0.md
+ create mode 100644 docs/evidence/70-tag-unique-check.log
+ create mode 100644 docs/evidence/71-remote-state.log
+ create mode 100644 docs/evidence/72-commit.log
+ create mode 100644 scripts/recompute-indicators.mjs
+ create mode 100644 src/core/indicators.js
+ create mode 100644 src/core/technical.js
+ create mode 100644 tests/technical.test.mjs
+[KSuccessfully rebased and updated refs/heads/main.
+HEAD: b9dcff0 | origin/main: 484311f | 领先: 1

@@ -1,0 +1,20 @@
+=== 变基后全量回归 ===
+# tests 53
+# pass 53
+# fail 0
+=== 浏览器二次终验（用冲突解决后的最新快照）===
+  "cards": 6,
+  "bubbles": 1,
+  "modules": 7,
+  "m2Headline": "外部技术面偏多",
+  "techCells": 10,
+  "hasBannedText": false,
+  "scrollWidth": 390,
+  "hasPAXG": false,
+console/page errors: 0
+[BROWSER PASS] 7 卡全渲染、M2 指标网格、全局零双印证、账户事实保留、无报错、无溢出
+=== 工作区状态 ===
+## main...origin/main [ahead 1]
+?? docs/evidence/73-rebase.log
+?? docs/evidence/74-rebase-resolve.log
+?? docs/evidence/75-post-rebase-regression.log

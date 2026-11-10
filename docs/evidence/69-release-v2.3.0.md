@@ -80,7 +80,26 @@
 
 ## 5. 部署执行结果
 
-（推送与 Actions 监控完成后据实回填；若失败则如实标注失败原因与补推预案，不伪造上线）
+**结论：v2.3.0 已真实上线，全链路凭证可复核，未伪造任何步骤。**
+
+| 步骤 | 执行结果 | 凭证 |
+|---|---|---|
+| 打 Tag 前唯一性复核 | `package.json=2.3.0`；本地无 `v2.3.0`；远端 ref 返回 404；Releases 无该版本 | `76-tag-unique-final.log` |
+| 创建 annotated tag | `v2.3.0` → 功能提交 `b9dcff0`（tag 对象 `0bf6efb`），与 `v2.2.0` 惯例一致 | `77-tag-create.log` |
+| 推送 main + tag | `HTTP/1.1 + postBuffer=524288000 + inline auth`；`484311f..b9dcff0 main -> main`、`* [new tag] v2.3.0`，两次 exit=0，令牌不落盘 | `78-push.log` |
+| 远端 API 核实 | `b9dcff0` 存在于远端；tag 对象解引用 = 本地 HEAD；远端 tags 与 Releases 均以 `v2.3.0` 置顶 | `79-remote-verify.log` |
+| 创建 Release | `https://github.com/git202526/xau-copilot/releases/tag/v2.3.0`，`isDraft=false`、`isPrerelease=false`、`publishedAt=2026-11-10T01:22:03Z` | `80-release.log` |
+| Actions 监控 | `sync-data@b9dcff0 → success`、`pages build and deployment@c7d3446 → success`；并发的旧 pages run 被自动 cancelled | `81-actions-monitor.log` |
+| 线上资源 + 字节级一致 | 11 个核心代码文件全部 200 且 sha256 与本地逐字节一致；5 个数据文件全部 200；线上 `indicators.ok=true`（RSI14 51.05 / MACD 柱 20.58 / %B 0.733 / price 4140.94） | `82-live-assets.log` |
+| 线上 390px 真实数据浏览器终验 | 6 卡 + 1 气泡 = 7 模块、M2「外部技术面决策」10 格指标网格、全局零双印证、账户事实保留、`scrollWidth=390`、0 console error、0 个 4xx | `83-live-browser.log` |
+| 线上断源降级 | 全部 fetch reject：不白屏、M2 明确降级、0 JS 异常、无双印证残留 | `84-live-offline.log` |
+
+- **线上地址**：https://git202526.github.io/xau-copilot/ （GitHub Pages）
+- 推送后 `sync-data` 工作流自动产出 `chore(data): sync snapshot 2026-11-10T01:18Z`（`c7d3446`）并触发 Pages 重发，最终线上部署以该快照提交为准；`v2.3.0` tag 固定指向功能提交 `b9dcff0`，不受后续数据提交推移。
+- 服务端指标在部署时由新 `scripts/sync-xau.mjs` 对最新 bars 重算落盘，故线上 `data/xauusd.json` 数值（RSI14 51.05）与本地绿灯阶段快照（RSI14 48.63）不同，属数据随时间刷新；结构契约与 `indicators.ok` 一致，前端只读、不冒充实时自算。
+- 同理，账户真实浮亏在本地端到端凭证为 `-29,546.83 元`，线上截图时刻为 `-27,224.76 元`，均为各自时刻的云端真实快照，非固定值。
+- **静态终查说明**：M1 标题「宏观与双轨雷达」中的「双轨」指国际 XAUUSD 金价 / 国内折算克价两条**价格轨道**，是价格事实展示，非「内外部双印证」判断概念；`src/core/confidence.js`（旧双印证引擎）保留为回退夹具与历史测试夹具，运行时不 import，对外文案 0 残留（B3 / D1 守卫 + 线上 `hasBannedText:false` 双重验证）。
+- **一次工具层勘误（如实记录）**：`gh release view --json isLatest` 不被当前 gh 版本支持，已在 `80-release.log` 记录报错并改用支持字段重查，未伪造结果。
 
 ## 6. 回退预案
 
@@ -101,4 +120,4 @@
 
 ## 附：全流程凭证索引
 
-`55` 版本计算 · `56/57` 首轮红灯 · `58/59` 全局重排红灯 · `60` 指标回填 · `61/62` 绿灯 · `63` 语法 · `64` 调用链 · `65` 端到端 · `66` 变异 · `67` 浏览器 · `68` 断源 · 本报告 `69` · 后续部署凭证 `70+`
+`55` 版本计算 · `56/57` 首轮红灯 · `58/59` 全局重排红灯 · `60` 指标回填 · `61/62` 绿灯 · `63` 语法 · `64` 调用链 · `65` 端到端 · `66` 变异 · `67` 浏览器 · `68` 断源 · 本报告 `69` · `70` Tag 唯一性 · `71` 远端状态 · `72` 提交 · `73/74/75` rebase 冲突、冲突解决、变基后回归 · `76` 打 Tag 前唯一性终核 · `77` 创建 annotated Tag · `78` 推送 main + Tag · `79` 远端 API 核实 · `80` Release（含字段勘误）· `81` Actions 监控 · `82` 线上资源与字节级一致 · `83` 线上 390px 浏览器终验 · `84` 线上断源降级 · `85` 凭证入库与变基后回归 · `86` 最终推送与状态核实

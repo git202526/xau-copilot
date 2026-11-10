@@ -1,0 +1,34 @@
+=== 线上资源 200 + 代码字节级一致 ===
+UTC: 2026-11-10T01:24:16Z
+BASE: https://git202526.github.io/xau-copilot/
+--- .nojekyll 检查 ---
+no .nojekyll（Pages 按静态文件原样输出）
+--- 代码文件：http 状态 + sha256 本地/线上比对 ---
+index.html | http=200 | local=08e3544730eefab3 | live=08e3544730eefab3 | IDENTICAL
+src/main.js | http=200 | local=9f07a3aea5f51f2c | live=9f07a3aea5f51f2c | IDENTICAL
+src/app.js | http=200 | local=4ba5807643319e18 | live=4ba5807643319e18 | IDENTICAL
+src/render.js | http=200 | local=fc8e78e0c1ca45d2 | live=fc8e78e0c1ca45d2 | IDENTICAL
+src/config.js | http=200 | local=5d58f1bcbf9a71d7 | live=5d58f1bcbf9a71d7 | IDENTICAL
+src/sourceB.js | http=200 | local=4b5f4efb9839f5f3 | live=4b5f4efb9839f5f3 | IDENTICAL
+src/core/technical.js | http=200 | local=e4535ff0063650b3 | live=e4535ff0063650b3 | IDENTICAL
+src/core/indicators.js | http=200 | local=8ba8118430f8781d | live=8ba8118430f8781d | IDENTICAL
+src/core/risk.js | http=200 | local=78adad1a6915a279 | live=78adad1a6915a279 | IDENTICAL
+src/core/grid.js | http=200 | local=5699863db0a7a479 | live=5699863db0a7a479 | IDENTICAL
+src/core/discipline.js | http=200 | local=eea4a57a9c9785b1 | live=eea4a57a9c9785b1 | IDENTICAL
+--- 数据文件：http 状态 + 体量 ---
+data/live.json | http=200 | bytes=19536
+data/meta.json | http=200 | bytes=184
+data/xauusd.json | http=200 | bytes=7789
+data/rating.json | http=200 | bytes=992
+data/macro.json | http=200 | bytes=383
+--- 线上 xauusd.json 的 indicators 结构（服务端预算指标是否随部署落地）---
+{
+  "ok": true,
+  "rsi14": 51.05,
+  "macdHist": 20.58,
+  "pctB": 0.733,
+  "price": 4140.94,
+  "bars": 60,
+  "spot": 4133.93,
+  "asOf": "2026-11-10T01:18:24.748Z"
+}

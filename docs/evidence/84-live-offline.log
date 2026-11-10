@@ -1,0 +1,13 @@
+=== v2.3.0 线上断源降级终验（全部 fetch reject）===
+URL: https://git202526.github.io/xau-copilot/
+{
+  "cards": 7,
+  "text": "XAU Copilot\nDECISION DECK\nAI 研判\n11-10 09:26 · 外部指标融合\n\n早上好。外部行情未就绪，指标预算中；宏观方向分歧。外部源数据异常，本次判断作废。\n\n技术面 外部行情不可用\n评级 未评级\n宏观 中性\n置信 降级\n外部行情陈旧 · 判断作废\n账户数据陈旧\n源异常\n01\n宏观与双轨雷达\n宏观\n--\n国际 · XAUUSD\n--$/oz\n未评级\n国内 · 折算克价\n--元/克\n外部行情不可用\n国内溢价",
+  "hasDegChip": true,
+  "m2HasDegraded": true,
+  "hasBanned": false,
+  "appExists": true,
+  "notBlank": true
+}
+JS errors: 0
+[OFFLINE PASS] 线上断源降级不白屏、M2 明确降级、无 JS 异常、无双印证残留

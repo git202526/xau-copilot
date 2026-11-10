@@ -1,0 +1,59 @@
+=== 创建 Release v2.3.0 ===
+UTC: 2026-11-10T01:22:01Z
+--- Release Notes ---
+## v2.3.0 · 纯外部技术面判断（全局去双印证）
+
+**本轮范围**：应用彻底去掉内外部双印证，只搜集外部实时行情指标做出判断，并让所有卡片同步更新。
+
+### 变更
+- 判断/决策逻辑统一为纯外部技术面加权投票（decideTechnical → s.technical），运行时不再 import 旧 decide()/confidence.js。
+- 新增 RSI14 / MACD / 布林带(%B) / MA5·10·20·50 排列：服务端预算写入 data/xauusd.json，前端只读、不造轮子。
+- M0–M6 卡片、晨报、网格熔断、纪律复盘、FOMO 锁、Webhook、页脚、README/CHANGELOG 全部同步为纯外部口径。
+- 账户事实数据完整保留：真实浮亏 -29,546.83 元、均价、克重、资金枯竭、多账户再平衡、网格档距数值。
+- 只用伦敦金 XAUUSD，PAXG 全局 0 处；数据存 GitHub，不同设备一致。
+
+### 质量证据
+- TDD 红灯 → 绿灯 53/53 全绿；4 次变异测试均被捕获；调用链 DAG 校验通过。
+- 390px 真实浏览器终验：7 模块、M2 十格指标网格、全局零双印证字样、0 console error、无横向溢出。
+- 断源降级：全部 fetch reject 不白屏、M2 明确「源数据异常，降级处理」、0 JS 异常。
+
+### 数据与降级
+- 账户事实来自 Source A 云端快照；外部行情 XAUUSD + 服务端预算指标；宏观 DXY/10Y/VIX；汇率 USD/CNY。
+- 实时源失败回退快照时按 stale / 指标缺失降级，不冒充实时判断。
+
+### 回退
+- git checkout v2.2.0 恢复旧双印证链路；data/xauusd.json 仅新增 indicators 字段，向下兼容。
+
+本工作台仅为决策辅助，不构成投资建议。
+--- gh release create（--verify-tag 要求 tag 已推送）---
+https://github.com/git202526/xau-copilot/releases/tag/v2.3.0
+create exit=0
+--- Release 核实 ---
+Unknown JSON field: "isLatest"
+Available fields:
+  apiUrl
+  assets
+  author
+  body
+  createdAt
+  databaseId
+  id
+  isDraft
+  isImmutable
+  isPrerelease
+  name
+  publishedAt
+  tagName
+  tarballUrl
+  targetCommitish
+  uploadUrl
+  url
+  zipballUrl
+
+=== 勘误补充：Release 字段核实（isLatest 不被本 gh 版本支持，改用可用字段重查，未伪造）===
+UTC: 2026-11-10T01:22:18Z
+{"isDraft":false,"isPrerelease":false,"name":"v2.3.0 · 纯外部技术面判断（全局去双印证）","publishedAt":"2026-11-10T01:22:03Z","tagName":"v2.3.0","targetCommitish":"main","url":"https://github.com/git202526/xau-copilot/releases/tag/v2.3.0"}
+--- 远端 Releases 列表（确认 v2.3.0 已发布且置顶）---
+v2.3.0 | v2.3.0 · 纯外部技术面判断（全局去双印证） | 2026-11-10T01:22:03Z
+v2.2.0 | v2.2.0 · 时间维度对齐引擎 | 2026-11-09T17:32:10Z
+v2.1.0 | v2.1.0 · 终极重构：XAUUSD 单源 + 老应用全量解析 | 2026-11-09T15:40:02Z

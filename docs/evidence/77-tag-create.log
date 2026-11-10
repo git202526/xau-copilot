@@ -1,0 +1,19 @@
+=== 创建 annotated tag v2.3.0 ===
+--- tag 类型（tag = annotated）---
+tag
+--- tag 对象内容 ---
+object b9dcff0d8c58231768b72fd7ac37f1d01ea6392b
+type commit
+tag v2.3.0
+tagger XAU Copilot Agent <agent@xau-copilot.local> 1794273466 +0800
+
+v2.3.0 · 纯外部技术面判断：全局去双印证 + RSI14/MACD/布林/多周期均线排列服务端指标
+--- tag 解引用到 commit ---
+b9dcff0d8c58231768b72fd7ac37f1d01ea6392b
+--- 全部 tags ---
+v1.0.0
+v1.0.1
+v2.0.0
+v2.1.0
+v2.2.0
+v2.3.0

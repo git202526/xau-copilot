@@ -1,0 +1,23 @@
+=== v2.3.0 打 Tag 前最终唯一性复核 ===
+UTC: 2026-11-10T01:17:44Z
+--- package.json version ---
+2.3.0
+--- 本地 tags（排序）---
+v1.0.0
+v1.0.1
+v2.0.0
+v2.1.0
+v2.2.0
+--- 本地 v2.3.0（应为空）---
+--- 远端 ref tags/v2.3.0（应 404）---
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/git/refs#get-a-reference","status":"404"}gh: Not Found (HTTP 404)
+--- 远端 Releases 是否含 v2.3.0（应 not present）---
+not present
+--- 待打 Tag 的 HEAD ---
+b9dcff0d8c58231768b72fd7ac37f1d01ea6392b feat(v2.3.0): 应用去掉内外部双印证，改为纯外部技术面判断（全卡片同步 + RSI/MACD/布林/均线排列服务端指标）
+--- 工作区状态 ---
+## main...origin/main [ahead 1]
+?? docs/evidence/73-rebase.log
+?? docs/evidence/74-rebase-resolve.log
+?? docs/evidence/75-post-rebase-regression.log
+?? docs/evidence/76-tag-unique-final.log
