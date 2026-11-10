@@ -1,0 +1,37 @@
+=== v2.3.0 最终状态凭证（收尾复核）===
+UTC: 2026-11-10T01:51:13Z
+--- 远端 main ---
+main=8e089054c281c9d31383d0306810f17adb7362b9 | chore(data): sync snapshot 2026-11-10T01:49Z
+--- tag v2.3.0 ---
+ref=refs/tags/v2.3.0 | object=0bf6efb918185b8c4750460ce1cd6a7416e5412a
+--- latest Release ---
+tag=v2.3.0 | published=2026-11-10T01:22:03Z
+--- 最近 Actions ---
+pages build and deployment | completed | success | 8e08905
+sync-data | completed | success | e4c2121
+pages build and deployment | completed | cancelled | e4c2121
+pages build and deployment | completed | success | af685d3
+--- 线上站点 ---
+index.html http=200
+--- 代码字节级复核（3 个关键文件）---
+index.html local=08e3544730eefab3 live=08e3544730eefab3 IDENTICAL
+src/render.js local=fc8e78e0c1ca45d2 live=fc8e78e0c1ca45d2 IDENTICAL
+src/core/technical.js local=e4535ff0063650b3 live=e4535ff0063650b3 IDENTICAL
+--- 线上 390px 浏览器终验复跑 ---
+  "scrollWidth": 390,
+  "footText": "账户数据 ok  ·  外部行情 实时  ·  宏观 ok  ·  汇率 6.6866  ·  数据 586 分钟前（账户数据陈旧）  ·  云端同步 33 分钟前  ·  账户同步超 15 分钟",
+  "bodyLen": 1143
+}
+HTTP >=400 资源: 0
+console/page errors: 0
+screenshot: /workspace/xau-copilot-v2.3.0-live-390.png
+[LIVE PASS] 线上真实数据：7 卡全渲染、M2 十格指标网格、全局零双印证、账户事实保留、0 报错、无 4xx、无溢出
+browser exit=0
+--- 本地工作区 ---
+## main...origin/main
+?? docs/evidence/87-final-state.log
+e4c2121 docs(evidence): 如实补记推送抖动与重试成功，归档最终核实说明
+af685d3 chore(data): sync snapshot 2026-11-10T01:43Z
+efa55f7 docs(evidence): 归档 v2.3.0 变基后回归与最终推送核实凭证
+--- 凭证文件数 ---
+85
