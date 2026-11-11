@@ -1,21 +1,21 @@
 {
   "symbol": "MACRO",
-  "asOf": "2026-11-11T00:49:41.962Z",
+  "asOf": "2026-11-11T07:40:13.962Z",
   "sources": {
     "vix": "cboe",
     "tnx": "fred:DGS10",
     "dxy": "er-api × ICE formula"
   },
-  "dxy": 101.789,
+  "dxy": 102.068,
   "dxyPrev": 101.776,
   "tnx": 4.88,
   "tnxPrev": 4.86,
-  "vix": 19.92,
-  "vixPrev": 25.64,
+  "vix": 19.46,
+  "vixPrev": 19.92,
   "dates": {
-    "vix": "11/09/2026",
+    "vix": "11/10/2026",
     "tnx": "2026-11-09",
-    "dxy": "Tue, 10 Nov 2026"
+    "dxy": "Wed, 11 Nov 2026"
   },
   "errs": []
 }
