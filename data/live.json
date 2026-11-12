@@ -1,6 +1,6 @@
 {
   "H_BASE": 4696,
-  "TOTAL": 330,
+  "TOTAL": 400,
   "GRAMS": 0,
   "COST": 0,
   "gearsDone": [],
@@ -97,7 +97,7 @@
     "PL90": {
       "cut": 168.4,
       "price": 1000.9564664788528,
-      "at": 1794453372874
+      "at": 1794464201448
     },
     "前高": {
       "cut": 26,
@@ -217,7 +217,7 @@
     "+15%": {
       "cut": 159.4,
       "price": 1117.7566640410241,
-      "at": 1794453372874
+      "at": 1794464201448
     },
     "+25%": {
       "cut": 62.1,
@@ -256,7 +256,7 @@
     }
   },
   "lastDir": "dn",
-  "updatedAt": 1794453371441,
+  "updatedAt": 1794464201451,
   "gearHit": {
     "第1档": 1
   },
@@ -669,17 +669,14 @@
   "avgBand": 60,
   "avgHigh": null,
   "wPct": [
-    4,
-    6,
+    5,
+    5,
+    30,
+    50,
     10,
-    14,
-    17,
-    18,
-    15,
-    10,
-    6
+    0
   ],
-  "alpha": 0.77,
+  "alpha": 1.05,
   "spanMode": "alpha",
   "gearMarks": {},
   "swingGears": [],
@@ -687,7 +684,7 @@
   "dripPct": 0.2,
   "dripMaxPremium": 3,
   "dripAt": {
-    "1": 1794012256100
+    "2": 1794464201451
   },
   "realloc": {
     "on": true,
@@ -695,8 +692,8 @@
     "ratio": 1,
     "maxDrop": 3
   },
-  "gearCount": 9,
-  "startDrop": 15,
+  "gearCount": 6,
+  "startDrop": 14,
   "endDrop": 34.3,
   "avgAnchor": 5,
   "btOpts": {
@@ -735,5 +732,6 @@
   ],
   "acctLast": "a1793727823104653",
   "delAccts": [],
-  "noCap": true
+  "noCap": false,
+  "wPctByCount": {}
 }
