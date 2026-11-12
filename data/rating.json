@@ -3,58 +3,58 @@
   "provider": "local:rating.js",
   "method": "MA5/10/20/50 + RSI14 + MACD + Stoch + CCI + W%R 加权投票（TradingView 口径）",
   "ok": true,
-  "score": 56,
-  "label": "Buy",
-  "buy": 5,
-  "sell": 4,
+  "score": 11,
+  "label": "Strong Sell",
+  "buy": 1,
+  "sell": 8,
   "neutral": 0,
   "detail": [
     {
       "name": "MA5",
-      "value": 4078.65,
+      "value": 4064.18,
       "dir": -1
     },
     {
       "name": "MA10",
-      "value": 4023.49,
-      "dir": 1
+      "value": 4015.54,
+      "dir": -1
     },
     {
       "name": "MA20",
-      "value": 4059.02,
+      "value": 4053.15,
       "dir": -1
     },
     {
       "name": "MA50",
-      "value": 4185.41,
+      "value": 4177.4,
       "dir": -1
     },
     {
       "name": "RSI14",
-      "value": 43.58,
+      "value": 47.63,
       "dir": -1
     },
     {
       "name": "MACD",
-      "value": 17.66,
+      "value": 12.55,
       "dir": 1
     },
     {
       "name": "Stoch",
-      "value": 58.46,
-      "dir": 1
+      "value": 42.27,
+      "dir": -1
     },
     {
       "name": "CCI20",
-      "value": 4.49,
-      "dir": 1
+      "value": -47.7,
+      "dir": -1
     },
     {
       "name": "W%R",
-      "value": -41.54,
-      "dir": 1
+      "value": -57.73,
+      "dir": -1
     }
   ],
-  "lastBar": "2026-11-10",
-  "at": "2026-11-11T00:49:41.912Z"
+  "lastBar": "2026-11-11",
+  "at": "2026-11-12T03:18:09.054Z"
 }
