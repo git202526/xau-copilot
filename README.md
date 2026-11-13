@@ -128,7 +128,7 @@ tests/
 ## 五、本地运行
 
 ```bash
-npm test          # 119 条用例，必须全绿
+npm test          # 123 条用例，必须全绿
 npm run sync      # 拉老应用账户数据
 node scripts/sync-xau.mjs            # 抓日线 + 服务端预算指标/评级
 node scripts/recompute-indicators.mjs # 离线回填指标（可选）

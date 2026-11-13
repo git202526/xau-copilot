@@ -96,7 +96,11 @@ export async function buildState(ctx = {}) {
   const disc = discipline({ A, techDir: technical.dir, technical });
 
   const dataAt = A.updatedAt || null;
-  const syncAt = aRes.meta && aRes.meta.syncedAt ? Date.parse(aRes.meta.syncedAt) : null;
+  /* 新鲜度以「最近一次成功轮询」为准（meta.checkedAt）；
+     旧快照没有 checkedAt 时回退到 syncedAt（内容变更时刻），保证向后兼容。 */
+  const syncAt = aRes.meta
+    ? Date.parse(aRes.meta.checkedAt || aRes.meta.syncedAt || 0) || null
+    : null;
   /* 数据管道新鲜度以「云端同步时间」为准（Actions 定时落盘）；
      GitHub 免费仓库的 scheduled workflow 实际间隔常达数小时，账户快照用独立宽松阈值，
      避免把正常的调度延迟误报成「数据陈旧」。行情（B）仍用 15 分钟严格阈值。 */

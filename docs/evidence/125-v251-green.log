@@ -1,0 +1,16 @@
+# v2.5.1 绿灯  2026-11-13T13:24:45Z  HEAD=7071302
+ok 1 - N1 sync-data.mjs 写入 checkedAt（每次轮询都刷新）
+ok 2 - N2 内容无变化时仍刷新 META，不得提前退出
+ok 3 - N3 前端优先用 checkedAt，缺失时回退 syncedAt
+ok 4 - N4 syncedAt 保留「内容变更时刻」语义
+# tests 4
+# pass 4
+# fail 0
+## 全量
+# tests 123
+# pass 123
+# fail 0
+## 语义实测（本地连跑两次，内容未变）
+checkedAt 前进 / syncedAt 保持 2026-11-13T13:06:47.659Z
+## 语法
+SYNTAX OK

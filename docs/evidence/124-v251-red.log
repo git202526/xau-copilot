@@ -1,0 +1,9 @@
+# v2.5.1 红灯  2026-11-13T13:24:42Z
+# 在 v2.5.0 工作树上复现（git worktree）
+not ok 1 - N1 sync-data.mjs 写入 checkedAt（每次轮询都刷新）
+not ok 2 - N2 内容无变化时仍刷新 META，不得提前退出
+not ok 3 - N3 前端优先用 checkedAt，缺失时回退 syncedAt
+ok 4 - N4 syncedAt 保留「内容变更时刻」语义
+# tests 4
+# pass 1
+# fail 3

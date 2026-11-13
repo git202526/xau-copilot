@@ -52,18 +52,30 @@ try {
 
 const prev = existsSync(OUT) ? readFileSync(OUT, "utf8") : "";
 const next = JSON.stringify(raw, null, 2);
+const changed = prev.trim() !== next.trim();
 
-if (prev.trim() === next.trim()) {
-  console.log("[sync] 无变化，跳过写入");
-  process.exit(0);
+/* 老快照兼容：读不到就当作没有 */
+let prevMeta = {};
+try {
+  prevMeta = existsSync(META) ? JSON.parse(readFileSync(META, "utf8")) : {};
+} catch {
+  prevMeta = {};
 }
 
-writeFileSync(OUT, next + "\n");
+const nowIso = new Date().toISOString();
+
+if (changed) writeFileSync(OUT, next + "\n");
+
+/* 无论内容是否变化都要刷新 META：
+ *   checkedAt —— 本次轮询成功的时刻（链路是否活着）
+ *   syncedAt  —— 内容真正发生变化的时刻（数据新旧），未变化则沿用上一次
+ * 否则账户流水一天只变几次时，轮询再频繁也会被误读成「数据陈旧」。 */
 writeFileSync(
   META,
   JSON.stringify(
     {
-      syncedAt: new Date().toISOString(),
+      checkedAt: nowIso,
+      syncedAt: changed ? nowIso : (prevMeta.syncedAt || nowIso),
       sourceUpdatedAt: raw.updatedAt || null,
       source: `${SRC.owner}/${SRC.repo}/${SRC.path}`,
       bytes: Buffer.byteLength(next),
@@ -74,4 +86,9 @@ writeFileSync(
     2,
   ) + "\n",
 );
-console.log(`[sync] 已更新快照：${Buffer.byteLength(next)} bytes，源 updatedAt=${raw.updatedAt}`);
+
+console.log(
+  changed
+    ? `[sync] 已更新快照：${Buffer.byteLength(next)} bytes，源 updatedAt=${raw.updatedAt}`
+    : `[sync] 内容无变化，已刷新 checkedAt=${nowIso}`,
+);
