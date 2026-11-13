@@ -17,7 +17,7 @@
 | **B 预算指标** | RSI14、MACD、布林带、MA5/10/20/50 排列、综合评级 | `sync-xau.mjs` 服务端预算 → `data/xauusd.json.indicators` / `data/rating.json` | 15 分钟 | **判断** |
 | **C 宏观** | DXY、10Y 美债、VIX | CBOE 官方 CSV + FRED DGS10 + er-api 汇率合成 | 15 分钟 | **判断**（含 VIX 避险拦截） |
 | **FX 汇率** | USD/CNY | open.er-api（CORS 开放） | 60 秒 | 单位换算 / 溢价率 |
-| **A 账户事实** | 持仓、账户、网格参数、今日操作 | 私有库 `data.json` → Actions 同步为 `data/live.json` | 每 5 分钟尝试（GitHub 调度可能延迟） | **仅展示**，不参与方向判断 |
+| **A 账户事实** | 持仓、账户、网格参数、今日操作 | 私有库 `data.json` → Actions 同步为 `data/live.json` | 每 10 分钟刷新（自调度链，断链 30 分钟自愈） | **仅展示**，不参与方向判断 |
 
 > 只做 **XAUUSD 伦敦金现** 一个品种。不使用任何加密资产代币作为黄金代理——跨品种基差会让指标失真。
 > 单位严格隔离：国际金 `$/oz`、国内金 `元/克`，溢价率单独成栏，绝不混算。
@@ -128,7 +128,7 @@ tests/
 ## 五、本地运行
 
 ```bash
-npm test          # 108 条用例，必须全绿
+npm test          # 119 条用例，必须全绿
 npm run sync      # 拉老应用账户数据
 node scripts/sync-xau.mjs            # 抓日线 + 服务端预算指标/评级
 node scripts/recompute-indicators.mjs # 离线回填指标（可选）

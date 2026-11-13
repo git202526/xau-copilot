@@ -175,9 +175,11 @@ test("D4 页脚按小时分级，删除误导性的 15 分钟提示", async () =
   assert.doesNotMatch(src, /账户同步超 15 分钟/, "删除误导性提示");
 });
 
-test("D5 同步工作流提高触发频率（cron 每 5 分钟）", async () => {
+test("D5 同步工作流不再依赖 schedule 扛主链路（v2.5.0 起改自调度）", async () => {
   const yml = await read(".github/workflows/sync-data.yml");
-  assert.match(yml, /\*\/5 \* \* \* \*/, "cron 应改为每 5 分钟，提高调度命中率");
+  assert.match(yml, /workflow_dispatch/, "需支持手动/自调度触发");
+  assert.match(yml, /gh workflow run sync-data\.yml/, "v2.5.0：轮末自调度，代替不可靠的 schedule");
+  assert.doesNotMatch(yml, /\*\/5 \* \* \* \*/, "v2.5.0：*/5 已被证明无法命中，改为 30 分钟兜底");
 });
 
 /* ───────────────── E 版本号 ───────────────── */

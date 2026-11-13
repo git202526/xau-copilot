@@ -1,7 +1,10 @@
-# 账户数据新鲜度：现状、根因与根治方案
+# 账户数据新鲜度：现状、根因与已实施方案
 
-> 适用版本：v2.4.0+
+> 适用版本：v2.4.0+（阈值分级）／v2.5.0+（自调度链路）
 > 相关文件：`.github/workflows/sync-data.yml`、`src/config.js`、`src/app.js`、`src/render.js`
+
+> **状态：方案 A 已实施（v2.5.0）** —— 采用 GitHub 原生自调度链，**不需要**外部定时服务、**不需要**额外 PAT。
+> 效果：数据每 10 分钟刷新一次；链路意外中断后最多 **30 分钟**由兜底 `schedule` 自愈。
 
 ## 1. 现状
 
@@ -32,33 +35,64 @@
 | 页脚分级 | 「账户快照 3.2 小时前」按分钟 / 小时显示，超过 6 小时才标「（陈旧）」 |
 | `push` 顺带同步 | 每次发版 push 到 `main` 也会触发一次同步，不完全依赖 schedule |
 
-## 4. 根治方案 A：外部定时器触发 `workflow_dispatch`（推荐，零代码改动）
+## 4. 已实施：GitHub 原生自调度链（v2.5.0，方案 A 的实现）
 
-GitHub 的 schedule 不可控，但 `workflow_dispatch` 是**即时触发**的。用任意免费外部 cron 每 5–10 分钟调用一次 GitHub API 即可绕开调度延迟。
+`workflow_dispatch` 是即时触发的，不受 schedule 排队影响。既然 GitHub 自带的 `GITHUB_TOKEN` 支持 `workflow_dispatch`（属于官方文档列明的「不会被 GITHUB_TOKEN 抑制」的例外事件），就让**工作流自己在轮末调度下一轮**，不需要任何外部 cron、也不需要长期 PAT。
 
-### 4.1 生成细粒度令牌
+### 4.1 链路结构
 
-GitHub → Settings → Developer settings → Fine-grained tokens：
+```
+run(N) ── 同步 ×6 轮（每 10 分钟一次，约 60 分钟）
+        └─ 轮末：gh workflow run sync-data.yml --ref main
+                                  ↓
+run(N+1) ── 同上 …… 持续滚动
+```
 
-- 仅授权仓库 `git202526/xau-copilot`
-- 权限：`Actions: Read and write`（仅此一项）
-- 有效期按需设置
+| 参数 | 值 | 理由 |
+|---|---|---|
+| `SYNC_INTERVAL` | `600`（10 分钟） | 每小时 6 次 Pages 构建，低于免费站点 10 次/小时软限制；对网格决策已足够 |
+| `SYNC_ROUNDS` | `6` | 单次 run 约 60 分钟，避免长时间占用 runner |
+| `timeout-minutes` | `75` | 兜住异常挂起 |
+| 兜底 `schedule` | `*/30 * * * *` | 链断了最多 30 分钟自愈 |
+| 权限 | `contents: write` + `actions: write` | 仅仓库内置令牌，无外部凭证 |
 
-### 4.2 用 cron-job.org（免费）
+### 4.2 防双链与自我修复
 
-1. 注册 https://cron-job.org
-2. 新建任务：
-   - URL：`https://api.github.com/repos/git202526/xau-copilot/actions/workflows/sync-data.yml/dispatches`
-   - Method：`POST`
-   - Headers：
-     - `Authorization: Bearer <你的细粒度令牌>`
-     - `Accept: application/vnd.github+json`
-     - `Content-Type: application/json`
-   - Body：`{"ref":"main"}`
-   - 频率：每 5 分钟
-3. 保存后可在 GitHub Actions 页面看到由 `workflow_dispatch` 触发的运行记录。
+- **只在 `schedule` / `workflow_dispatch` 触发的 run 里自调度**；`push`（发版）触发的 run 只同步一次，不接链。
+- dispatch 前先查 `--status=queued` 与 `--status=in_progress`，排除自身 `GITHUB_RUN_ID`；已有其他任务在跑/排队则**跳过自调度**。
+- 单轮抓取失败只打印日志并保留上一份快照（`|| echo`），不会中断整条链。
+- 推送前 `git pull --rebase --autostash`，失败重试 3 次，避免与并发提交分叉。
 
-### 4.3 用 Cloudflare Worker（更可控）
+### 4.3 熔断与回滚
+
+- 停止链路：仓库 Settings → Variables 设 `SYNC_LOOP=off`，或在 Actions 页面 Disable workflow。当前 run 会把尾巴跑完，之后不再自调度。
+- 回滚到 v2.4.0 行为：`git checkout v2.4.0 -- .github/workflows/sync-data.yml`，即回到纯 `schedule` 模式（会重新变慢）。
+- 想改刷新频率：只改 `SYNC_INTERVAL`（秒）。低于 600 会逼近 Pages 构建软限制，不建议。
+
+### 4.4 如何确认链路活着
+
+```bash
+gh run list --workflow=sync-data.yml --limit 10 \
+  --json createdAt,event,status,conclusion \
+  --jq '.[] | "\(.createdAt) \(.event) \(.status)/\(.conclusion)"'
+```
+
+健康特征：`event` 交替出现 `workflow_dispatch`，相邻 run 的 `createdAt` 间隔约 60 分钟；页面页脚「源数据 / 账户快照」应为个位数到十几分钟。
+
+## 4A. 备选：外部定时器触发 `workflow_dispatch`（本方案未采用）
+
+若将来想彻底摆脱 GitHub Actions 的链路（例如换成自己的服务器），仍可用外部 cron 触发，此时需要一把只授 `Actions: Read and write` 的细粒度令牌：
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer $GH_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  -H "Content-Type: application/json" \
+  https://api.github.com/repos/git202526/xau-copilot/actions/workflows/sync-data.yml/dispatches \
+  -d '{"ref":"main"}'
+```
+
+Cloudflare Worker 版本（`[triggers] crons = ["*/5 * * * *"]`，令牌放 Worker Secret）：
 
 ```js
 export default {
@@ -80,9 +114,7 @@ export default {
 };
 ```
 
-配合 `wrangler.toml` 的 `[triggers] crons = ["*/5 * * * *"]`，令牌放 Worker Secret。
-
-> 注意：令牌只存在外部服务端，**绝不写入前端或仓库**。
+> 令牌只存在外部服务端，**绝不写入前端或仓库**。当前 v2.5.0 的自调度链不需要这一步。
 
 ## 5. 根治方案 B：老应用仓库转公开 + 前端直连（时效最好，需权衡隐私）
 
@@ -96,12 +128,13 @@ const raw = "https://raw.githubusercontent.com/git202526/xau-desk-data/main/data
 - 缺点：实盘仓位对公网可见。用户此前表示「实盘上云也没事，别人以为是模拟数据」，如接受可直接切换；
 - 切换成本：`src/config.js` 增加 `dataDirectUrl`，`loadA` 优先直连、失败回退 Actions 快照。
 
-## 6. 取舍建议
+## 6. 取舍结论
 
-| 场景 | 建议 |
-|---|---|
-| 只想尽快改善、不改隐私 | 方案 A（外部 cron 触发 dispatch） |
-| 追求最短链路、可接受公开持仓 | 方案 B（公开仓库 + 前端直连） |
-| 完全不想引入外部服务 | 保持现状：cron `*/5` + 阈值分级，接受数小时级延迟 |
+| 场景 | 方案 | 状态 |
+|---|---|---|
+| 改善时效、不碰隐私、不引入外部服务 | **自调度链（本方案）** | **已实施（v2.5.0）** |
+| 想彻底脱离 GitHub Actions 调度 | 外部 cron 触发 `workflow_dispatch` | 备选，需细粒度令牌 |
+| 追求秒级、可接受公开原始流水 | 方案 B（老应用仓库转公开 + 前端直连） | 未采用 |
+| 完全不想改 | `schedule` + 阈值分级 | 已废弃（实测 4–8 小时延迟） |
 
-无论哪种方案，前端都应继续显示「账户快照 X 前」，让用户对数据时效有明确预期，而不是给出「实时」的错觉。
+无论哪种方案，前端都继续显示「源数据 X 前 / 账户快照 X 前」，让用户对数据时效有明确预期，而不是给出「实时」的错觉。

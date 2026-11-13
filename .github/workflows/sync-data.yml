@@ -1,44 +1,117 @@
 name: sync-data
 
+# ── 数据刷新链路（v2.5.0）──────────────────────────────────────────────────
+# 为什么不再用 schedule 扛主链路：GitHub scheduled workflow 实测延迟 4–8 小时，
+# 触发时间不可控，导致账户快照与行情长期陈旧（用户反馈「数据读取不及时」）。
+# 现方案：单轮内连续同步，轮末用 workflow_dispatch 调度下一轮，形成不间断链路。
+#   · 只用仓库内置 GITHUB_TOKEN（actions: write），不引入外部定时服务或长期 PAT
+#   · schedule 降级为兜底：链路若断，最多 30 分钟自愈
+#   · 每 10 分钟一次 = 每小时 6 次 Pages 构建，低于免费站点 10 次/小时的构建软限制
+#   · 熔断：仓库变量 SYNC_LOOP=off 即停止自调度（当前轮把尾巴跑完）
+# ──────────────────────────────────────────────────────────────────────────
 on:
   schedule:
-    - cron: "*/5 * * * *"   # 每 5 分钟尝试一次（GitHub scheduled 会延迟，提高触发命中率）
+    - cron: "*/30 * * * *"   # 仅兜底，不是刷新主链路
   workflow_dispatch:
+    inputs:
+      rounds:
+        description: "本轮同步次数（留空=默认 6），用于快速验证链路"
+        required: false
+        default: ""
+      interval:
+        description: "每轮间隔秒数（留空=默认 600）"
+        required: false
+        default: ""
   push:
-    branches: [main]   # 每次发版也顺带同步一次数据，不完全依赖 schedule
+    branches: [main]         # 发版顺带同步一次；push 事件不自调度，避免双链
 
 permissions:
   contents: write
+  actions: write             # 自调度下一轮所需
 
 concurrency:
   group: sync-data
   cancel-in-progress: false
 
+env:
+  SYNC_INTERVAL: "600"       # 10 分钟一轮
+  SYNC_ROUNDS: "6"           # 每轮约 60 分钟，轮末自调度
+
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Sync data.json → data/live.json
+
+      - name: 循环同步
         env:
           XAU_DATA_TOKEN: ${{ secrets.XAU_DATA_TOKEN }}
-        run: node scripts/sync-data.mjs
-      - name: Sync XAUUSD daily bars → data/xauusd.json + data/rating.json
-        run: node scripts/sync-xau.mjs
-      - name: Sync macro (DXY / 10Y / VIX) → data/macro.json
-        run: node scripts/sync-macro.mjs
-        continue-on-error: true
-      - name: Commit snapshot
+          INPUT_ROUNDS: ${{ inputs.rounds }}
+          INPUT_INTERVAL: ${{ inputs.interval }}
         run: |
+          set -u
+          ROUNDS="${INPUT_ROUNDS:-$SYNC_ROUNDS}"
+          INTERVAL="${INPUT_INTERVAL:-$SYNC_INTERVAL}"
+          # 发版触发的 run 只同步一次，不占着并发位空跑一小时
+          if [ "${GITHUB_EVENT_NAME:-}" = "push" ]; then ROUNDS=1; fi
+          echo "rounds=$ROUNDS interval=${INTERVAL}s"
+
           git config user.name "xau-copilot-bot"
           git config user.email "bot@users.noreply.github.com"
-          if [ -z "$(git status --porcelain data/)" ]; then
-            echo "no changes"
+
+          for i in $(seq 1 "$ROUNDS"); do
+            echo "::group::round $i / $ROUNDS"
+            node scripts/sync-data.mjs  || echo "sync-data 失败，保留上一份快照"
+            node scripts/sync-xau.mjs   || echo "sync-xau 失败，保留上一份快照"
+            node scripts/sync-macro.mjs || echo "sync-macro 失败，保留上一份快照"
+
+            if [ -z "$(git status --porcelain data/)" ]; then
+              echo "no changes"
+            else
+              git add data/
+              git commit -m "chore(data): sync snapshot $(date -u +'%Y-%m-%dT%H:%MZ')"
+
+              pushed=0
+              for t in 1 2 3; do
+                if git pull --rebase --autostash -q origin main && git push -q; then
+                  pushed=1
+                  break
+                fi
+                git rebase --abort 2>/dev/null || true
+                sleep 5
+              done
+              [ "$pushed" = "1" ] || echo "push 失败，下一轮重试"
+            fi
+            echo "::endgroup::"
+
+            if [ "$i" -lt "$ROUNDS" ]; then
+              sleep "$INTERVAL"
+            fi
+          done
+
+      - name: 自调度下一轮
+        if: >-
+          success() &&
+          (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
+          vars.SYNC_LOOP != 'off'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -u
+          others=$(gh run list --workflow=sync-data.yml --status=queued --limit 20 \
+            --json databaseId --jq "[.[] | select(.databaseId != ${GITHUB_RUN_ID})] | length")
+          running=$(gh run list --workflow=sync-data.yml --status=in_progress --limit 20 \
+            --json databaseId --jq "[.[] | select(.databaseId != ${GITHUB_RUN_ID})] | length")
+
+          if [ "${others}" -gt 0 ] || [ "${running}" -gt 0 ]; then
+            echo "已有排队/运行中的任务，跳过自调度，避免双链"
             exit 0
           fi
-          git add data/live.json data/meta.json data/xauusd.json data/rating.json data/macro.json
-          git commit -m "chore(data): sync snapshot $(date -u +'%Y-%m-%dT%H:%MZ')"
-          git push
+
+          gh workflow run sync-data.yml --ref main
+          echo "已调度下一轮"

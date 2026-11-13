@@ -3,6 +3,21 @@
 > 历史条目（v2.2.0 及以前）描述的是当时的「内部 × 外部双印证」架构，作为版本沿革保留原文；
 > 自 **v2.3.0** 起应用已改为纯外部技术面判断，那些引擎不再参与运行时。
 
+## v2.5.0 — 2026-11-13
+
+### 数据刷新链路：从「靠 schedule」到「自调度链」
+
+- **根因**：GitHub scheduled workflow 实测延迟 4–8 小时（不是 cron 写错），`*/5` 也无法命中，页面长期显示「数据 272 分钟前」。
+- **方案 A 落地**：工作流单次运行内连续同步 6 轮（每 10 分钟一轮，约 60 分钟），轮末用 `gh workflow run sync-data.yml` 调度下一轮，形成不间断链路。`workflow_dispatch` 是即时触发，不受 schedule 排队影响。
+- **零外部依赖**：只用仓库内置 `GITHUB_TOKEN`（`permissions.actions: write`），不需要 Cloudflare / cron-job.org，也不需要任何长期 PAT。
+- **兜底与自愈**：`schedule` 降为 `*/30`，链路若断最多 30 分钟自愈。
+- **防双链**：只在 `schedule` / `workflow_dispatch` 触发的运行里自调度；dispatch 前查 `queued` / `in_progress` 并排除自身 `GITHUB_RUN_ID`；`push`（发版）触发的运行只同步一次。
+- **抗抖动**：单轮抓取失败保留上一份快照、不中断链路；推送前 `git pull --rebase --autostash`，失败重试 3 次。
+- **熔断**：仓库变量 `SYNC_LOOP=off` 即停止自调度（当前轮跑完尾巴）。
+- **构建频率约束**：10 分钟节流 = 每小时 6 次 Pages 构建，低于免费站点 10 次/小时软限制，避免构建被丢弃导致数据不更新。
+- **TDD**：新增 `tests/v250.test.mjs` 11 条（红灯 0 pass / 11 fail → 绿灯 11/11），全套 **119/119 绿**；`tests/v240.test.mjs` D5 随口径更新（不再断言 `*/5`）。
+- **文档**：`docs/data-freshness.md` 重写为「已实施方案」，含链路结构、防双链、熔断、健康检查命令。
+
 ## v2.4.0 — 2026-11-13
 
 ### 可读性、口径与数据新鲜度
