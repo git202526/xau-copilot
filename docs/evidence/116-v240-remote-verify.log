@@ -1,0 +1,25 @@
+# v2.4.0 远端状态核实  2026-11-13T08:29:09Z
+## 1) 远端 main HEAD
+49725396e599fa1e7300c6a7d1a6f31aef0e5410 | chore(data): sync snapshot 2026-11-13T08:21Z
+## 2) 远端 tag refs
+refs/tags/v1.0.0 -> f30b8045c614 (tag)
+refs/tags/v1.0.1 -> 36f30125449a (tag)
+refs/tags/v2.0.0 -> 42e6af294a07 (tag)
+refs/tags/v2.1.0 -> 0101829acff5 (tag)
+refs/tags/v2.2.0 -> f76b1e302bcc (tag)
+refs/tags/v2.3.0 -> 0bf6efb91818 (tag)
+refs/tags/v2.3.1 -> f3347b72b80f (tag)
+refs/tags/v2.4.0 -> 9be0fa0d8d47 (tag)
+## 3) tag v2.4.0 对象
+9be0fa0d8d472af499a6b899ad2b82eed7c6deec tag
+## 4) Release
+id=443979049 tag=v2.4.0 draft=false prerelease=false url=https://github.com/git202526/xau-copilot/releases/tag/v2.4.0
+## 5) 最近工作流
+4972539 pages build and deployment completed/success
+32e246f sync-data completed/success
+32e246f pages build and deployment completed/cancelled
+8e3f1e6 pages build and deployment completed/success
+face0a0 sync-data completed/success
+face0a0 pages build and deployment completed/success
+## 6) tag 解引用（本地）
+tag=9be0fa0d8d472af499a6b899ad2b82eed7c6deec commit=32e246fc065313f70b4b412bcc51afad16970da8

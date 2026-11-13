@@ -1,0 +1,23 @@
+# v2.4.0 线上资源字节级比对  2026-11-13T08:29:21Z
+# 基线 commit: 4972539  BASE=https://git202526.github.io/xau-copilot
+OK   200 6e34c3e2418a478f index.html
+OK   200 4a9ffc5d82784d57 src/main.js
+OK   200 bc89c9fdf1f8d735 src/app.js
+OK   200 a4da39b3e430fbdf src/render.js
+OK   200 4f7d09f32e7141e5 src/config.js
+OK   200 cad5613b9662f998 src/version.js
+OK   200 4b5f4efb9839f5f3 src/sourceB.js
+OK   200 a58e3b786a273fd5 src/sourceC.js
+OK   200 422971584aaf0b34 src/core/labels.js
+OK   200 a6336c7e58d44aaa src/core/normalize.js
+OK   200 c33072b9529ea30d src/core/risk.js
+OK   200 2fe2a8060e4e4684 src/core/technical.js
+OK   200 7c147c61b5bc7dfc src/core/macro.js
+OK   200 59ca11a654f8c295 src/core/grid.js
+OK   200 8c1d9dce23e677ff src/core/rating.js
+OK   200 f790165164d2914f data/live.json
+OK   200 9e55bf854107ce10 data/macro.json
+OK   200 722917cad6a14c44 data/meta.json
+OK   200 646d573e1976dd9d data/rating.json
+OK   200 f586c53eb58bad4f data/xauusd.json
+COUNT=20 FAIL_FLAG=0

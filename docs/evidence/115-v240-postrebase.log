@@ -1,0 +1,17 @@
+# v2.4.0 变基后回归复跑  2026-11-13T08:30:22Z
+# HEAD=4972539  (rebase onto remote data snapshot)
+## 全量用例
+1..108
+# tests 108
+# suites 0
+# pass 108
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 92.036693
+## 语法自检
+SYNTAX OK
+## 真实快照 E2E
+逐项检查: {"remOk":true,"capOk":true,"levelsOk":true,"tierOk":true,"gridTierOk":true,"labelOk":true,"versionOk":true}
+[E2E PASS] 剩余可买=72.12克(按上限400) / 档位克重20·20·120·200·40·0 / 评级与宏观中文 / 版本一致

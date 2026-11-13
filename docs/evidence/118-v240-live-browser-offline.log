@@ -1,0 +1,46 @@
+# v2.4.0 线上 390px 浏览器 + 断源降级  2026-11-13T08:29:48Z
+=== v2.4.0 · 线上 390px 终验 ===
+{
+  "version": "v2.4.0",
+  "totalCards": 6,
+  "pillsText": [
+    "美元指数DXY",
+    "10Y 美债TNX",
+    "恐慌指数VIX"
+  ],
+  "pnlText": "-44,066.60",
+  "pnlNum": -44066.6,
+  "pnlOk": true,
+  "m2Neutral": true,
+  "judgeAllNeutral": true,
+  "chgRedGreen": true,
+  "toneHasRedGreen": false,
+  "stripHasRedGreen": false,
+  "ratingText": "强烈卖出 11",
+  "m3Text": "03 | 账户真实体检 | 327.88 g | 当前真实浮亏 | -44,066.60 | 收益率 -13.83% | 均价 972.01 元/克 | 再跌 5% | -1.37 万 | 剩余可买（按持仓上限） | 72.12 克 | 持仓上限 400.00 克 − 已持克重估算；为计划参数派生值，非账户余额 | 额度充足（估算）：按持仓上限还可买 72.12 克，可覆盖 1 档",
+  "m4Text": "04 | 网格效率与熔断 | 熔断 | 外部 ATR14 | 20.76 元/克 | 当前档距 | 40.99 元/克 | ATR / 档距 | 51% · 6 档 · 高点 4696 | 下一档 第5档 3,275.9 · 40.0 克 | 外部技术面偏空，继续按网格自动买入等于持续接飞刀。建议暂停后续自动买入，等技术面转为中性再恢复。",
+  "hasNextTier": true,
+  "hasGramsInM4": true,
+  "hasRatio": true,
+  "hasCap": true,
+  "hasRemain": true,
+  "hasBanned": false,
+  "hasPAXG": false,
+  "scrollWidth": 390,
+  "footer": "XAU Copilot · 外部行情指标决策辅助，不构成投资建议。 | 账户数据 ok · 外部行情 实时 · 宏观 ok · 汇率 6.6851 · 源数据 12 分钟前 · 账户快照 8 分钟前"
+}
+HTTP >=400: 0
+console/page errors: 0
+[LIVE PASS] 线上版本号 / 宏观中文 / 评级中文 / 档位克重 / 剩余可买 / 配色合规 / 0 报错 / 无溢出
+=== v2.4.0 · 线上断源降级 ===
+{
+  "notBlank": true,
+  "hasDegraded": true,
+  "m2Degraded": true,
+  "hasBanned": false,
+  "hasVersion": true,
+  "scrollWidth": 390
+}
+JS errors: 0
+[LIVE OFFLINE PASS] 不白屏 / M2 明确降级 / 版本号仍显示 / 0 JS 异常
+EXIT=0
