@@ -1,0 +1,18 @@
+# v2.5.3 绿灯  2026-11-13T14:37:53Z  HEAD=805b10b
+## v253 专项
+ok 1 - P1 push 忽略 data/** 变更，避免数据提交自我触发
+ok 2 - P2 push 运行使用独立并发组，不被 chain run 顶掉
+ok 3 - P3 push 仍保留且只跑 1 轮、不自调度
+ok 4 - P4 chain 事件之间仍互斥（防双链守卫未丢）
+ok 5 - P5 同步步骤仍带失败兜底，不中断链路
+# tests 5
+# pass 5
+# fail 0
+## 全量
+# tests 145
+# pass 145
+# fail 0
+## YAML 结构
+on  = ['push', 'schedule', 'workflow_dispatch']
+push= {'branches': ['main'], 'paths-ignore': ['data/**']}
+conc= {'group': 'sync-data-${{ github.event_name }}', 'cancel-in-progress': False}

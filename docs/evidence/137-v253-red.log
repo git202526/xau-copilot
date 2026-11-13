@@ -1,0 +1,10 @@
+# v2.5.3 红灯  2026-11-13T14:37:48Z
+# 在 v2.5.2 工作树上复现（git worktree add /tmp/red-v253 v2.5.2）
+not ok 1 - P1 push 忽略 data/** 变更，避免数据提交自我触发
+not ok 2 - P2 push 运行使用独立并发组，不被 chain run 顶掉
+ok 3 - P3 push 仍保留且只跑 1 轮、不自调度
+ok 4 - P4 chain 事件之间仍互斥（防双链守卫未丢）
+ok 5 - P5 同步步骤仍带失败兜底，不中断链路
+# tests 5
+# pass 3
+# fail 2

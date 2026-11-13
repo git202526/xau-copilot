@@ -1,0 +1,8 @@
+# v2.5.3 变异测试  2026-11-13T14:37:56Z
+[CAUGHT] M1 去掉 paths-ignore，data 提交会自我触发 → fail=1 restored=true
+[CAUGHT] M2 并发组退回共用，push run 会被顶掉 → fail=1 restored=true
+# tests 5
+# pass 5
+# fail 0
+[MUTATION PASS] 变异全部捕获且字节级还原
+EXIT=0

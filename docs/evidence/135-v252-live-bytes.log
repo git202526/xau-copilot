@@ -1,0 +1,26 @@
+# v2.5.2 线上字节级与结构校验  2026-11-13T14:32:45Z
+── 代码文件：字节级比对 ──
+OK   200 1f9929d8c2f718f9 index.html
+OK   200 4a9ffc5d82784d57 src/main.js
+OK   200 8ebc736ad0443063 src/app.js
+OK   200 240d5fa1b87160f8 src/render.js
+OK   200 04e7467ec652d135 src/config.js
+OK   200 67fc3b3a5d4ecc9b src/version.js
+OK   200 797281cfe27db831 src/sourceB.js
+OK   200 6cd4100bf850e784 src/sourceC.js
+OK   200 422971584aaf0b34 src/core/labels.js
+OK   200 a6336c7e58d44aaa src/core/normalize.js
+OK   200 c33072b9529ea30d src/core/risk.js
+OK   200 2fe2a8060e4e4684 src/core/technical.js
+OK   200 7c147c61b5bc7dfc src/core/macro.js
+OK   200 59ca11a654f8c295 src/core/grid.js
+OK   200 8c1d9dce23e677ff src/core/rating.js
+── 数据文件：结构校验（内容随链路滚动，不做字节比对）──
+HTTP 200 data/macro.json
+HTTP 200 data/xauusd.json
+HTTP 200 data/rating.json
+HTTP 200 data/meta.json
+macro: {'vix': 'cnbc', 'tnx': 'cnbc', 'dxy': 'cnbc'} times {'tnx': '2026-11-13T09:27:19-05:00', 'dxy': '2026-11-13T09:27:22-05:00', 'vix': '2026-11-13T09:25:01-05:00'}
+xau quote: {'price': 3889.42, 'prevClose': 3877.43, 'open': 3877.21, 'high': 3922.99, 'low': 3872.91, 'at': '2026-11-13T22:27:00+08:00', 'date': '2026-11-13', 'time': '22:27:00', 'source': 'sina:hf_XAU'}
+COUNT=15 FAIL_FLAG=0 STRUCT_RC=0
+[BYTES PASS] 15 个代码文件 200+字节一致；数据文件结构合规

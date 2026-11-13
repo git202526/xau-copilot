@@ -23,14 +23,22 @@ on:
         required: false
         default: ""
   push:
-    branches: [main]         # 发版顺带同步一次；push 事件不自调度，避免双链
+    branches: [main]
+    # 发版顺带同步一次；push 事件不自调度，避免双链
+    # 但必须忽略 data/**：否则「同步 → 提交数据 → 再触发 push → 再同步」会自激，
+    # 且排队中的 push run 会被后续 chain run 顶掉（v2.5.3 实测 cancelled）。
+    paths-ignore:
+      - "data/**"
 
 permissions:
   contents: write
   actions: write             # 自调度下一轮所需
 
+# 按事件名分组建：push（发版即时同步）与 chain（schedule/dispatch 长跑）
+# 若共用同一个 group，push run 会因 chain run 占位而长时间 pending，
+# 一旦新 run 进入队列，GitHub 只保留最新 pending，push run 就被判 cancelled。
 concurrency:
-  group: sync-data
+  group: sync-data-${{ github.event_name }}
   cancel-in-progress: false
 
 env:
