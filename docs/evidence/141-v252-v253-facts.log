@@ -1,0 +1,22 @@
+# v2.5.2 / v2.5.3 发布事实  2026-11-13T14:49:48Z
+## tags
+refs/tags/v2.5.0 -> 8710aed8c898 (tag)
+refs/tags/v2.5.1 -> a70d34984e45 (tag)
+refs/tags/v2.5.2 -> 6515aa8dd157 (tag)
+refs/tags/v2.5.3 -> 4f3aab3c6d43 (tag)
+## 本地 tag 解引用
+v2.5.2 -> 805b10b79847
+v2.5.3 -> da6389d16359
+## releases
+v2.5.2 id=444322302 draft=false pre=false url=https://github.com/git202526/xau-copilot/releases/tag/v2.5.2
+v2.5.3 id=444349233 draft=false pre=false url=https://github.com/git202526/xau-copilot/releases/tag/v2.5.3
+## sync-data 运行（push 对照）
+2026-11-13T14:44:01Z 43445534013 push completed/success da6389d
+2026-11-13T14:27:07Z 43442828955 workflow_dispatch in_progress/ 805b10b
+2026-11-13T14:22:00Z 43442027707 push completed/cancelled 805b10b
+2026-11-13T13:41:35Z 43435868626 push completed/cancelled 15f4c30
+2026-11-13T13:35:51Z 43435034296 workflow_dispatch completed/success c07ba6c
+## Pages
+b6f6c27 pages build and deployment completed/success
+da6389d sync-data completed/success
+da6389d pages build and deployment completed/cancelled

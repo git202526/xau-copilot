@@ -1,0 +1,13 @@
+# v2.5.3 线上 390px + 断源降级  2026-11-13T14:48:19Z
+version  : v2.5.3
+pills    : 美元指数DXY 103.19→ ｜ 10Y 美债TNX 5.16↑ ｜ 恐慌指数VIX 18.79→
+macro-at : 数据 22:44 · 4 分钟前
+m1       : 01 宏观与双轨雷达 美元指数DXY 103.19→ 10Y 美债TNX 5.16↑ 恐慌指数VIX 18.79→ 数据 22:44 · 4 分钟前 国际 · XAUUSD 3,896.24$/oz 强烈卖出 MA20 4,038.49 国内 · 折算克价 837.42元/克 外部技术面偏空 得分 
+width    : 390 / 390
+gold-api : 未请求(OK)
+errors   : 0 
+bad resp : 0 
+[LIVE PASS] 版本/金价口径/宏观中文与时刻/0报错/无溢出
+[OFFLINE] cards=6 version=v2.5.3 降级文案=true jsErr=0
+[LIVE OFFLINE PASS] 不白屏 / 明确降级 / 版本号仍显示 / 0 JS 异常
+EXIT=0
