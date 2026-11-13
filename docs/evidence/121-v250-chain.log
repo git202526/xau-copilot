@@ -1,0 +1,28 @@
+# v2.5.0 自调度链路实测  2026-11-13T13:13:43Z
+
+## 1. 触发者对照（证明用的是内置 GITHUB_TOKEN，不是外部 PAT）
+parent  run=43430881942 event=workflow_dispatch actor=git202526 created=2026-11-13T13:07:07Z conclusion=success
+child   run=43430927723 event=workflow_dispatch actor=github-actions[bot] triggering=github-actions[bot] created=2026-11-13T13:07:27Z
+
+父运行由人工触发（actor=git202526），结束后 20 秒内出现子运行，actor=github-actions[bot]
+→ 子运行由工作流自身的 GITHUB_TOKEN 通过 workflow_dispatch 创建，未使用任何外部令牌
+
+## 2. 步骤级日志（父运行）
+2026-11-13T13:07:18.3796300Z [36;1m    echo "no changes"[0m
+2026-11-13T13:07:18.3797442Z [36;1m    git commit -m "chore(data): sync snapshot $(date -u +'%Y-%m-%dT%H:%MZ')"[0m
+2026-11-13T13:07:18.3918405Z rounds=1 interval=20s
+2026-11-13T13:07:18.3973059Z ##[group]round 1 / 1
+2026-11-13T13:07:22.8037262Z [main 9cf3261] chore(data): sync snapshot 2026-11-13T13:07Z
+2026-11-13T13:07:24.3813352Z [36;1m  echo "已有排队/运行中的任务，跳过自调度，避免双链"[0m
+2026-11-13T13:07:24.3814864Z [36;1mecho "已调度下一轮"[0m
+2026-11-13T13:07:27.5133938Z 已调度下一轮
+
+## 3. 数据快照写入（远端 data/xauusd.json）
+spotAt 2026-11-13T13:06:23Z asOf 2026-11-13T13:06:49.344Z spot 3895.75
+
+## 4. 运行序列
+2026-11-13T13:07:27Z 43430927723 workflow_dispatch in_progress/
+2026-11-13T13:07:07Z 43430881942 workflow_dispatch completed/success
+2026-11-13T13:06:38Z 43430812286 push completed/success
+2026-11-13T08:30:32Z 43393756556 push completed/success
+2026-11-13T08:21:39Z 43392608320 push completed/success

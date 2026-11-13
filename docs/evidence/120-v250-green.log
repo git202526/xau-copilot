@@ -1,0 +1,23 @@
+# v2.5.0 绿灯  2026-11-13T13:07:56Z  HEAD=81ed6ae
+ok 1 - H1 工作流声明 actions: write（自调度所需最小权限）
+ok 2 - H2 存在自调度步骤（gh workflow run 自身）
+ok 3 - H3 节流参数：10 分钟一轮、多轮循环
+ok 4 - H4 兜底 cron 改为 */30（主链路不再依赖 schedule）
+ok 5 - H5 防双链守卫：排除自身 run 并检查排队/运行中
+ok 6 - H6 仅 schedule / workflow_dispatch 触发自调度，push 不自调度
+ok 7 - H7 熔断开关：vars.SYNC_LOOP=off 停止链路
+ok 8 - H8 单轮抓取失败不中断整条链路
+ok 9 - H9 推送前先 pull --rebase，避免与并发提交分叉
+ok 10 - H10 每 10 分钟一次 → 每小时 6 次 Pages 构建，低于 10 次软限制
+ok 11 - H11 文档标注已实施方案 A 与自愈时间
+# tests 11
+# pass 11
+# fail 0
+## 全量
+# tests 119
+# pass 119
+# fail 0
+## 语法
+SYNTAX OK
+## YAML
+YAML OK perms= {'contents': 'write', 'actions': 'write'} env= {'SYNC_INTERVAL': '600', 'SYNC_ROUNDS': '6'}
