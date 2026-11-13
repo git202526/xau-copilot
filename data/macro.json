@@ -1,6 +1,6 @@
 {
   "symbol": "MACRO",
-  "asOf": "2026-11-13T13:17:50.598Z",
+  "asOf": "2026-11-13T13:27:56.722Z",
   "sources": {
     "vix": "cboe",
     "tnx": "fred:DGS10",
