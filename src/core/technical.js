@@ -19,6 +19,8 @@
  * 输出场景：tech_bull / tech_bear / tech_neutral / risk_off / degraded
  */
 
+import { ratingZh } from "./labels.js";
+
 const n = (v) => (v == null || v === "" ? null : Number.isFinite(Number(v)) ? Number(v) : null);
 const r2 = (v) => (v == null ? null : +Number(v).toFixed(2));
 
@@ -120,7 +122,7 @@ function buildSignals(B, C, cfg) {
 
   /* 9 外部综合评级（服务端预算，非必需项） */
   const ratingDir = ratingScore == null ? 0 : ratingScore >= 55 ? 1 : ratingScore <= 45 ? -1 : 0;
-  add("rating", "技术评级", B.ratingOk && B.rating ? `${B.rating.label} ${ratingScore}` : "未评级",
+  add("rating", "技术评级", B.ratingOk && B.rating ? `${ratingZh(B.rating.label)} ${ratingScore}` : "未评级",
     ratingDir, "服务端预算", 1);
 
   /* 10 宏观 DXY / 10Y / VIX */

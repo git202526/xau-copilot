@@ -55,6 +55,13 @@ const oldVersion = pkg.version;
 pkg.version = arr.join(".");
 writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 
+/* 版本号单一来源：前端顶栏读 src/version.js，由本脚本自动写入，禁止手改，避免 package.json 漂移 */
+const verPath = "src/version.js";
+writeFileSync(
+  verPath,
+  `/** 版本号唯一来源：由 scripts/release.mjs 自动写入，禁止手改 */\nexport const VERSION = "${arr.join(".")}";\n`
+);
+
 console.log(JSON.stringify({
   kind,
   latestTag: latest.t,
@@ -63,5 +70,6 @@ console.log(JSON.stringify({
   unique: true,
   localTagCount: localTags.length,
   remoteTagCount: remoteTags.length,
+  versionFile: verPath,
   allKnownTags: [...known].sort(),
 }, null, 2));

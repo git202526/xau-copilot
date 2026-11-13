@@ -1,0 +1,22 @@
+=== v2.4.0 变异测试（4 次）===
+UTC: 2026-11-13T06:24:28Z
+[CAUGHT] M1 剩余可买退回「扣未标记流水」 | rc=1 | restored=true
+   not ok - C1 剩余可买按持仓上限 TOTAL 计算（不再扣未标记流水）
+[CAUGHT] M2 技术评级回退英文 label | rc=1 | restored=true
+   not ok - A5 technical.js 技术评级输出中文（不再拼英文 label）
+[CAUGHT] M3 同步频率退回 15 分钟 | rc=1 | restored=true
+   not ok - D5 同步工作流提高触发频率（cron 每 5 分钟）
+[CAUGHT] M4 页脚丢弃小时分级 | rc=1 | restored=true
+   not ok - D4 页脚按小时分级，删除误导性的 15 分钟提示
+[MUTATION PASS] 4 次变异全部被捕获且字节级还原
+mutation exit=0
+
+=== 还原后全量回归 ===
+test RC=0
+# tests 108
+# pass 108
+# fail 0
+
+=== refreshAll 唯一入口核实 ===
+main.js 中 renderAll( 调用次数: 1
+main.js 中 refreshAll 定义: 1

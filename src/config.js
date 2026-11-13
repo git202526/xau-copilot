@@ -27,7 +27,8 @@ export const CONFIG = {
   techPctBLow: 0.2,                // 布林下轨触底线
 
   /* 风控阈值 */
-  staleMinutes: 15,                // 超过即判僵尸数据
+  staleMinutes: 15,                // 外部行情超过即判僵尸数据
+  accountStaleMinutes: 360,        // 账户快照容忍（GitHub 调度可达数小时，避免误报陈旧）
   fomoCountdownSec: 10,
   depletedRatio: 1.5,              // 剩余额度 / 下一档 < 1.5 → 枯竭
   vixSpikePct: 20,                 // VIX 单日涨幅阈值

@@ -1,0 +1,37 @@
+=== v2.4.0 红灯：7 项需求验收守卫 ===
+UTC: 2026-11-13T06:16:37Z
+--- 语法 ---
+v240 SYNTAX OK
+
+--- 单独运行 tests/v240.test.mjs（预期失败）---
+v240 exit=1
+# tests 28
+# pass 10
+# fail 18
+失败用例：
+A1 ratingZh 覆盖五档 + 大小写 + 未知值兜底
+A2 ratingZhEn 中英并列（英文原值保留）
+A3 macroZh 覆盖 DXY / TNX / VIX
+A4 renderRadar 宏观 pills 必须消费中文 label
+A5 technical.js 技术评级输出中文（不再拼英文 label）
+A6 M0 徽章与 M1 评级同步中文
+B3 renderGrid 档位柱读取克重并标注单位
+B4 renderGrid 输出「下一档」克重摘要
+C1 剩余可买按持仓上限 TOTAL 计算（不再扣未标记流水）
+C2 持仓超上限 → 剩余 0 且标记 overCap
+C3 risk 额度文案改为持仓上限口径，且不再误报不足
+C4 noCap=true 与 false 都按 TOTAL 计算
+D1 配置分离账户快照容忍阈值（>=180 分钟）
+D2 app.js 账户陈旧判定使用 accountStaleMinutes
+D4 页脚按小时分级，删除误导性的 15 分钟提示
+D5 同步工作流提高触发频率（cron 每 5 分钟）
+E3 index.html 顶部有版本号挂载点
+E4 main.js 注入 VERSION 到 \#app-ver
+
+--- 全量回归（旧 80 条应仍全绿，新增用例失败）---
+full exit=1
+# tests 108
+# pass 90
+# fail 18
+# skipped 0
+# todo 0

@@ -2,7 +2,7 @@ name: sync-data
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # 每 15 分钟拉一次老应用私有库快照
+    - cron: "*/5 * * * *"   # 每 5 分钟尝试一次（GitHub scheduled 会延迟，提高触发命中率）
   workflow_dispatch:
   push:
     branches: [main]   # 每次发版也顺带同步一次数据，不完全依赖 schedule

@@ -1,0 +1,73 @@
+=== v2.4.0 · 390px 浏览器终验 ===
+{
+  "version": "v2.4.0",
+  "cards": 6,
+  "bubbles": 1,
+  "modules": 7,
+  "pillsText": [
+    "美元指数DXY",
+    "10Y 美债TNX",
+    "恐慌指数VIX"
+  ],
+  "pnlText": "-28,026.86",
+  "pnlNum": -28026.86,
+  "pnlColor": "rgb(63, 214, 140)",
+  "pnlOk": true,
+  "m2Headline": "外部技术面偏空",
+  "m2Color": "rgb(139, 147, 248)",
+  "m2Neutral": true,
+  "judgeCount": 3,
+  "judgeAllNeutral": true,
+  "chgCount": 3,
+  "chgRedGreen": true,
+  "toneAttrs": [
+    "gray",
+    "indigo",
+    "gray",
+    "amber",
+    "amber",
+    "gray"
+  ],
+  "toneHasRedGreen": false,
+  "stripCls": [
+    "alert-strip gray",
+    "alert-strip warn",
+    "alert-strip calm"
+  ],
+  "stripHasRedGreen": false,
+  "ratingText": "强烈卖出 11",
+  "m3Text": "03\n账户真实体检\n327.88 g\n当前真实浮亏\n-28,026.86\n收益率 -8.79% | 均价 972.01 元/克\n再跌 5%\n-1.45 万\n剩余可买（按持仓上限）\n72.12 克\n持仓上限 400.00 克 − 已持克重估算；为计划参数派生值，非账户余额\n额度充足（估算）：按持仓上限还可买 72.12 克，可覆盖 1 档",
+  "m3cells": [
+    {
+      "k": "再跌 5%",
+      "v": "-1.45 万"
+    },
+    {
+      "k": "剩余可买（按持仓上限）",
+      "v": "72.12 克"
+    }
+  ],
+  "m4Text": "04\n网格效率与熔断\n熔断\n外部 ATR14\n22.05 元/克\n当前档距\n43.53 元/克\nATR / 档距\n51% · 6 档 · 高点 4696\n下一档 第5档 3,275.9 · 40.0 克\n外部技术面偏空，继续按网格自动买入等于持续接飞刀。建议暂停后续自动买入，等技术面转为中性再恢复。",
+  "hasNextTier": true,
+  "hasGramsInM4": true,
+  "hasRatio": true,
+  "hasCap": true,
+  "hasRemain72": true,
+  "hasBanned": false,
+  "hasPAXG": false,
+  "scrollWidth": 390
+}
+HTTP >=400: 0
+console/page errors: 0
+[BROWSER PASS] 版本号 / 宏观中文 / 评级中文 / 档位克重 / 剩余可买72克 / 配色合规 / 0 报错 / 无溢出
+=== v2.4.0 · 断源降级 ===
+{
+  "notBlank": true,
+  "hasDegraded": true,
+  "m2Degraded": true,
+  "hasBanned": false,
+  "hasVersion": true,
+  "scrollWidth": 390
+}
+JS errors: 0
+[OFFLINE PASS] 不白屏 / M2 明确降级 / 版本号仍显示 / 0 JS 异常

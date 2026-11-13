@@ -8,6 +8,7 @@
  * 老应用无资金字段，「额度」为预算克重派生估算，页面已标注非账户余额。
  */
 import { BADGE } from "./core/technical.js";
+import { ratingZh, macroZh } from "./core/labels.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -71,7 +72,7 @@ export function renderBriefing(s) {
   const t = s.technical || {};
   const chips = [
     `<span class="chip">技术面 ${t.headline ? esc(t.headline) : "--"}</span>`,
-    `<span class="chip">评级 ${s.B && s.B.rating ? esc(s.B.rating.label) : "未评级"}</span>`,
+    `<span class="chip">评级 ${s.B && s.B.rating ? esc(ratingZh(s.B.rating.label)) : "未评级"}</span>`,
     `<span class="chip">宏观 ${s.C.mode === "risk_off" ? "避险" : esc(s.C.label || "--")}</span>`,
     `<span class="chip ${t.conf === "high" ? "bad" : t.conf === "degraded" ? "" : "warn"}">置信 ${BADGE[t.conf] ? BADGE[t.conf].text : "--"}</span>`,
     t.score != null ? `<span class="chip">指标得分 ${t.score}</span>` : "",
@@ -104,12 +105,13 @@ export function renderRadar(s) {
       const dir = it.dir;
       const cls = dir > 0 ? "up" : dir < 0 ? "dn" : "flat";
       const arrow = dir > 0 ? "↑" : dir < 0 ? "↓" : "→";
-      return `<div class="pill"><span class="k">${esc(it.key)}</span><span class="v ${cls}">${it.value != null ? num(it.value, it.digits) : "--"}<span style="font-size:9px;opacity:.7">${arrow}</span></span></div>`;
+      const zh = it.label || macroZh(it.key);
+      return `<div class="pill"><span class="k">${esc(zh)}<em>${esc(it.key)}</em></span><span class="v ${cls}">${it.value != null ? num(it.value, it.digits) : "--"}<span style="font-size:9px;opacity:.7">${arrow}</span></span></div>`;
     })
     .join("");
 
   const intlPrice = B.ok ? num(B.priceUsdOz) : "--";
-  const rateLbl = B.ok && B.rating ? B.rating.label : "未评级";
+  const rateLbl = B.ok && B.rating ? ratingZh(B.rating.label) : "未评级";
   const rateCls = B.ok && B.rating ? (B.rating.score >= 55 ? "buy" : B.rating.score <= 45 ? "sell" : "mid") : "mid";
 
   const domPrice = s.priceCnyGram != null ? num(s.priceCnyGram) : "--";
@@ -216,11 +218,11 @@ export function renderAccount(s) {
         <div class="v" style="color:var(--green)">${r.stressLoss != null ? `-${wan(r.stressLoss)} 万` : "--"}</div>
       </div>
       <div>
-        <div class="k">剩余可买（预算估算）</div>
+        <div class="k">剩余可买（按持仓上限）</div>
         <div class="v">${r.remainingGrams != null ? `${num(r.remainingGrams)} <span class="mini">克</span>` : "--"}</div>
       </div>
     </div>
-    <div class="src-note">额度由预算克重 TOTAL − 已持克重 × 现价折算，为计划参数派生估算值，非账户余额</div>
+    <div class="src-note">持仓上限 ${r.capGrams != null ? num(r.capGrams) : "--"} 克 − 已持克重估算；为计划参数派生值，非账户余额</div>
     <div class="alert-strip ${stripCls}">
       ${depleted ? ico.warn : ico.info}
       <span>${esc(r.depletedText)}</span>
@@ -240,9 +242,15 @@ export function renderGrid(s) {
     .map((lv) => {
       const h = 8 + (lv.weightPct || 0) * 1.1;
       const cls = lv.isNext ? "next" : lv.filled ? "on" : "";
-      return `<i class="${cls}" style="height:${h.toFixed(0)}px" title="第${lv.i}档 ${lv.priceUsd || "--"}"></i>`;
+      const grams = lv.grams != null ? `${num(lv.grams, 1)} 克` : "--";
+      return `<i class="${cls}" style="height:${h.toFixed(0)}px" title="第${lv.i}档 ${lv.priceUsd || "--"} · ${grams}"></i>`;
     })
     .join("");
+
+  const nextLv = (g.levels || []).find((lv) => lv.isNext);
+  const nextTxt = nextLv
+    ? `下一档 第${nextLv.i}档 ${num(nextLv.priceUsd, 1)} · ${nextLv.grams != null ? num(nextLv.grams, 1) : "--"} 克`
+    : "";
 
   box.innerHTML = `<section class="card rise ${fuse ? "fuse" : ""}" data-tone="${barTone}">
     <div class="c-head"><span class="c-no">04</span><span class="c-title">网格效率与熔断</span>
@@ -251,9 +259,10 @@ export function renderGrid(s) {
     <div class="rows">
       <div class="row"><span class="k">外部 ATR14</span><span class="v">${g.atrCny != null ? `${num(g.atrCny)} <span class="mini">元/克</span>` : "--"}</span></div>
       <div class="row"><span class="k">当前档距</span><span class="v">${g.spacingCny != null ? `${num(g.spacingCny)} <span class="mini">元/克</span>` : ""}</span></div>
-      <div class="row"><span class="k">档距 / 高点</span><span class="v" style="color:var(--tx-2);font-size:11px">${g.gearCount ? `${g.gearCount} 档 · 高点 $${g.highBase}` : "--"}</span></div>
+      <div class="row"><span class="k">ATR / 档距</span><span class="v" style="color:var(--tx-2);font-size:11px">${g.ratioPct != null ? `${g.ratioPct}%` : "--"}${g.gearCount ? `<span class="mini"> · ${g.gearCount} 档 · 高点 ${g.highBase}</span>` : ""}</span></div>
     </div>
     ${levels ? `<div class="levels">${levels}</div>` : ""}
+    ${nextTxt ? `<div class="lv-next">${esc(nextTxt)}</div>` : ""}
     <div class="alert-strip ${fuse || g.tone === "amber" ? "warn" : "gray"}">
       ${fuse ? ico.warn : ico.info}
       <span>${esc(g.text)}</span>
@@ -333,10 +342,13 @@ export function renderTopbar(s) {
     bits.push(`外部行情 ${s.meta.bOk ? (s.B.spotSource === "gold-api" ? "实时" : "快照") : "失败"}`);
     bits.push(`宏观 ${s.meta.cOk ? "ok" : "失败"}`);
     bits.push(`汇率 ${s.meta.fx ? Number(s.meta.fx).toFixed(4) : "--"}${s.meta.fxFallback ? "(兜底)" : ""}`);
-    bits.push(`数据 ${s.meta.dataAgeMin != null ? s.meta.dataAgeMin + " 分钟前" : "--"}${s.meta.staleA ? "（账户数据陈旧）" : ""}`);
-    if (s.meta.syncAgeMin != null) bits.push(`云端同步 ${s.meta.syncAgeMin} 分钟前`);
+    const ageText = (min) => {
+      if (min == null) return "--";
+      return min < 60 ? `${min} 分钟前` : `${(min / 60).toFixed(1)} 小时前`;
+    };
+    bits.push(`源数据 ${ageText(s.meta.dataAgeMin)}`);
+    if (s.meta.syncAgeMin != null) bits.push(`账户快照 ${ageText(s.meta.syncAgeMin)}${s.meta.staleA ? "（陈旧）" : ""}`);
     if (s.meta.staleB) bits.push("外部行情陈旧 · 判断作废");
-    if (s.meta.staleA) bits.push("账户同步超 15 分钟");
     foot.textContent = bits.join("  ·  ");
   }
 }

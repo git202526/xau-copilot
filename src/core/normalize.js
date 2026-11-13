@@ -98,13 +98,15 @@ export function calcTodayActions(buys, sells, now = Date.now()) {
 }
 
 /**
- * 网格计划派生（移植老应用 gearBase / planBudget）
+ * 网格计划派生（对齐老应用 gearBase，v2.4.0 修正剩余可买口径）
  *   档距 = H × (endDrop − startDrop)/100 ÷ (n − 1)
- *   预算 = noCap ? TOTAL : TOTAL − 未标记档位的持仓
- *   剩余可买 = 预算 − 已持克重
- *   预算额度折算(万) = 剩余可买 × 现价 ÷ 10000（派生估算，非账户余额）
+ *   持仓上限 = TOTAL（用户已按上限管理，不再扣「未标记档位」流水）
+ *   剩余可买 = MAX(0, TOTAL − 已持克重)
+ *   额度折算(万) = 剩余可买 × 现价 ÷ 10000（派生估算，非账户余额）
  *   下一档克重 = TOTAL × wPct[next]
- * 注：老应用 Source A 无资金/余额字段，TOTAL 为预算总克重，以上均为计划参数派生量。
+ * 注：老应用 Source A 无资金/余额字段，TOTAL 为持仓上限（克），以上均为计划参数派生量。
+ *     v2.3.x 曾按 planBudget 扣减「未标记档位持仓」，实测老应用 gear 多为 null，
+ *     会把预算扣成 0、剩余可买恒为 0；v2.4.0 改为直接以 TOTAL 为上限。
  */
 export function calcPlan(raw, grams, priceCnyGram) {
   const n = num(raw.gearCount) || 9;
@@ -118,16 +120,15 @@ export function calcPlan(raw, grams, priceCnyGram) {
   const baseSpacing =
     H > 0 && endDrop > startDrop && n > 1 ? (H * ((endDrop - startDrop) / 100)) / (n - 1) : null;
 
-  let budget = TOTAL;
-  if (!raw.noCap) {
-    const unmarked = (Array.isArray(raw.buys) ? raw.buys : []).reduce(
-      (s, b) => (b.gear === null || b.gear === undefined || b.gear === "" ? s + num(b.gram) : s),
-      0
-    );
-    if (unmarked > 0.01) budget = Math.max(0, TOTAL - unmarked);
-  }
+  /* 未标记档位的买入克重：仅用于解释口径，不再从上限里扣减 */
+  const unmarkedGrams = (Array.isArray(raw.buys) ? raw.buys : []).reduce(
+    (s, b) => (b.gear === null || b.gear === undefined || b.gear === "" ? s + num(b.gram) : s),
+    0
+  );
 
-  const remainingGrams = grams != null && TOTAL > 0 ? Math.max(0, budget - grams) : null;
+  const budget = TOTAL;
+  const overCap = grams != null && TOTAL > 0 && grams > TOTAL;
+  const remainingGrams = grams != null && TOTAL > 0 ? Math.max(0, TOTAL - grams) : null;
   const remainingFunds =
     remainingGrams != null && price > 0 ? (remainingGrams * price) / 10000 : null;
 
@@ -161,6 +162,10 @@ export function calcPlan(raw, grams, priceCnyGram) {
     endDrop: endDrop || null,
     baseSpacing: baseSpacing != null ? +baseSpacing.toFixed(1) : null,
     budget: TOTAL || null,
+    capGrams: TOTAL || null,
+    noCap: raw.noCap === true,
+    unmarkedGrams: +unmarkedGrams.toFixed(2),
+    overCap,
     remainingGrams,
     remainingFunds,
     nextIdx: nextIdx + 1,

@@ -97,10 +97,11 @@ export async function buildState(ctx = {}) {
 
   const dataAt = A.updatedAt || null;
   const syncAt = aRes.meta && aRes.meta.syncedAt ? Date.parse(aRes.meta.syncedAt) : null;
-  /* 数据管道新鲜度以「云端同步时间」为准（Actions 每 15 分钟落盘）；
-     meta 缺失时退回源数据 updatedAt，给 1 小时容忍（持仓是用户手动记账，天然不会频繁变动）。 */
+  /* 数据管道新鲜度以「云端同步时间」为准（Actions 定时落盘）；
+     GitHub 免费仓库的 scheduled workflow 实际间隔常达数小时，账户快照用独立宽松阈值，
+     避免把正常的调度延迟误报成「数据陈旧」。行情（B）仍用 15 分钟严格阈值。 */
   const staleA = syncAt != null
-    ? isStale(syncAt, now, cfg.staleMinutes * 60 * 1000)
+    ? isStale(syncAt, now, (cfg.accountStaleMinutes || 360) * 60 * 1000)
     : isStale(dataAt, now, 60 * 60 * 1000);
 
   return {

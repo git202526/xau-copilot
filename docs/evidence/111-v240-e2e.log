@@ -1,0 +1,102 @@
+=== v2.4.0 真实快照端到端装配 ===
+UTC: 2026-11-13T06:23:13Z
+{
+  "version": "2.4.0",
+  "technical": {
+    "scenario": "tech_bear",
+    "tone": "indigo",
+    "score": 34,
+    "signals": 10
+  },
+  "account": {
+    "grams": 327.8848,
+    "capGrams": 400,
+    "remainingGrams": 72.11520000000002,
+    "overCap": false,
+    "unmarkedGrams": 328.88,
+    "depletedText": "额度充足（估算）：按持仓上限还可买 72.12 克，可覆盖 1 档",
+    "depletedTone": "gray"
+  },
+  "grid": {
+    "gearCount": 6,
+    "ratioPct": 51,
+    "levels": [
+      {
+        "i": 1,
+        "priceUsd": 4038.6,
+        "grams": 20,
+        "isNext": false
+      },
+      {
+        "i": 2,
+        "priceUsd": 3847.9,
+        "grams": 20,
+        "isNext": false
+      },
+      {
+        "i": 3,
+        "priceUsd": 3657.2,
+        "grams": 120,
+        "isNext": false
+      },
+      {
+        "i": 4,
+        "priceUsd": 3466.6,
+        "grams": 200,
+        "isNext": false
+      },
+      {
+        "i": 5,
+        "priceUsd": 3275.9,
+        "grams": 40,
+        "isNext": true
+      },
+      {
+        "i": 6,
+        "priceUsd": 3085.3,
+        "grams": 0,
+        "isNext": false
+      }
+    ],
+    "next": {
+      "i": 5,
+      "dropPct": 30.24,
+      "priceUsd": 3275.9,
+      "weightPct": 10,
+      "grams": 40,
+      "filled": false,
+      "isNext": true
+    }
+  },
+  "labels": {
+    "ratingRaw": "Strong Sell",
+    "ratingZh": "强烈卖出",
+    "ratingSignalValue": "强烈卖出 11",
+    "macroItems": [
+      {
+        "key": "DXY",
+        "label": "美元指数",
+        "zh": "美元指数"
+      },
+      {
+        "key": "TNX",
+        "label": "10Y 美债",
+        "zh": "10Y 美债"
+      },
+      {
+        "key": "VIX",
+        "label": "恐慌指数",
+        "zh": "恐慌指数"
+      }
+    ]
+  }
+}
+
+逐项检查: {"remOk":true,"capOk":true,"levelsOk":true,"tierOk":true,"gridTierOk":true,"labelOk":true,"versionOk":true}
+[E2E PASS] 剩余可买=72.12克(按上限400) / 档位克重20·20·120·200·40·0 / 评级与宏观中文 / 版本一致
+
+=== 调用链 DAG：渲染函数零互调 ===
+render 函数: renderBriefing, renderRadar, renderDecision, renderAccount, renderGrid, renderRebalance, renderDiscipline, renderTopbar, renderAll, renderFailSafe
+互调违规: 0
+refreshAll 唯一入口: 需人工确认
+callgraph exit=0

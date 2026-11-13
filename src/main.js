@@ -7,6 +7,7 @@
 import { CONFIG } from "./config.js";
 import { buildState } from "./app.js";
 import { renderAll, renderFailSafe } from "./render.js";
+import { VERSION } from "./version.js";
 
 const $ = (id) => document.getElementById(id);
 const HOOK_KEY = "xau_copilot_hook_url";
@@ -221,6 +222,8 @@ function bindUI() {
 
 /* ── 启动 ── */
 function init() {
+  const ver = $("app-ver");
+  if (ver) ver.textContent = `v${VERSION}`;
   paintSkeleton();
   bindUI();
   refreshAll();

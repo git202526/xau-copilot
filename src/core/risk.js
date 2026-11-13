@@ -46,16 +46,21 @@ export function assess(input = {}) {
   const target = price > 0 ? price * (1 - stressDrop) : null;
   const stressLoss = grams != null && target != null ? grams * (price - target) : null;
 
-  /* 预算额度：TOTAL 预算克重派生的估算值，老应用 Source A 无资金/余额字段 */
+  /* 额度：按持仓上限 TOTAL 派生的估算值（老应用 Source A 无资金/余额字段） */
   const ratio = n(plan.ratio);
   const depleted = ratio != null && ratio < 1.5;
+  const overCap = plan.overCap === true;
+  const capGrams = n(plan.capGrams);
+  const remainG = n(plan.remainingGrams);
   const depletedText =
     ratio == null
       ? "计划数据不可得，无法评估补仓能力"
-      : depleted
-        ? `预算额度不足（估算）：剩余额度仅够 ${ratio.toFixed(2)} 档，不足 1.5 倍安全垫`
-        : `预算额度充足（估算）：剩余额度可覆盖 ${Math.floor(ratio)} 档`;
-  const depletedTone = ratio == null ? "gray" : depleted ? "amber" : "gray";
+      : overCap
+        ? `已达持仓上限：持仓已高于上限 ${capGrams != null ? capGrams.toFixed(2) : "--"} 克，剩余可买 0 克`
+        : depleted
+          ? `额度不足（估算）：剩余可买仅够 ${ratio.toFixed(2)} 档，不足 1.5 倍安全垫`
+          : `额度充足（估算）：按持仓上限还可买 ${remainG != null ? remainG.toFixed(2) : "--"} 克，可覆盖 ${Math.floor(ratio)} 档`;
+  const depletedTone = ratio == null ? "gray" : depleted || overCap ? "amber" : "gray";
 
   /* 反人性锁：外部技术面偏空（techDir<0）仍逆势买入 → 10 秒拦截 */
   const buys = ((A && A.todayActions) || []).filter((x) => x.type === "BUY");
@@ -83,6 +88,9 @@ export function assess(input = {}) {
     remainingGrams: n(plan.remainingGrams),
     remainingFunds: n(plan.remainingFunds),
     nextBuyAmount: n(plan.nextBuyAmount),
+    capGrams,
+    overCap,
+    unmarkedGrams: n(plan.unmarkedGrams),
     ratio,
     depleted,
     depletedText,

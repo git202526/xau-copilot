@@ -252,7 +252,7 @@ test("C3 risk.js 额度文案改预算口径，不得再宣称「资金枯竭」
 test("C4 render.js M3 不再出现「可用资金」，并标注非账户余额", async () => {
   const s = await read("src/render.js");
   assert.doesNotMatch(s, /可用资金/);
-  assert.match(s, /预算估算/);
+  assert.match(s, /持仓上限/, "v2.4.0 口径：剩余可买按持仓上限估算");
   assert.match(s, /非账户余额/);
 });
 

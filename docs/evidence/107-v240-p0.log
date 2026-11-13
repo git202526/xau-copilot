@@ -1,0 +1,27 @@
+=== XAU Copilot v2.4.0 P0 基线核验 ===
+UTC: 2026-11-13T06:13:08Z
+--- 当前版本 / 最新 tag ---
+2.3.1
+v2.3.1
+v2.3.0
+v2.2.0
+--- 基线全量回归（v2.3.1 应为 80/80）---
+test RC=0
+# tests 80
+# pass 80
+# fail 0
+# skipped 0
+# todo 0
+--- 语法 ---
+SYNTAX OK
+--- 线上可达性 ---
+index.html http=200
+--- 线上数据新鲜度 ---
+{
+  "syncedAt": "2026-11-12T19:12:59.711Z",
+  "sourceUpdatedAt": 1794497393074,
+  "source": "git202526/xau-desk-data/data.json",
+  "bytes": 19501,
+  "trades": 4,
+  "mode": "actions"
+}

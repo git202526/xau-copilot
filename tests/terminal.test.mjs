@@ -123,12 +123,12 @@ test("T5 外部技术面偏空 + 今日有 BUY → 逆势买入触发 FOMO 锁",
 });
 
 /* ── T6 预算额度不足（v2.3.1 需求变更：老应用无资金字段，改预算口径 + 中性告警色）── */
-test("T6 剩余额 < 1.5 倍下一档 → 琥珀预算额度不足告警", () => {
+test("T6 剩余可买 < 1.5 倍下一档 → 琥珀额度不足告警", () => {
   const a = normalizeA(rawSample(), { priceCnyGram: 880 });
   assert.ok(a.plan.ratio < 1.5, `实测比值 ${a.plan.ratio} 应小于 1.5`);
   const r = assess({ A: a, priceCnyGram: 880, macro: { dir: 0, mode: "normal" } });
   assert.equal(r.depleted, true);
-  assert.match(r.depletedText, /预算额度/);
+  assert.match(r.depletedText, /额度不足|剩余可买/, "v2.4.0 文案改为剩余可买口径");
   assert.equal(r.depletedTone, "amber");
 });
 
