@@ -132,6 +132,9 @@ body{
 .pill .v.up{color:var(--amber)}   /* 宏观方向判断：红绿以外的中性色 */
 .pill .v.dn{color:var(--indigo)}
 .pill .v.flat{color:var(--tx-2)}
+.pills+.macro-at{margin-top:-6px}
+.macro-at{font-size:9.5px;color:var(--tx-3);font-family:var(--mono);letter-spacing:.2px;margin-bottom:12px}
+.macro-at.late{color:var(--amber)}
 
 .dual{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-radius:10px;overflow:hidden}
 .dual>div{background:var(--card);padding:10px 11px}
@@ -340,7 +343,7 @@ body{
 <body>
 <div class="shell">
   <header class="topbar">
-    <div class="brand"><b>XAU Copilot</b><span>Decision Deck</span><span class="ver" id="app-ver">v2.5.1</span></div>
+    <div class="brand"><b>XAU Copilot</b><span>Decision Deck</span><span class="ver" id="app-ver">v2.5.2</span></div>
     <div class="tb-right">
       <span class="dot" id="live-dot" title="数据源状态"></span>
       <button class="iconbtn" id="btn-refresh" title="刷新" aria-label="刷新">

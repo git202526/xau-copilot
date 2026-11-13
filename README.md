@@ -13,9 +13,9 @@
 
 | 源 | 内容 | 通道 | 更新 | 用途 |
 |---|---|---|---|---|
-| **B 外部行情** | XAUUSD 现价、MA20/偏离、ATR14、日内涨跌 | 新浪 XAU 日线 + gold-api 现价 | 15 分钟 / 现价 60 秒 | **判断** |
+| **B 外部行情** | XAUUSD 现价、今开/最高/最低、MA20/偏离、ATR14、日内涨跌 | 新浪 XAU 日线 + 新浪 `hf_XAU` 现价（服务端抓取，与主流行情软件同源） | 10 分钟 | **判断** |
 | **B 预算指标** | RSI14、MACD、布林带、MA5/10/20/50 排列、综合评级 | `sync-xau.mjs` 服务端预算 → `data/xauusd.json.indicators` / `data/rating.json` | 15 分钟 | **判断** |
-| **C 宏观** | DXY、10Y 美债、VIX | CBOE 官方 CSV + FRED DGS10 + er-api 汇率合成 | 15 分钟 | **判断**（含 VIX 避险拦截） |
+| **C 宏观** | DXY、10Y 美债、VIX | CNBC 实时（US10Y / .DXY / .VIX）；FRED DGS10 + CBOE CSV + er-api 合成作回退 | 10 分钟（数据时刻实时） | **判断**（含 VIX 避险拦截） |
 | **FX 汇率** | USD/CNY | open.er-api（CORS 开放） | 60 秒 | 单位换算 / 溢价率 |
 | **A 账户事实** | 持仓、账户、网格参数、今日操作 | 私有库 `data.json` → Actions 同步为 `data/live.json` | 每 10 分钟刷新（自调度链，断链 30 分钟自愈） | **仅展示**，不参与方向判断 |
 
@@ -55,7 +55,7 @@ v2.3.0 起这些值只用于账户体检与再平衡展示，**不再喂给任�
 
 | 指标 | 来源 | 方向映射 |
 |---|---|---|
-| 现价 `$/oz` | gold-api 实时 | 展示位（权重 0） |
+| 现价 `$/oz` | 新浪 `hf_XAU` 快照 | 展示位（权重 0） |
 | MA20 偏离 | 服务端日线 | 站上/跌破 → ±1 |
 | 日内涨跌 | 现价 / 昨收 | ±1 |
 | ATR14 | 服务端日线 | 展示位（权重 0） |
@@ -128,7 +128,7 @@ tests/
 ## 五、本地运行
 
 ```bash
-npm test          # 123 条用例，必须全绿
+npm test          # 140 条用例，必须全绿
 npm run sync      # 拉老应用账户数据
 node scripts/sync-xau.mjs            # 抓日线 + 服务端预算指标/评级
 node scripts/recompute-indicators.mjs # 离线回填指标（可选）

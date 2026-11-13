@@ -1,0 +1,11 @@
+# v2.5.2 变异测试  2026-11-13T14:17:25Z
+[CAUGHT] M1 昨收错取今开字段 → fail=1 restored=true
+[CAUGHT] M2 现价变了也不落盘 → fail=1 restored=true
+[CAUGHT] M3 10Y 取错标的 → fail=2 restored=true
+[CAUGHT] M4 恢复前端直连口径不符的源 → fail=1 restored=true
+[CAUGHT] M5 宏观时刻不再展示 → fail=1 restored=true
+# tests 17
+# pass 17
+# fail 0
+[MUTATION PASS] 全部变异被捕获且字节级还原
+EXIT=0

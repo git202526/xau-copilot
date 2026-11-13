@@ -1,0 +1,33 @@
+# v2.5.2 绿灯  2026-11-13T14:16:21Z  HEAD=15f4c30
+## v252 专项
+ok 1 - Q1 现价主源改为新浪 hf_XAU，不再以 gold-api 为主
+ok 2 - Q2 parseSinaQuote 正确解析伦敦金现字段
+ok 3 - Q3 parseSinaQuote 对空/异常响应返回 null（不抛错）
+ok 4 - Q4 快照写入 quote 对象（现价/昨收/开/高/低/时刻）
+ok 5 - Q5 现价变化也要落盘（不能因日线未变就跳过）
+ok 6 - Q6 前端不再直连 gold-api（口径统一走快照）
+ok 7 - Q7 快照价的时间锚点取 quote.at
+ok 8 - M1 宏观主源改 CNBC 实时，FRED/CBOE 降为回退
+ok 9 - M2 parseCnbc 正确解析三标的（现价/前收/时刻）
+ok 10 - M3 parseCnbc 缺项时返回 null 而非造数
+ok 11 - M4 宏观快照写入 times（每项数据时刻）
+ok 12 - M5 sourceC 把 times 透出给渲染层
+ok 13 - T1 宏观卡片显示数据时刻与距今多久
+ok 14 - T2 数据过期（>60 分钟）时要显式标注
+ok 15 - R1 宏观回退链完整：CNBC → FRED/CBOE → 沿用旧值
+ok 16 - R2 金价抓取失败时保留上一份快照，不清空
+ok 17 - R3 前端拿不到 quote 时回退 snap.spot（旧快照兼容）
+# tests 17
+# pass 17
+# fail 0
+## 全量
+# tests 140
+# pass 140
+# fail 0
+## 语法
+OK src/sourceB.js
+OK src/sourceC.js
+OK src/render.js
+OK src/config.js
+OK scripts/sync-xau.mjs
+OK scripts/sync-macro.mjs

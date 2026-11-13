@@ -51,6 +51,10 @@ export async function loadC(ctx = {}) {
     vix: n(doc && doc.vix), vixPrev: n(doc && doc.vixPrev),
   });
   macro.asOf = (doc && doc.asOf) || null;
+  /* v2.5.2：每项数据的真实时刻（CNBC 实时源才有，回退源为 null）与数据日期 */
+  macro.times = (doc && doc.times) || {};
+  macro.dates = (doc && doc.dates) || {};
+  macro.sources = (doc && doc.sources) || {};
   macro.err = errs.length ? errs.join("；") : null;
 
   return macro;

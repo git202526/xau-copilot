@@ -6,8 +6,10 @@ export const CONFIG = {
   ratingUrl: "data/rating.json",   // 外部技术评级（Actions 预算，前端只读）
   macroUrl: "data/macro.json",     // DXY / 10Y / VIX
 
-  /* 实时接口（CORS 开放，无 key） */
-  xauSpotUrl: "https://api.gold-api.com/price/XAU",
+  /* 实时接口（CORS 开放，无 key）
+     v2.5.2：金价不再前端直连。gold-api 与伦敦金现口径偏差 3~9 美元且会跳变，
+     改由 Actions 抓新浪 hf_XAU 落盘快照，前端只读，与行情软件同源。 */
+  xauSpotUrl: "",
   fxUrl: "https://open.er-api.com/v6/latest/USD",
   fxFallback: 7.1,                 // 仅全部汇率源失败时使用，界面会标注
 

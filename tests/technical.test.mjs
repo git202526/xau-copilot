@@ -289,7 +289,8 @@ test("C5 快照 data/xauusd.json 含 indicators（rsi14 / macd / boll / ma / ali
 test("C6 sync-xau.mjs 引入 computeIndicators 并把结果写入快照", async () => {
   const s = await read("scripts/sync-xau.mjs");
   assert.match(s, /computeIndicators/, "同步脚本未引入指标计算");
-  assert.match(s, /indicators:/, "同步脚本未把 indicators 写入 doc");
+  /* v2.5.2：doc 改用 `indicators,` 简写（等价于 indicators: indicators），断言同步放宽键名写法 */
+  assert.match(s, /indicators[,:]/, "同步脚本未把 indicators 写入 doc");
 });
 
 /* ═══════════ D 组：全局零双印证（运行时链路 + 静态文案）═══════════ */

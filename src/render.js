@@ -36,6 +36,18 @@ const fmtTime = (ts, withDate = false) => {
   return withDate ? `${p(d.getMonth() + 1)}-${p(d.getDate())} ${hm}` : hm;
 };
 
+/* 距今时长（人话）：<1 分钟记「刚刚」，>1 天记「x 天前」 */
+const ageText = (min) =>
+  min == null || !Number.isFinite(min)
+    ? ""
+    : min < 1
+      ? "刚刚"
+      : min < 60
+        ? `${Math.round(min)} 分钟前`
+        : min < 1440
+          ? `${(min / 60).toFixed(1)} 小时前`
+          : `${Math.floor(min / 1440)} 天前`;
+
 const ico = {
   warn: `<svg viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>`,
   check: `<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>`,
@@ -114,6 +126,24 @@ export function renderRadar(s) {
   const rateLbl = B.ok && B.rating ? ratingZh(B.rating.label) : "未评级";
   const rateCls = B.ok && B.rating ? (B.rating.score >= 55 ? "buy" : B.rating.score <= 45 ? "sell" : "mid") : "mid";
 
+  /* 宏观数据时刻：CNBC 实时源带 last_time；回退到 FRED/CBOE 时只有日期。
+     用最旧的一项判滞后（保守），显示最新的一项时刻（用户要看的是「多久前的数据」）。 */
+  const times = (C.times) || {};
+  const tss = ["dxy", "tnx", "vix"]
+    .map((k) => Date.parse(times[k] || ""))
+    .filter((x) => Number.isFinite(x) && x > 0);
+  const newestTs = tss.length ? Math.max(...tss) : null;
+  const oldestTs = tss.length ? Math.min(...tss) : null;
+  const macroLate = oldestTs != null && s.now - oldestTs > 60 * 60 * 1000;
+  let macroAt = "";
+  if (newestTs != null) {
+    const mins = Math.max(0, (s.now - newestTs) / 60000);
+    macroAt = `数据 ${fmtTime(newestTs)} · ${ageText(mins)}${macroLate ? " · 源滞后" : ""}`;
+  } else {
+    const dl = ["dxy", "tnx", "vix"].map((k) => ((C.dates) || {})[k]).filter(Boolean).sort();
+    if (dl.length) macroAt = `数据日期 ${dl[dl.length - 1]} · 源为日频，非实时`;
+  }
+
   const domPrice = s.priceCnyGram != null ? num(s.priceCnyGram) : "--";
   const techTxt = t.headline || "外部判断未就绪";
   const techCls = t.dir < 0 ? "sell" : t.dir > 0 ? "buy" : "mid";
@@ -132,6 +162,7 @@ export function renderRadar(s) {
       ${C.mode === "risk_off" ? `<span class="badge b-low" style="margin-left:auto">避险模式</span>` : C.panic ? `<span class="badge b-low" style="margin-left:auto">恐慌区</span>` : ""}
     </div>
     <div class="pills">${pills || `<div class="pill"><span class="k">宏观</span><span class="v flat">--</span></div>`}</div>
+    ${macroAt ? `<div class="macro-at${macroLate ? " late" : ""}">${esc(macroAt)}</div>` : ""}
     <div class="dual">
       <div>
         <div class="lbl">国际 · XAUUSD</div>

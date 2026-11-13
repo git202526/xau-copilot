@@ -60,9 +60,21 @@ export async function loadB(ctx = {}) {
     errs.push(`评级 ${e.message || e}`);
   }
 
+  /* ISO 字符串与数字时间戳都要能吃：旧快照可能只有 spotAt/asOf 字符串 */
+  const parseTs = (v) => {
+    if (v == null || v === "") return null;
+    const num = Number(v);
+    if (Number.isFinite(num) && num > 0) return num;
+    const dp = Date.parse(v);
+    return Number.isFinite(dp) ? dp : null;
+  };
+
   let spot = null;
   let spotAt = null;              // 本次实时抓取的时间戳（缓存命中时保留原抓取时刻）
   let spotSource = "snapshot";
+  let quote = null;               // 快照里的现价明细（今开/昨收/高/低/时刻）
+
+  /* 前端直连通道（默认关闭）。v2.5.2 起金价统一走快照，避免第三方源口径漂移。 */
   if (cfg.xauSpotUrl) {
     try {
       const q = await withTTL("b:spot", QUOTE_TTL, async () => {
@@ -78,10 +90,28 @@ export async function loadB(ctx = {}) {
       errs.push(`实时现价 ${e.message || e}`);
     }
   }
+
+  /* 主通道：Actions 抓新浪 hf_XAU 写入的 quote（与行情软件同口径） */
+  if (snap && snap.quote && n(snap.quote.price) != null && n(snap.quote.price) > 100) {
+    quote = {
+      price: n(snap.quote.price),
+      prevClose: n(snap.quote.prevClose),
+      open: n(snap.quote.open),
+      high: n(snap.quote.high),
+      low: n(snap.quote.low),
+      at: snap.quote.at || null,
+    };
+    if (spot == null) {
+      spot = quote.price;
+      spotAt = parseTs(quote.at);
+      spotSource = snap.quote.source || "sina:hf_XAU";
+    }
+  }
+
+  /* 旧快照没有 quote，回退顶层 spot，不白屏也不报错 */
   if (spot == null && snap && n(snap.spot) != null) {
     spot = n(snap.spot);
     spotSource = "snapshot";
-    errs.push("实时现价不可用，回退快照价");
   }
 
   /* 服务端预算指标：前端只读透出，绝不自行计算（严禁前端造轮子）。
@@ -129,17 +159,10 @@ export async function loadB(ctx = {}) {
   }
 
   const ratingOk = Boolean(ratingDoc && ratingDoc.ok && n(ratingDoc.score) != null);
-  /* 新鲜度锚点：实时现价成功 → 用本次抓取时刻；否则回退日线快照写入时刻。
+  /* 新鲜度锚点：有现价时刻（快照 quote.at 或实时抓取）→ 用它；否则回退日线快照写入时刻。
      注意快照里 spotAt/asOf 是 ISO 字符串，不能用 Number() 解析（会静默变成 null）。 */
-  const parseTs = (v) => {
-    if (v == null || v === "") return null;
-    const num = Number(v);
-    if (Number.isFinite(num) && num > 0) return num;
-    const dp = Date.parse(v);
-    return Number.isFinite(dp) ? dp : null;
-  };
   const snapTs = parseTs(snap.spotAt) ?? parseTs(snap.asOf);
-  const ts = spotSource === "gold-api" && spotAt != null ? spotAt : snapTs;
+  const ts = spotAt != null ? spotAt : snapTs;
   const stale = ts != null ? now - ts > STALE_MS : false;
 
   return {
@@ -160,6 +183,7 @@ export async function loadB(ctx = {}) {
       .map((v) => (v == null ? null : +v.toFixed(2)))
       .slice(-30),
     spotSource,
+    quote,                        // 今开/昨收/最高/最低/时刻（可能为 null）
     asOf: snap.asOf || null,
     ts,
     stale,

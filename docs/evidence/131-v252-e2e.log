@@ -1,0 +1,39 @@
+# v2.5.2 真实快照 E2E  2026-11-13T14:16:21Z
+# 数据来源：data/xauusd.json（新浪 hf_XAU 22:08 快照）+ data/macro.json（CNBC 09:09 EST）
+{
+  "version": "2.5.2",
+  "price": {
+    "spot": 3882.8,
+    "source": "sina:hf_XAU",
+    "ts": "2026-11-13T14:08:00.000Z",
+    "stale": false
+  },
+  "quote": {
+    "price": 3882.8,
+    "prevClose": 3877.43,
+    "open": 3877.21,
+    "high": 3922.99,
+    "low": 3872.91,
+    "at": "2026-11-13T22:08:00+08:00"
+  },
+  "macro": {
+    "dxy": 103.21,
+    "tnx": 5.14,
+    "vix": 18.04,
+    "times": {
+      "tnx": "2026-11-13T09:09:44-05:00",
+      "dxy": "2026-11-13T09:09:56-05:00",
+      "vix": "2026-11-13T09:09:46-05:00"
+    },
+    "sources": {
+      "vix": "cnbc",
+      "tnx": "cnbc",
+      "dxy": "cnbc"
+    },
+    "tnxAgeMin": 0.3,
+    "label": "分歧",
+    "mode": "normal"
+  }
+}
+[E2E PASS] 金价与新浪快照一致 / 今开高低昨收齐全 / 宏观三项实时且带时刻 / 方向判断正常 / 版本一致
+EXIT=0
