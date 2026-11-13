@@ -138,10 +138,17 @@ body{
 
 .dual{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-radius:10px;overflow:hidden}
 .dual>div{background:var(--card);padding:10px 11px}
-.dual .lbl{font-size:9.5px;color:var(--tx-3);letter-spacing:.9px;margin-bottom:3px;font-family:var(--mono)}
+.dual .lbl{font-size:9.5px;color:var(--tx-3);letter-spacing:.9px;margin-bottom:3px;font-family:var(--mono);display:flex;justify-content:space-between;align-items:baseline;gap:6px}
 .dual .big{font-size:19px;font-weight:650;font-family:var(--mono);letter-spacing:-.6px;line-height:1.2}
 .dual .unit{font-size:10px;color:var(--tx-3);font-weight:400;margin-left:2px;letter-spacing:0}
 .dual .sub{font-size:10.5px;color:var(--tx-2);margin-top:3px;display:flex;align-items:center;gap:4px}
+/* v2.6.0 15 秒实时价：涨红跌绿，时效行独立成行，避免挤在副标题里被截断 */
+.spot-chg{font-family:var(--mono);font-size:10px;font-weight:650;letter-spacing:0;white-space:nowrap}
+.spot-chg.up{color:var(--red)}
+.spot-chg.dn{color:var(--green)}
+.spot-chg.flat{color:var(--tx-3)}
+.spot-at{font-size:9.5px;color:var(--tx-3);font-family:var(--mono);letter-spacing:.2px;margin-top:6px}
+.spot-at.live{color:var(--green)}
 .sig{font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:4px;letter-spacing:.3px}
 .sig.buy{color:#FFC862;background:rgba(245,166,35,.13)}
 .sig.sell{color:#B9BEFF;background:rgba(139,147,248,.13)}
@@ -263,6 +270,8 @@ body{
   display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--tx-3);
   background:rgba(255,255,255,.03);border:1px dashed var(--line);border-radius:8px;padding:9px 10px;margin-top:8px;
 }
+/* 降级条里的 info 图标：不限尺寸会被 SVG 默认 300×150 撑成大黑块 */
+.deg svg{width:15px;height:15px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 
 /* ── 弹窗 ── */
 .modal{
@@ -343,7 +352,7 @@ body{
 <body>
 <div class="shell">
   <header class="topbar">
-    <div class="brand"><b>XAU Copilot</b><span>Decision Deck</span><span class="ver" id="app-ver">v2.5.3</span></div>
+    <div class="brand"><b>XAU Copilot</b><span>Decision Deck</span><span class="ver" id="app-ver">v2.6.0</span></div>
     <div class="tb-right">
       <span class="dot" id="live-dot" title="数据源状态"></span>
       <button class="iconbtn" id="btn-refresh" title="刷新" aria-label="刷新">

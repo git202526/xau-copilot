@@ -199,9 +199,12 @@ test("T11 pagehide 清理 ui.timer 与 ui.countdown", async () => {
   assert.match(hook, /clearInterval\(ui\.countdown\)/);
 });
 
-/* ── T12 新鲜度口径：实时现价成功时，不得因「日线快照写入时间旧」误判僵尸 ── */
-test("T12 实时现价新鲜不判僵尸；实时挂掉且旧快照回退才判僵尸", async () => {
+/* ── T12 新鲜度口径：实时价成功时，不得因「日线快照写入时间旧」误判僵尸 ──
+   v2.6.0 迁移：实时价的来源从「前端直连聚合接口」改为「15 秒 tick 通道」，
+   断言意图（新鲜度以实时价时刻为准，不以日线快照写入时刻为准）保持不变。 */
+test("T12 实时 tick 新鲜不判僵尸；tick 缺失且旧快照回退才判僵尸", async () => {
   const { loadB } = await import("../src/sourceB.js");
+  const { setLatestSpot, resetLatestSpot } = await import("../src/realtime.js");
   const { withTTL } = await import("../src/core/sanitize.js");
   const now = Date.parse("2026-11-09T23:00:00+08:00");
   const old = new Date(now - 3 * 3600 * 1000).toISOString();
@@ -210,27 +213,28 @@ test("T12 实时现价新鲜不判僵尸；实时挂掉且旧快照回退才判�
   }));
   const snap = { bars, spot: 4120, spotAt: old, asOf: old };
   const rating = { ok: true, score: 30, label: "Sell" };
-  const cfg = { xauUrl: "data/xauusd.json", ratingUrl: "data/rating.json", xauSpotUrl: "https://api.gold-api.com/price/XAU", maPeriod: 20 };
+  const cfg = { xauUrl: "data/xauusd.json", ratingUrl: "data/rating.json", maPeriod: 20 };
 
-  const mk = (spotOk) => (u) => {
+  const mk = () => (u) => {
     if (u.includes("xauusd.json")) return Promise.resolve({ ok: true, json: async () => snap });
     if (u.includes("rating.json")) return Promise.resolve({ ok: true, json: async () => rating });
-    if (u.includes("gold-api")) {
-      return spotOk
-        ? Promise.resolve({ ok: true, json: async () => ({ price: 4124.4 }) })
-        : Promise.reject(new Error("spot down"));
-    }
     return Promise.reject(new Error("unexpected " + u));
   };
 
   withTTL._s?.clear();
-  const fresh = await loadB({ fetchImpl: mk(true), now, config: cfg });
+  resetLatestSpot();
+  setLatestSpot({
+    price: 4124.4, prevClose: 4100, open: null, high: null, low: null,
+    at: new Date(now).toISOString(), recvAt: now, source: "tencent:hf_XAU",
+  });
+  const fresh = await loadB({ fetchImpl: mk(), now, config: cfg });
   assert.equal(fresh.ok, true);
-  assert.equal(fresh.stale, false, "实时现价成功，不应被 3 小时前写入的日线快照拖成僵尸");
-  assert.ok(Math.abs(fresh.ts - now) < 60 * 1000, `ts 应取本次实时抓取时间，实际 ${fresh.ts}`);
+  assert.equal(fresh.stale, false, "实时价新鲜，不应被 3 小时前写入的日线快照拖成僵尸");
+  assert.ok(Math.abs(fresh.ts - now) < 60 * 1000, `ts 应取实时价时刻，实际 ${fresh.ts}`);
 
   withTTL._s?.clear();
-  const stale = await loadB({ fetchImpl: mk(false), now, config: cfg });
-  assert.equal(stale.stale, true, "实时源挂掉并回退旧快照时，必须判僵尸并废弃印证");
+  resetLatestSpot();
+  const stale = await loadB({ fetchImpl: mk(), now, config: cfg });
+  assert.equal(stale.stale, true, "实时通道缺失并回退旧快照时，必须判僵尸并废弃印证");
   withTTL._s?.clear();
 });

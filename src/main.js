@@ -6,14 +6,15 @@
  */
 import { CONFIG } from "./config.js";
 import { buildState } from "./app.js";
-import { renderAll, renderFailSafe } from "./render.js";
+import { renderAll, renderFailSafe, renderSpotTick } from "./render.js";
+import { createSpotTicker, SPOT_INTERVAL_MS } from "./realtime.js";
 import { VERSION } from "./version.js";
 
 const $ = (id) => document.getElementById(id);
 const HOOK_KEY = "xau_copilot_hook_url";
 const FOMO_KEY = "xau_copilot_fomo_dismissed";
 
-const ui = { state: null, timer: null, countdown: null, busy: false };
+const ui = { state: null, timer: null, countdown: null, busy: false, spot: null };
 
 /* ── 骨架屏：只填充各容器内部，绝不替换容器本身（否则渲染层找不到挂载点） ── */
 function paintSkeleton() {
@@ -43,6 +44,9 @@ async function refreshAll() {
     ui.state = next;
     renderAll(next);
     afterRender(next);
+    /* 首屏补一拍：首笔 tick 往往在 state 就绪前就返回了（被 applySpotTick 丢弃），
+       不补的话要干等 15 秒才看到实时价。 */
+    ui.spot?.tick();
   } catch (e) {
     console.error("[copilot] refresh failed", e);
     renderFailSafe(e);
@@ -50,6 +54,30 @@ async function refreshAll() {
   } finally {
     ui.busy = false;
   }
+}
+
+/* ── 15 秒价格 tick：只改价格相关的 4 个节点，不整页重算 ──
+   为什么不做成 15 秒 refreshAll：buildState 要拉 4 个源 + 跑 6 个引擎，
+   15 秒重算会让决策卡与 FOMO 弹窗反复抖动，也会把 10 分钟快照的同步链打成高压。
+   价格是唯一真正需要秒级的东西，就只让它秒级。 */
+function applySpotTick(q) {
+  const s = ui.state;
+  if (!s || !s.B || !q) return;
+  s.B.priceUsdOz = +Number(q.price).toFixed(2);
+  s.B.quote = {
+    ...(s.B.quote || {}),
+    price: s.B.priceUsdOz,
+    prevClose: q.prevClose,
+    open: q.open,
+    high: q.high,
+    low: q.low,
+    at: q.at,
+  };
+  s.B.spotSource = q.source;
+  s.B.ts = q.recvAt;
+  s.B.stale = false;
+  s.now = Date.now();
+  renderSpotTick(s);
 }
 
 /* ── 渲染后的副作用：FOMO 锁 + Webhook ── */
@@ -216,17 +244,34 @@ function bindUI() {
 
   // 页面重新可见时刷新（手机切回来不会看到过期数据）
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") refreshAll();
+    if (document.visibilityState === "visible") {
+      refreshAll();
+      ui.spot?.tick();
+    }
   });
 }
 
 /* ── 启动 ── */
-function init() {
+async function init() {
   const ver = $("app-ver");
   if (ver) ver.textContent = `v${VERSION}`;
   paintSkeleton();
   bindUI();
-  refreshAll();
+
+  /* v2.6.0：金价 15 秒独立通道（腾讯 hf_XAU，CORS 开放、与新浪同口径）。
+     与下面的 60 秒整页刷新互不干扰：整页管判断，这条只管价格数字。 */
+  ui.spot = createSpotTicker({
+    intervalMs: SPOT_INTERVAL_MS,
+    isHidden: () => document.visibilityState !== "visible",
+    onQuote: applySpotTick,
+  });
+  ui.spot.start();
+
+  /* 先抢一拍再装配：loadB 直接读到最新价，避免首屏拿 10 分钟前的快照价
+     判成「僵尸数据」误报源异常。最多等 900ms，超时就先出内容，tick 回来再补。 */
+  await Promise.race([ui.spot.tick(), new Promise((r) => setTimeout(r, 900))]);
+  await refreshAll();
+
   // 现价 60 秒刷新；页面隐藏时暂停，省电省流量
   ui.timer = setInterval(() => {
     if (document.visibilityState === "visible") refreshAll();
@@ -236,6 +281,7 @@ function init() {
   window.addEventListener("pagehide", () => {
     if (ui.timer) clearInterval(ui.timer);
     if (ui.countdown) clearInterval(ui.countdown);
+    if (ui.spot) ui.spot.stop();
     ui.timer = null;
     ui.countdown = null;
   });

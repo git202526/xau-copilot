@@ -1,6 +1,6 @@
 {
   "name": "xau-copilot",
-  "version": "2.5.3",
+  "version": "2.6.0",
   "private": true,
   "type": "module",
   "description": "XAU Copilot — 纯外部技术面 AI 决策指挥中心（无 K 线主图）",

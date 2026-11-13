@@ -1,0 +1,25 @@
+[warn] 远端 tag 读取失败，仅用本地 tag 校验：spawnSync /bin/sh ETIMEDOUT
+{
+  "kind": "feature",
+  "latestTag": "v2.5.3",
+  "oldPackageVersion": "2.6.0",
+  "newVersion": "v2.6.0",
+  "unique": true,
+  "localTagCount": 12,
+  "remoteTagCount": 0,
+  "versionFile": "src/version.js",
+  "allKnownTags": [
+    "v1.0.0",
+    "v1.0.1",
+    "v2.0.0",
+    "v2.1.0",
+    "v2.2.0",
+    "v2.3.0",
+    "v2.3.1",
+    "v2.4.0",
+    "v2.5.0",
+    "v2.5.1",
+    "v2.5.2",
+    "v2.5.3"
+  ]
+}

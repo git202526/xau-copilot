@@ -97,10 +97,12 @@ test("Q5 现价变化也要落盘（不能因日线未变就跳过）", async ()
   assert.match(src, /barsSame\s*&&\s*quoteSame/, "两者都未变才允许跳过写入");
 });
 
-test("Q6 前端不再直连 gold-api（口径统一走快照）", async () => {
+test("Q6 前端不直连聚合报价（gold-api 已弃用，v2.6.0 改腾讯 hf_XAU 同口径）", async () => {
   const cfg = await read("src/config.js");
-  assert.match(cfg, /xauSpotUrl:\s*""/, "xauSpotUrl 必须置空");
   assert.doesNotMatch(cfg, /api\.gold-api\.com/, "配置里不得残留 gold-api");
+  /* v2.6.0 需求变更：金价要 15 秒级，快照 10 分钟一档不够；
+     换成的源必须与新浪 hf_XAU 同口径（否则重演「金价差太多」）。 */
+  assert.match(cfg, /qt\.gtimg\.cn\/q=hf_XAU/, "必须指向腾讯 hf_XAU 同口径源");
 });
 
 test("Q7 快照价的时间锚点取 quote.at", async () => {

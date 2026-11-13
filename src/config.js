@@ -7,9 +7,10 @@ export const CONFIG = {
   macroUrl: "data/macro.json",     // DXY / 10Y / VIX
 
   /* 实时接口（CORS 开放，无 key）
-     v2.5.2：金价不再前端直连。gold-api 与伦敦金现口径偏差 3~9 美元且会跳变，
-     改由 Actions 抓新浪 hf_XAU 落盘快照，前端只读，与行情软件同源。 */
-  xauSpotUrl: "",
+     v2.6.0：金价由前端每 15 秒直连腾讯 hf_XAU（返回 access-control-allow-origin: *，
+     且与新浪 hf_XAU 同口径）；10 分钟快照降级为「首屏加载 + 断网兜底」。
+     历史坑：早期用第三方聚合报价，同时刻比新浪高 3~9 美元且会跳变，已彻底弃用。 */
+  xauSpotUrl: "https://qt.gtimg.cn/q=hf_XAU",
   fxUrl: "https://open.er-api.com/v6/latest/USD",
   fxFallback: 7.1,                 // 仅全部汇率源失败时使用，界面会标注
 

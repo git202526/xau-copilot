@@ -9,7 +9,8 @@
  * 不使用任何加密资产代币作为黄金代理。
  */
 
-import { withTTL, QUOTE_TTL, MACRO_TTL, STALE_MS } from "./core/sanitize.js";
+import { withTTL, MACRO_TTL, STALE_MS } from "./core/sanitize.js";
+import { getLatestSpot, SPOT_FRESH_MS } from "./realtime.js";
 
 const n = (v) => (v == null || v === "" ? null : Number.isFinite(Number(v)) ? Number(v) : null);
 const round = (v, d = 2) => (v == null ? null : +Number(v).toFixed(d));
@@ -74,24 +75,7 @@ export async function loadB(ctx = {}) {
   let spotSource = "snapshot";
   let quote = null;               // 快照里的现价明细（今开/昨收/高/低/时刻）
 
-  /* 前端直连通道（默认关闭）。v2.5.2 起金价统一走快照，避免第三方源口径漂移。 */
-  if (cfg.xauSpotUrl) {
-    try {
-      const q = await withTTL("b:spot", QUOTE_TTL, async () => {
-        const j = await getJSON(fetchImpl, cfg.xauSpotUrl);
-        return { price: n(j && j.price), at: now };
-      });
-      if (q && q.price && q.price > 100) {
-        spot = q.price;
-        spotAt = q.at;
-        spotSource = "gold-api";
-      }
-    } catch (e) {
-      errs.push(`实时现价 ${e.message || e}`);
-    }
-  }
-
-  /* 主通道：Actions 抓新浪 hf_XAU 写入的 quote（与行情软件同口径） */
+  /* 主通道：Actions 抓新浪 hf_XAU 写入的 quote（与行情软件同口径，10 分钟一档） */
   if (snap && snap.quote && n(snap.quote.price) != null && n(snap.quote.price) > 100) {
     quote = {
       price: n(snap.quote.price),
@@ -106,6 +90,30 @@ export async function loadB(ctx = {}) {
       spotAt = parseTs(quote.at);
       spotSource = snap.quote.source || "sina:hf_XAU";
     }
+  }
+
+  /* v2.6.0：15 秒实时通道优先。tick 只在有效期内采用，过旧即丢弃 ——
+     长期挂后台再回来时，绝不拿一笔僵尸 tick 覆盖 10 分钟快照。 */
+  const live = getLatestSpot();
+  const liveOk =
+    live &&
+    n(live.price) != null &&
+    n(live.price) > 100 &&
+    Number.isFinite(live.recvAt) &&
+    now - live.recvAt <= SPOT_FRESH_MS;
+
+  if (liveOk) {
+    quote = {
+      price: n(live.price),
+      prevClose: n(live.prevClose),
+      open: n(live.open),
+      high: n(live.high),
+      low: n(live.low),
+      at: live.at || null,
+    };
+    spot = quote.price;
+    spotAt = live.recvAt;
+    spotSource = live.source || "tencent:hf_XAU";
   }
 
   /* 旧快照没有 quote，回退顶层 spot，不白屏也不报错 */

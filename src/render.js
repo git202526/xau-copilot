@@ -9,6 +9,7 @@
  */
 import { BADGE } from "./core/technical.js";
 import { ratingZh, macroZh } from "./core/labels.js";
+import { spotTickView } from "./realtime.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -61,7 +62,9 @@ function briefingText(s) {
   const hour = new Date(s.now).getHours();
   const hi = hour < 11 ? "早上好" : hour < 18 ? "下午好" : "晚上好";
 
-  const priceTxt = B.ok && B.priceUsdOz != null ? `伦敦金现 ${num(B.priceUsdOz)} $/oz` : "外部行情未就绪";
+  /* 价格用占位符，渲染时替换成可单独更新的 <span>：15 秒 tick 只改这个数字，
+     不重排整段晨报文本，读者视线不跳。 */
+  const priceTxt = B.ok && B.priceUsdOz != null ? `伦敦金现 {{P}} $/oz` : "外部行情未就绪";
   const rsi = B.indicators ? B.indicators.rsi14 : null;
   const indTxt = rsi != null ? `RSI14 ${num(rsi, 1)}` : "指标预算中";
   const macroTxt =
@@ -99,7 +102,7 @@ export function renderBriefing(s) {
       <span class="sep"></span>
       <time>${fmtTime(s.now, true)} · 外部指标融合</time>
     </div>
-    <p class="b-text">${esc(body)}</p>
+    <p class="b-text">${esc(body).replace("{{P}}", `<span id="brief-spot">${num(s.B && s.B.priceUsdOz)}</span>`)}</p>
     <div class="b-foot">${chips}</div>
   </section>`;
 }
@@ -123,6 +126,8 @@ export function renderRadar(s) {
     .join("");
 
   const intlPrice = B.ok ? num(B.priceUsdOz) : "--";
+  /* 15 秒实时通道视图：涨跌幅与时效能单点更新，整块渲染时也用同一份口径，避免两处数字打架 */
+  const spot = spotTickView(s);
   const rateLbl = B.ok && B.rating ? ratingZh(B.rating.label) : "未评级";
   const rateCls = B.ok && B.rating ? (B.rating.score >= 55 ? "buy" : B.rating.score <= 45 ? "sell" : "mid") : "mid";
 
@@ -165,8 +170,8 @@ export function renderRadar(s) {
     ${macroAt ? `<div class="macro-at${macroLate ? " late" : ""}">${esc(macroAt)}</div>` : ""}
     <div class="dual">
       <div>
-        <div class="lbl">国际 · XAUUSD</div>
-        <div class="big">${intlPrice}<span class="unit">$/oz</span></div>
+        <div class="lbl"><span>国际 · XAUUSD</span><span id="spot-chg" class="spot-chg ${spot.chgTone}">${esc(spot.chgText)}</span></div>
+        <div class="big"><span id="spot-price">${intlPrice}</span><span class="unit">$/oz</span></div>
         <div class="sub"><span class="sig ${rateCls}">${esc(rateLbl)}</span>${B.ok ? `<span style="color:var(--tx-3)">MA20 ${num(B.ma20UsdOz)}</span>` : ""}</div>
       </div>
       <div>
@@ -175,6 +180,7 @@ export function renderRadar(s) {
         <div class="sub"><span class="sig ${techCls}">${esc(techTxt)}</span>${techScore ? `<span style="color:var(--tx-3)">${techScore}</span>` : ""}</div>
       </div>
     </div>
+    <div class="spot-at${spot.live ? " live" : ""}" id="spot-at">${esc(spot.atText)}</div>
     <div class="${premCls}">
       ${premTxt}
       ${p.frozen ? `<span class="lock">已冻结</span>` : ""}
@@ -370,7 +376,7 @@ export function renderTopbar(s) {
   if (foot) {
     const bits = [];
     bits.push(`账户数据 ${s.meta.aOk ? "ok" : "失败"}`);
-    bits.push(`外部行情 ${s.meta.bOk ? (s.B.spotSource === "gold-api" ? "实时" : "快照") : "失败"}`);
+    bits.push(`外部行情 ${s.meta.bOk ? (String(s.B.spotSource || "").startsWith("tencent:") ? "15 秒实时" : "快照") : "失败"}`);
     bits.push(`宏观 ${s.meta.cOk ? "ok" : "失败"}`);
     bits.push(`汇率 ${s.meta.fx ? Number(s.meta.fx).toFixed(4) : "--"}${s.meta.fxFallback ? "(兜底)" : ""}`);
     const ageText = (min) => {
@@ -384,6 +390,27 @@ export function renderTopbar(s) {
   }
 }
 
+/* ───────────────── 价格单点刷新（15 秒 tick 专用） ─────────────────
+   只改 4 个叶子节点，不重建卡片、不重放动画、不调任何其它渲染函数。
+   这样 15 秒的高频更新不会打断阅读，也不会把决策卡刷得乱跳。 */
+export function renderSpotTick(s) {
+  const v = spotTickView(s);
+  const price = $("spot-price");
+  if (price) price.textContent = v.priceText;
+  const chg = $("spot-chg");
+  if (chg) {
+    chg.textContent = v.chgText;
+    chg.className = `spot-chg ${v.chgTone}`;
+  }
+  const at = $("spot-at");
+  if (at) {
+    at.textContent = v.atText;
+    at.className = `spot-at${v.live ? " live" : ""}`;
+  }
+  const brief = $("brief-spot");
+  if (brief) brief.textContent = v.priceText;
+}
+
 /* ───────────────── 统一出口（唯一被 main 调用的函数） ───────────────── */
 export function renderAll(s) {
   renderBriefing(s);
@@ -394,6 +421,7 @@ export function renderAll(s) {
   renderRebalance(s);
   renderDiscipline(s);
   renderTopbar(s);
+  renderSpotTick(s);
 }
 
 /* 降级兜底：全量失败时也要有内容，不白屏 */

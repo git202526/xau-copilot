@@ -1,0 +1,871 @@
+# v2.6.0 全量回归
+# 2026-11-13T23:36:30+08:00
+
+> xau-copilot@2.6.0 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: A1 浮亏（跌/负）用绿，不得用红
+ok 1 - A1 浮亏（跌/负）用绿，不得用红
+  ---
+  duration_ms: 16.866463
+  ...
+# Subtest: A2 浮盈（涨/正）用红，不得用绿
+ok 2 - A2 浮盈（涨/正）用红，不得用绿
+  ---
+  duration_ms: 0.307572
+  ...
+# Subtest: A3 异常边界①：pnl 缺失 → gray，且不抛异常
+ok 3 - A3 异常边界①：pnl 缺失 → gray，且不抛异常
+  ---
+  duration_ms: 0.143921
+  ...
+# Subtest: A4 render.js 数值类严格红涨绿跌（收益率 / 压力测试 / 溢价）
+ok 4 - A4 render.js 数值类严格红涨绿跌（收益率 / 压力测试 / 溢价）
+  ---
+  duration_ms: 5.494354
+  ...
+# Subtest: A5 index.html 保留数值类红绿，并新增 change / judge 分层类
+ok 5 - A5 index.html 保留数值类红绿，并新增 change / judge 分层类
+  ---
+  duration_ms: 1.546887
+  ...
+# Subtest: A6 buildSignals 标注 kind：只有纯数值涨跌项才允许红绿
+ok 6 - A6 buildSignals 标注 kind：只有纯数值涨跌项才允许红绿
+  ---
+  duration_ms: 0.824567
+  ...
+# Subtest: B1 tech_bull「偏多」tone 不得用绿色
+ok 7 - B1 tech_bull「偏多」tone 不得用绿色
+  ---
+  duration_ms: 0.54623
+  ...
+# Subtest: B2 tech_bear「偏空」tone 不得用红色
+ok 8 - B2 tech_bear「偏空」tone 不得用红色
+  ---
+  duration_ms: 0.215381
+  ...
+# Subtest: B3 异常边界②：降级 / 避险 / 指标缺失 / 中性 tone 全为中性
+ok 9 - B3 异常边界②：降级 / 避险 / 指标缺失 / 中性 tone 全为中性
+  ---
+  duration_ms: 0.597067
+  ...
+# Subtest: B4 置信徽章对应 CSS 规则禁用红绿
+ok 10 - B4 置信徽章对应 CSS 规则禁用红绿
+  ---
+  duration_ms: 2.082671
+  ...
+# Subtest: B5 额度枯竭告警 tone 禁用红绿
+ok 11 - B5 额度枯竭告警 tone 禁用红绿
+  ---
+  duration_ms: 0.403771
+  ...
+# Subtest: B6 网格熔断 tone 禁用红绿
+ok 12 - B6 网格熔断 tone 禁用红绿
+  ---
+  duration_ms: 0.26031
+  ...
+# Subtest: B7 纪律违规 tone 禁用红绿
+ok 13 - B7 纪律违规 tone 禁用红绿
+  ---
+  duration_ms: 0.258827
+  ...
+# Subtest: B8 index.html 判断类 CSS 规则整体禁用红绿
+ok 14 - B8 index.html 判断类 CSS 规则整体禁用红绿
+  ---
+  duration_ms: 57.935495
+  ...
+# Subtest: B9 render.js 不得残留判断类红绿与误导性资金文案
+ok 15 - B9 render.js 不得残留判断类红绿与误导性资金文案
+  ---
+  duration_ms: 1.043524
+  ...
+# Subtest: B10 判断类 tone 赋值全局收敛（数值类 pnlTone 除外）
+ok 16 - B10 判断类 tone 赋值全局收敛（数值类 pnlTone 除外）
+  ---
+  duration_ms: 1.661905
+  ...
+# Subtest: B11 异常边界⑥：BUY 流水缺 gram/priceCny 不得抛异常，且 tone 仍为中性
+ok 17 - B11 异常边界⑥：BUY 流水缺 gram/priceCny 不得抛异常，且 tone 仍为中性
+  ---
+  duration_ms: 0.48837
+  ...
+# Subtest: C1 数据来源事实：老应用快照顶层无资金/余额字段
+ok 18 - C1 数据来源事实：老应用快照顶层无资金/余额字段
+  ---
+  duration_ms: 1.49033
+  ...
+# Subtest: C2 assess 暴露 remainingGrams（真实底层字段）并保留 remainingFunds 兼容
+ok 19 - C2 assess 暴露 remainingGrams（真实底层字段）并保留 remainingFunds 兼容
+  ---
+  duration_ms: 0.341846
+  ...
+# Subtest: C3 risk.js 额度文案改预算口径，不得再宣称「资金枯竭」
+ok 20 - C3 risk.js 额度文案改预算口径，不得再宣称「资金枯竭」
+  ---
+  duration_ms: 1.551796
+  ...
+# Subtest: C4 render.js M3 不再出现「可用资金」，并标注非账户余额
+ok 21 - C4 render.js M3 不再出现「可用资金」，并标注非账户余额
+  ---
+  duration_ms: 0.682088
+  ...
+# Subtest: C5 异常边界③：ratio 缺失 → 不枯竭、中性色、文案含不可得
+ok 22 - C5 异常边界③：ratio 缺失 → 不枯竭、中性色、文案含不可得
+  ---
+  duration_ms: 0.415679
+  ...
+# Subtest: D1 异常边界④：脏数据 calcPlan 不抛异常且派生值为 null
+ok 23 - D1 异常边界④：脏数据 calcPlan 不抛异常且派生值为 null
+  ---
+  duration_ms: 0.426285
+  ...
+# Subtest: D2 异常边界⑤：全源失效 → 降级、中性、不出方向
+ok 24 - D2 异常边界⑤：全源失效 → 降级、中性、不出方向
+  ---
+  duration_ms: 0.076168
+  ...
+# Subtest: D3 端到端：浮亏绿 + 偏多非绿 + 额度中性 可同时成立
+ok 25 - D3 端到端：浮亏绿 + 偏多非绿 + 额度中性 可同时成立
+  ---
+  duration_ms: 0.467318
+  ...
+# Subtest: E1 CSS 注释不得再把「偏多/偏空判断」与「涨跌红绿」混用
+ok 26 - E1 CSS 注释不得再把「偏多/偏空判断」与「涨跌红绿」混用
+  ---
+  duration_ms: 1.076594
+  ...
+# Subtest: E2 M2 指标网格按 kind 分层：change 用 chg-*，judge 用 bull/bear
+ok 27 - E2 M2 指标网格按 kind 分层：change 用 chg-*，judge 用 bull/bear
+  ---
+  duration_ms: 0.649999
+  ...
+# Subtest: T13 盘中强反抽：日线共振做空但盘中急拉 → 反抽预警，绝不判真背离
+ok 28 - T13 盘中强反抽：日线共振做空但盘中急拉 → 反抽预警，绝不判真背离
+  ---
+  duration_ms: 1.277864
+  ...
+# Subtest: T14 真背离：内部日线空 + 外部日线多 + 盘中大涨 → 仍是真背离
+ok 29 - T14 真背离：内部日线空 + 外部日线多 + 盘中大涨 → 仍是真背离
+  ---
+  duration_ms: 1.085008
+  ...
+# Subtest: T15 异常边界 intradayPct=null → 不触发反抽，回退日线共振
+ok 30 - T15 异常边界 intradayPct=null → 不触发反抽，回退日线共振
+  ---
+  duration_ms: 0.177984
+  ...
+# Subtest: T16 向后兼容：未传 intradayPct → 保持旧版共振结论
+ok 31 - T16 向后兼容：未传 intradayPct → 保持旧版共振结论
+  ---
+  duration_ms: 0.120466
+  ...
+# Subtest: T17 异常边界 盘中 +0.3%（小于阈值）→ 不触发反抽
+ok 32 - T17 异常边界 盘中 +0.3%（小于阈值）→ 不触发反抽
+  ---
+  duration_ms: 0.169781
+  ...
+# Subtest: T18 异常边界 stale=true + 盘中大涨 → 仍判僵尸·印证作废
+ok 33 - T18 异常边界 stale=true + 盘中大涨 → 仍判僵尸·印证作废
+  ---
+  duration_ms: 0.107365
+  ...
+# Subtest: T19 异常边界 共振做空 + 盘中顺势大跌 -2.5% → 不误报反抽
+ok 34 - T19 异常边界 共振做空 + 盘中顺势大跌 -2.5% → 不误报反抽
+  ---
+  duration_ms: 0.22066
+  ...
+# Subtest: T20 异常边界 bMissing=true + 盘中大涨 → 外部校验失败降级
+ok 35 - T20 异常边界 bMissing=true + 盘中大涨 → 外部校验失败降级
+  ---
+  duration_ms: 0.119384
+  ...
+# Subtest: T21 共振做多 + 盘中急跌 → 盘中回踩预警，文案不得出现『追空』
+ok 36 - T21 共振做多 + 盘中急跌 → 盘中回踩预警，文案不得出现『追空』
+  ---
+  duration_ms: 0.334624
+  ...
+# Subtest: T22' M2 消费 s.technical 且渲染外部指标网格，不再有双印证分支
+ok 37 - T22' M2 消费 s.technical 且渲染外部指标网格，不再有双印证分支
+  ---
+  duration_ms: 7.333101
+  ...
+# Subtest: T23' app.js 装配 decideTechnical，且不再调用双印证 decide
+ok 38 - T23' app.js 装配 decideTechnical，且不再调用双印证 decide
+  ---
+  duration_ms: 0.832139
+  ...
+# Subtest: A1 单调上升 60 根 → 多头排列 / RSI 超买 / MACD 柱为正 / 价格贴上轨
+ok 39 - A1 单调上升 60 根 → 多头排列 / RSI 超买 / MACD 柱为正 / 价格贴上轨
+  ---
+  duration_ms: 7.581162
+  ...
+# Subtest: A2 单调下降 60 根 → 空头排列 / RSI 超卖 / MACD 柱为负 / 价格贴下轨
+ok 40 - A2 单调下降 60 根 → 空头排列 / RSI 超卖 / MACD 柱为负 / 价格贴下轨
+  ---
+  duration_ms: 0.585329
+  ...
+# Subtest: A3 异常边界 bars=null → 不抛异常，返回 ok:false
+ok 41 - A3 异常边界 bars=null → 不抛异常，返回 ok:false
+  ---
+  duration_ms: 0.309656
+  ...
+# Subtest: A4 异常边界 bars 仅 10 根（不足 26）→ 不抛异常，ok:false
+ok 42 - A4 异常边界 bars 仅 10 根（不足 26）→ 不抛异常，ok:false
+  ---
+  duration_ms: 0.215601
+  ...
+# Subtest: A5 异常边界 closes 混入 null / NaN / 字符串 → 过滤后不泄漏 NaN
+ok 43 - A5 异常边界 closes 混入 null / NaN / 字符串 → 过滤后不泄漏 NaN
+  ---
+  duration_ms: 0.742982
+  ...
+# Subtest: A6 数学性质守卫：严格等差（零加速度）序列 MACD 柱必须趋近 0
+ok 44 - A6 数学性质守卫：严格等差（零加速度）序列 MACD 柱必须趋近 0
+  ---
+  duration_ms: 1.06054
+  ...
+# Subtest: B1 全多外部指标 → tech_bull / dir=1 / 不含内部数据依赖
+ok 45 - B1 全多外部指标 → tech_bull / dir=1 / 不含内部数据依赖
+  ---
+  duration_ms: 18.724279
+  ...
+# Subtest: B2 全空外部指标 → tech_bear / dir=-1
+ok 46 - B2 全空外部指标 → tech_bear / dir=-1
+  ---
+  duration_ms: 56.303877
+  ...
+# Subtest: B3 去双印证守卫：不接收 aSign，输出不含「内部/共振/背离/印证/反抽/多源」
+ok 47 - B3 去双印证守卫：不接收 aSign，输出不含「内部/共振/背离/印证/反抽/多源」
+  ---
+  duration_ms: 1.114663
+  ...
+# Subtest: B4 异常边界 indicators=null（指标缺失）→ degraded，不输出方向结论
+ok 48 - B4 异常边界 indicators=null（指标缺失）→ degraded，不输出方向结论
+  ---
+  duration_ms: 0.675078
+  ...
+# Subtest: B5 异常边界 stale=true（外部僵尸）→ degraded，方向作废
+ok 49 - B5 异常边界 stale=true（外部僵尸）→ degraded，方向作废
+  ---
+  duration_ms: 0.362698
+  ...
+# Subtest: B6 异常边界 VIX 暴涨（C.mode=risk_off）→ 避险模式，技术面失效
+ok 50 - B6 异常边界 VIX 暴涨（C.mode=risk_off）→ 避险模式，技术面失效
+  ---
+  duration_ms: 0.394055
+  ...
+# Subtest: B7 异常边界 B.ok=false（外部行情源全挂）→ degraded 不白屏
+ok 51 - B7 异常边界 B.ok=false（外部行情源全挂）→ degraded 不白屏
+  ---
+  duration_ms: 0.22159
+  ...
+# Subtest: B8 评级缺失但指标齐全 → 仍能判断（不硬依赖第三方评级）
+ok 52 - B8 评级缺失但指标齐全 → 仍能判断（不硬依赖第三方评级）
+  ---
+  duration_ms: 0.499528
+  ...
+# Subtest: B9 signals 至少覆盖 7 项外部指标（供 M2 网格展示）
+ok 53 - B9 signals 至少覆盖 7 项外部指标（供 M2 网格展示）
+  ---
+  duration_ms: 0.380394
+  ...
+# Subtest: C1 sourceB.js 不得 import 指标计算模块（前端严禁造轮子），只透出 snap.indicators
+ok 54 - C1 sourceB.js 不得 import 指标计算模块（前端严禁造轮子），只透出 snap.indicators
+  ---
+  duration_ms: 1.985973
+  ...
+# Subtest: C2 app.js 装配 s.technical 并把 B / C / stale 喂给 decideTechnical
+ok 55 - C2 app.js 装配 s.technical 并把 B / C / stale 喂给 decideTechnical
+  ---
+  duration_ms: 0.499889
+  ...
+# Subtest: C3 renderDecision 只读 s.technical，M2 段不得残留「内部结构/共振/背离/多源」
+ok 56 - C3 renderDecision 只读 s.technical，M2 段不得残留「内部结构/共振/背离/多源」
+  ---
+  duration_ms: 1.214757
+  ...
+# Subtest: C4 全局同步：render.js 全文不得再消费 s.decision（所有卡片统一外部判断源）
+ok 57 - C4 全局同步：render.js 全文不得再消费 s.decision（所有卡片统一外部判断源）
+  ---
+  duration_ms: 0.489312
+  ...
+# Subtest: C5 快照 data/xauusd.json 含 indicators（rsi14 / macd / boll / ma / align）
+ok 58 - C5 快照 data/xauusd.json 含 indicators（rsi14 / macd / boll / ma / align）
+  ---
+  duration_ms: 0.59871
+  ...
+# Subtest: C6 sync-xau.mjs 引入 computeIndicators 并把结果写入快照
+ok 59 - C6 sync-xau.mjs 引入 computeIndicators 并把结果写入快照
+  ---
+  duration_ms: 0.669479
+  ...
+# Subtest: D1 运行时链路与静态文案全局清除双印证字样
+ok 60 - D1 运行时链路与静态文案全局清除双印证字样
+  ---
+  duration_ms: 2.650264
+  ...
+# Subtest: D2 app.js 不再 import / 调用双印证引擎 decide
+ok 61 - D2 app.js 不再 import / 调用双印证引擎 decide
+  ---
+  duration_ms: 0.587223
+  ...
+# Subtest: D3 各下游判断模块改吃外部方向，不再依赖 A.trend / divergence
+ok 62 - D3 各下游判断模块改吃外部方向，不再依赖 A.trend / divergence
+  ---
+  duration_ms: 0.849115
+  ...
+# Subtest: D4 异常边界：main.js 的 Webhook / FOMO 不再引用 s.decision
+ok 63 - D4 异常边界：main.js 的 Webhook / FOMO 不再引用 s.decision
+  ---
+  duration_ms: 0.524406
+  ...
+# Subtest: D5 M1 雷达不得再展示「内部日线」，改为外部技术面
+ok 64 - D5 M1 雷达不得再展示「内部日线」，改为外部技术面
+  ---
+  duration_ms: 0.504325
+  ...
+# Subtest: D6 静态骨架屏与页脚文案同步更新（不残留「多源共振决策」）
+ok 65 - D6 静态骨架屏与页脚文案同步更新（不残留「多源共振决策」）
+  ---
+  duration_ms: 1.571906
+  ...
+# Subtest: E1 端到端解耦：内部趋势由「下行」翻成「上行」，外部判断结论完全不变
+ok 66 - E1 端到端解耦：内部趋势由「下行」翻成「上行」，外部判断结论完全不变
+  ---
+  duration_ms: 8.579947
+  ...
+# Subtest: E2 账户事实数据完整保留（真实浮亏 / 均价 / 克重 / 资金）
+ok 67 - E2 账户事实数据完整保留（真实浮亏 / 均价 / 克重 / 资金）
+  ---
+  duration_ms: 0.74817
+  ...
+# Subtest: E3 异常边界：服务端指标缺失 → technical 降级且不白屏，账户卡仍渲染事实数据
+ok 68 - E3 异常边界：服务端指标缺失 → technical 降级且不白屏，账户卡仍渲染事实数据
+  ---
+  duration_ms: 0.606902
+  ...
+# Subtest: T1 持仓数据缺失 → 不崩溃，盈亏标记为数据缺失而非 0
+ok 69 - T1 持仓数据缺失 → 不崩溃，盈亏标记为数据缺失而非 0
+  ---
+  duration_ms: 2.181433
+  ...
+# Subtest: T2 外部数据延迟 30 分钟 → 判定为僵尸数据并废弃
+ok 70 - T2 外部数据延迟 30 分钟 → 判定为僵尸数据并废弃
+  ---
+  duration_ms: 9.938776
+  ...
+# Subtest: T3 国内凌晨 3:00 休市 → 溢价率冻结
+ok 71 - T3 国内凌晨 3:00 休市 → 溢价率冻结
+  ---
+  duration_ms: 0.273461
+  ...
+# Subtest: T4 真实浮亏 -30000 → 原样透出，不回退成 0
+ok 72 - T4 真实浮亏 -30000 → 原样透出，不回退成 0
+  ---
+  duration_ms: 0.50742
+  ...
+# Subtest: T5 外部技术面偏空 + 今日有 BUY → 逆势买入触发 FOMO 锁
+ok 73 - T5 外部技术面偏空 + 今日有 BUY → 逆势买入触发 FOMO 锁
+  ---
+  duration_ms: 0.647375
+  ...
+# Subtest: T6 剩余可买 < 1.5 倍下一档 → 琥珀额度不足告警
+ok 74 - T6 剩余可买 < 1.5 倍下一档 → 琥珀额度不足告警
+  ---
+  duration_ms: 0.418623
+  ...
+# Subtest: T7 VIX 单日 +69.7% → 强制避险模式
+ok 75 - T7 VIX 单日 +69.7% → 强制避险模式
+  ---
+  duration_ms: 0.868344
+  ...
+# Subtest: T8 全项目不得出现 PAXG 字样
+ok 76 - T8 全项目不得出现 PAXG 字样
+  ---
+  duration_ms: 11.556071
+  ...
+# Subtest: T9 外部数据僵尸（>15min）→ 废弃印证，置信度降级
+ok 77 - T9 外部数据僵尸（>15min）→ 废弃印证，置信度降级
+  ---
+  duration_ms: 0.355907
+  ...
+# Subtest: T10 再平衡整体均价取 A.position.avgCost，不得二次加权造出第二个数字
+ok 78 - T10 再平衡整体均价取 A.position.avgCost，不得二次加权造出第二个数字
+  ---
+  duration_ms: 59.134097
+  ...
+# Subtest: T11 pagehide 清理 ui.timer 与 ui.countdown
+ok 79 - T11 pagehide 清理 ui.timer 与 ui.countdown
+  ---
+  duration_ms: 1.251714
+  ...
+# Subtest: T12 实时 tick 新鲜不判僵尸；tick 缺失且旧快照回退才判僵尸
+ok 80 - T12 实时 tick 新鲜不判僵尸；tick 缺失且旧快照回退才判僵尸
+  ---
+  duration_ms: 3.629789
+  ...
+# Subtest: A1 ratingZh 覆盖五档 + 大小写 + 未知值兜底
+ok 81 - A1 ratingZh 覆盖五档 + 大小写 + 未知值兜底
+  ---
+  duration_ms: 7.595754
+  ...
+# Subtest: A2 ratingZhEn 中英并列（英文原值保留）
+ok 82 - A2 ratingZhEn 中英并列（英文原值保留）
+  ---
+  duration_ms: 0.324148
+  ...
+# Subtest: A3 macroZh 覆盖 DXY / TNX / VIX
+ok 83 - A3 macroZh 覆盖 DXY / TNX / VIX
+  ---
+  duration_ms: 0.173657
+  ...
+# Subtest: A4 renderRadar 宏观 pills 必须消费中文 label
+ok 84 - A4 renderRadar 宏观 pills 必须消费中文 label
+  ---
+  duration_ms: 1.63976
+  ...
+# Subtest: A5 technical.js 技术评级输出中文（不再拼英文 label）
+ok 85 - A5 technical.js 技术评级输出中文（不再拼英文 label）
+  ---
+  duration_ms: 1.229229
+  ...
+# Subtest: A6 M0 徽章与 M1 评级同步中文
+ok 86 - A6 M0 徽章与 M1 评级同步中文
+  ---
+  duration_ms: 0.561042
+  ...
+# Subtest: B1 calcPlan 每档克重 = TOTAL × wPct
+ok 87 - B1 calcPlan 每档克重 = TOTAL × wPct
+  ---
+  duration_ms: 1.15206
+  ...
+# Subtest: B2 assessGrid 透传档位克重字段
+ok 88 - B2 assessGrid 透传档位克重字段
+  ---
+  duration_ms: 0.298348
+  ...
+# Subtest: B3 renderGrid 档位柱读取克重并标注单位
+ok 89 - B3 renderGrid 档位柱读取克重并标注单位
+  ---
+  duration_ms: 0.984763
+  ...
+# Subtest: B4 renderGrid 输出「下一档」克重摘要
+ok 90 - B4 renderGrid 输出「下一档」克重摘要
+  ---
+  duration_ms: 0.776714
+  ...
+# Subtest: C1 剩余可买按持仓上限 TOTAL 计算（不再扣未标记流水）
+ok 91 - C1 剩余可买按持仓上限 TOTAL 计算（不再扣未标记流水）
+  ---
+  duration_ms: 0.235201
+  ...
+# Subtest: C2 持仓超上限 → 剩余 0 且标记 overCap
+ok 92 - C2 持仓超上限 → 剩余 0 且标记 overCap
+  ---
+  duration_ms: 0.165985
+  ...
+# Subtest: C3 risk 额度文案改为持仓上限口径，且不再误报不足
+ok 93 - C3 risk 额度文案改为持仓上限口径，且不再误报不足
+  ---
+  duration_ms: 65.611643
+  ...
+# Subtest: C4 noCap=true 与 false 都按 TOTAL 计算
+ok 94 - C4 noCap=true 与 false 都按 TOTAL 计算
+  ---
+  duration_ms: 0.197774
+  ...
+# Subtest: D1 配置分离账户快照容忍阈值（>=180 分钟）
+ok 95 - D1 配置分离账户快照容忍阈值（>=180 分钟）
+  ---
+  duration_ms: 2.728454
+  ...
+# Subtest: D2 app.js 账户陈旧判定使用 accountStaleMinutes
+ok 96 - D2 app.js 账户陈旧判定使用 accountStaleMinutes
+  ---
+  duration_ms: 0.581574
+  ...
+# Subtest: D3 3 小时前不判陈旧、7 小时前判陈旧
+ok 97 - D3 3 小时前不判陈旧、7 小时前判陈旧
+  ---
+  duration_ms: 1.107853
+  ...
+# Subtest: D4 页脚按小时分级，删除误导性的 15 分钟提示
+ok 98 - D4 页脚按小时分级，删除误导性的 15 分钟提示
+  ---
+  duration_ms: 0.484975
+  ...
+# Subtest: D5 同步工作流不再依赖 schedule 扛主链路（v2.5.0 起改自调度）
+ok 99 - D5 同步工作流不再依赖 schedule 扛主链路（v2.5.0 起改自调度）
+  ---
+  duration_ms: 0.395167
+  ...
+# Subtest: E1 src/version.js 与 package.json 版本一致
+ok 100 - E1 src/version.js 与 package.json 版本一致
+  ---
+  duration_ms: 1.000799
+  ...
+# Subtest: E2 release.mjs 自动写 src/version.js
+ok 101 - E2 release.mjs 自动写 src/version.js
+  ---
+  duration_ms: 0.438244
+  ...
+# Subtest: E3 index.html 顶部有版本号挂载点
+ok 102 - E3 index.html 顶部有版本号挂载点
+  ---
+  duration_ms: 0.558438
+  ...
+# Subtest: E4 main.js 注入 VERSION 到 \#app-ver
+ok 103 - E4 main.js 注入 VERSION 到 \#app-ver
+  ---
+  duration_ms: 0.639242
+  ...
+# Subtest: F1 运行时零双印证残留
+ok 104 - F1 运行时零双印证残留
+  ---
+  duration_ms: 2.163285
+  ...
+# Subtest: F2 判断类评级仍禁用红绿（v2.3.1 不回归）
+ok 105 - F2 判断类评级仍禁用红绿（v2.3.1 不回归）
+  ---
+  duration_ms: 0.671593
+  ...
+# Subtest: F3 七模块结构不变
+ok 106 - F3 七模块结构不变
+  ---
+  duration_ms: 0.50036
+  ...
+# Subtest: F4 v240 用例数 >= 20（防删测）
+ok 107 - F4 v240 用例数 >= 20（防删测）
+  ---
+  duration_ms: 0.497244
+  ...
+# Subtest: G1 网格卡展示 ATR/档距效率比
+ok 108 - G1 网格卡展示 ATR/档距效率比
+  ---
+  duration_ms: 0.427137
+  ...
+# Subtest: H1 工作流声明 actions: write（自调度所需最小权限）
+ok 109 - H1 工作流声明 actions: write（自调度所需最小权限）
+  ---
+  duration_ms: 3.974519
+  ...
+# Subtest: H2 存在自调度步骤（gh workflow run 自身）
+ok 110 - H2 存在自调度步骤（gh workflow run 自身）
+  ---
+  duration_ms: 0.660736
+  ...
+# Subtest: H3 节流参数：10 分钟一轮、多轮循环
+ok 111 - H3 节流参数：10 分钟一轮、多轮循环
+  ---
+  duration_ms: 1.513727
+  ...
+# Subtest: H4 兜底 cron 改为 */30（主链路不再依赖 schedule）
+ok 112 - H4 兜底 cron 改为 */30（主链路不再依赖 schedule）
+  ---
+  duration_ms: 0.562064
+  ...
+# Subtest: H5 防双链守卫：排除自身 run 并检查排队/运行中
+ok 113 - H5 防双链守卫：排除自身 run 并检查排队/运行中
+  ---
+  duration_ms: 0.567743
+  ...
+# Subtest: H6 仅 schedule / workflow_dispatch 触发自调度，push 不自调度
+ok 114 - H6 仅 schedule / workflow_dispatch 触发自调度，push 不自调度
+  ---
+  duration_ms: 0.787581
+  ...
+# Subtest: H7 熔断开关：vars.SYNC_LOOP=off 停止链路
+ok 115 - H7 熔断开关：vars.SYNC_LOOP=off 停止链路
+  ---
+  duration_ms: 0.496683
+  ...
+# Subtest: H8 单轮抓取失败不中断整条链路
+ok 116 - H8 单轮抓取失败不中断整条链路
+  ---
+  duration_ms: 0.553992
+  ...
+# Subtest: H9 推送前先 pull --rebase，避免与并发提交分叉
+ok 117 - H9 推送前先 pull --rebase，避免与并发提交分叉
+  ---
+  duration_ms: 0.683721
+  ...
+# Subtest: H10 每 10 分钟一次 → 每小时 6 次 Pages 构建，低于 10 次软限制
+ok 118 - H10 每 10 分钟一次 → 每小时 6 次 Pages 构建，低于 10 次软限制
+  ---
+  duration_ms: 1.223351
+  ...
+# Subtest: H11 文档标注已实施方案 A 与自愈时间
+ok 119 - H11 文档标注已实施方案 A 与自愈时间
+  ---
+  duration_ms: 0.625411
+  ...
+# Subtest: N1 sync-data.mjs 写入 checkedAt（每次轮询都刷新）
+ok 120 - N1 sync-data.mjs 写入 checkedAt（每次轮询都刷新）
+  ---
+  duration_ms: 3.25314
+  ...
+# Subtest: N2 内容无变化时仍刷新 META，不得提前退出
+ok 121 - N2 内容无变化时仍刷新 META，不得提前退出
+  ---
+  duration_ms: 0.931772
+  ...
+# Subtest: N3 前端优先用 checkedAt，缺失时回退 syncedAt
+ok 122 - N3 前端优先用 checkedAt，缺失时回退 syncedAt
+  ---
+  duration_ms: 0.56623
+  ...
+# Subtest: N4 syncedAt 保留「内容变更时刻」语义
+ok 123 - N4 syncedAt 保留「内容变更时刻」语义
+  ---
+  duration_ms: 0.888105
+  ...
+# Subtest: Q1 现价主源改为新浪 hf_XAU，不再以 gold-api 为主
+ok 124 - Q1 现价主源改为新浪 hf_XAU，不再以 gold-api 为主
+  ---
+  duration_ms: 3.896199
+  ...
+# Subtest: Q2 parseSinaQuote 正确解析伦敦金现字段
+ok 125 - Q2 parseSinaQuote 正确解析伦敦金现字段
+  ---
+  duration_ms: 3.774541
+  ...
+# Subtest: Q3 parseSinaQuote 对空/异常响应返回 null（不抛错）
+ok 126 - Q3 parseSinaQuote 对空/异常响应返回 null（不抛错）
+  ---
+  duration_ms: 0.338089
+  ...
+# Subtest: Q4 快照写入 quote 对象（现价/昨收/开/高/低/时刻）
+ok 127 - Q4 快照写入 quote 对象（现价/昨收/开/高/低/时刻）
+  ---
+  duration_ms: 1.356796
+  ...
+# Subtest: Q5 现价变化也要落盘（不能因日线未变就跳过）
+ok 128 - Q5 现价变化也要落盘（不能因日线未变就跳过）
+  ---
+  duration_ms: 0.776394
+  ...
+# Subtest: Q6 前端不直连聚合报价（gold-api 已弃用，v2.6.0 改腾讯 hf_XAU 同口径）
+ok 129 - Q6 前端不直连聚合报价（gold-api 已弃用，v2.6.0 改腾讯 hf_XAU 同口径）
+  ---
+  duration_ms: 0.684542
+  ...
+# Subtest: Q7 快照价的时间锚点取 quote.at
+ok 130 - Q7 快照价的时间锚点取 quote.at
+  ---
+  duration_ms: 1.465492
+  ...
+# Subtest: M1 宏观主源改 CNBC 实时，FRED/CBOE 降为回退
+ok 131 - M1 宏观主源改 CNBC 实时，FRED/CBOE 降为回退
+  ---
+  duration_ms: 1.04106
+  ...
+# Subtest: M2 parseCnbc 正确解析三标的（现价/前收/时刻）
+ok 132 - M2 parseCnbc 正确解析三标的（现价/前收/时刻）
+  ---
+  duration_ms: 1.696858
+  ...
+# Subtest: M3 parseCnbc 缺项时返回 null 而非造数
+ok 133 - M3 parseCnbc 缺项时返回 null 而非造数
+  ---
+  duration_ms: 0.427167
+  ...
+# Subtest: M4 宏观快照写入 times（每项数据时刻）
+ok 134 - M4 宏观快照写入 times（每项数据时刻）
+  ---
+  duration_ms: 0.652233
+  ...
+# Subtest: M5 sourceC 把 times 透出给渲染层
+ok 135 - M5 sourceC 把 times 透出给渲染层
+  ---
+  duration_ms: 0.408217
+  ...
+# Subtest: T1 宏观卡片显示数据时刻与距今多久
+ok 136 - T1 宏观卡片显示数据时刻与距今多久
+  ---
+  duration_ms: 0.480017
+  ...
+# Subtest: T2 数据过期（>60 分钟）时要显式标注
+ok 137 - T2 数据过期（>60 分钟）时要显式标注
+  ---
+  duration_ms: 0.511476
+  ...
+# Subtest: R1 宏观回退链完整：CNBC → FRED/CBOE → 沿用旧值
+ok 138 - R1 宏观回退链完整：CNBC → FRED/CBOE → 沿用旧值
+  ---
+  duration_ms: 0.452876
+  ...
+# Subtest: R2 金价抓取失败时保留上一份快照，不清空
+ok 139 - R2 金价抓取失败时保留上一份快照，不清空
+  ---
+  duration_ms: 0.431744
+  ...
+# Subtest: R3 前端拿不到 quote 时回退 snap.spot（旧快照兼容）
+ok 140 - R3 前端拿不到 quote 时回退 snap.spot（旧快照兼容）
+  ---
+  duration_ms: 0.378191
+  ...
+# Subtest: P1 push 忽略 data/** 变更，避免数据提交自我触发
+ok 141 - P1 push 忽略 data/** 变更，避免数据提交自我触发
+  ---
+  duration_ms: 3.4487
+  ...
+# Subtest: P2 push 运行使用独立并发组，不被 chain run 顶掉
+ok 142 - P2 push 运行使用独立并发组，不被 chain run 顶掉
+  ---
+  duration_ms: 0.859711
+  ...
+# Subtest: P3 push 仍保留且只跑 1 轮、不自调度
+ok 143 - P3 push 仍保留且只跑 1 轮、不自调度
+  ---
+  duration_ms: 0.660064
+  ...
+# Subtest: P4 chain 事件之间仍互斥（防双链守卫未丢）
+ok 144 - P4 chain 事件之间仍互斥（防双链守卫未丢）
+  ---
+  duration_ms: 1.609414
+  ...
+# Subtest: P5 同步步骤仍带失败兜底，不中断链路
+ok 145 - P5 同步步骤仍带失败兜底，不中断链路
+  ---
+  duration_ms: 0.987017
+  ...
+# Subtest: P1 腾讯格式：价格/高/低/昨收/今开/时刻全部就位
+ok 146 - P1 腾讯格式：价格/高/低/昨收/今开/时刻全部就位
+  ---
+  duration_ms: 1.11241
+  ...
+# Subtest: P2 新浪格式同样可解析（换源不换口径，解析器同一套）
+ok 147 - P2 新浪格式同样可解析（换源不换口径，解析器同一套）
+  ---
+  duration_ms: 0.286611
+  ...
+# Subtest: P3 脏数据一律返回 null，绝不返回半截对象
+ok 148 - P3 脏数据一律返回 null，绝不返回半截对象
+  ---
+  duration_ms: 0.164523
+  ...
+# Subtest: F1 GBK 响应能正确解码出价格与中文名
+ok 149 - F1 GBK 响应能正确解码出价格与中文名
+  ---
+  duration_ms: 0.561323
+  ...
+# Subtest: F2 非 200 必须抛错（交给调度器累计失败，不静默当成功）
+ok 150 - F2 非 200 必须抛错（交给调度器累计失败，不静默当成功）
+  ---
+  duration_ms: 0.859411
+  ...
+# Subtest: F3 请求挂死必须被超时中断，不能把 15 秒节拍拖死
+ok 151 - F3 请求挂死必须被超时中断，不能把 15 秒节拍拖死
+  ---
+  duration_ms: 40.509331
+  ...
+# Subtest: F4 请求 URL 指向腾讯 hf_XAU 且带防缓存时间戳
+ok 152 - F4 请求 URL 指向腾讯 hf_XAU 且带防缓存时间戳
+  ---
+  duration_ms: 28.976126
+  ...
+# Subtest: L1 实时 tick 比快照新 → 用 tick 价，来源标 tencent
+ok 153 - L1 实时 tick 比快照新 → 用 tick 价，来源标 tencent
+  ---
+  duration_ms: 1.426903
+  ...
+# Subtest: L2 tick 过旧（超 2 分钟）不得覆盖快照，避免长期挂后台回来看到僵尸价
+ok 154 - L2 tick 过旧（超 2 分钟）不得覆盖快照，避免长期挂后台回来看到僵尸价
+  ---
+  duration_ms: 0.542924
+  ...
+# Subtest: L3 无 tick 时行为与 v2.5.3 完全一致（纯快照）
+ok 155 - L3 无 tick 时行为与 v2.5.3 完全一致（纯快照）
+  ---
+  duration_ms: 1.038837
+  ...
+# Subtest: V1 实时模式：涨用红、跌用绿，时效行显示本次更新时刻
+ok 156 - V1 实时模式：涨用红、跌用绿，时效行显示本次更新时刻
+  ---
+  duration_ms: 9.918525
+  ...
+# Subtest: V4 实时通道连续 3 个节拍没回来，必须明说停顿，不许继续显示「实时」
+ok 157 - V4 实时通道连续 3 个节拍没回来，必须明说停顿，不许继续显示「实时」
+  ---
+  duration_ms: 0.22741
+  ...
+# Subtest: V5 首屏不等 15 秒：整页刷新完成后要立刻补一拍
+ok 158 - V5 首屏不等 15 秒：整页刷新完成后要立刻补一拍
+  ---
+  duration_ms: 1.505073
+  ...
+# Subtest: V2 快照模式：明确标「快照」，不冒充实时
+ok 159 - V2 快照模式：明确标「快照」，不冒充实时
+  ---
+  duration_ms: 0.226418
+  ...
+# Subtest: V6 涨跌幅四舍五入到 0 时，不许显示「-0.00%」
+ok 160 - V6 涨跌幅四舍五入到 0 时，不许显示「-0.00%」
+  ---
+  duration_ms: 0.186898
+  ...
+# Subtest: V3 缺昨收时不硬算涨跌幅，返回 --
+ok 161 - V3 缺昨收时不硬算涨跌幅，返回 --
+  ---
+  duration_ms: 0.159946
+  ...
+# Subtest: K1 默认节拍就是 15 秒（不是 10 分钟）
+ok 162 - K1 默认节拍就是 15 秒（不是 10 分钟）
+  ---
+  duration_ms: 0.052211
+  ...
+# Subtest: K2 页面隐藏时不发起请求（省流量、避免无意义轮询）
+ok 163 - K2 页面隐藏时不发起请求（省流量、避免无意义轮询）
+  ---
+  duration_ms: 0.175791
+  ...
+# Subtest: K3 成功走 onQuote 并写入 latest；失败累加计数走 onError
+ok 164 - K3 成功走 onQuote 并写入 latest；失败累加计数走 onError
+  ---
+  duration_ms: 0.876938
+  ...
+# Subtest: K4 stop 之后定时器与手动 tick 都停掉（防内存泄漏/后台偷跑）
+ok 165 - K4 stop 之后定时器与手动 tick 都停掉（防内存泄漏/后台偷跑）
+  ---
+  duration_ms: 0.132383
+  ...
+# Subtest: K5 重叠保护：上一轮没回来时不得并发再发一趟
+ok 166 - K5 重叠保护：上一轮没回来时不得并发再发一趟
+  ---
+  duration_ms: 0.246809
+  ...
+# Subtest: G1 版本号升到 2.6.0 且页面同步显示
+ok 167 - G1 版本号升到 2.6.0 且页面同步显示
+  ---
+  duration_ms: 1.762109
+  ...
+# Subtest: G2 渲染层必须给实时价格留挂载点（找不到节点就白改）
+ok 168 - G2 渲染层必须给实时价格留挂载点（找不到节点就白改）
+  ---
+  duration_ms: 0.805347
+  ...
+# Subtest: G3 配置指向腾讯 hf_XAU，且不再回退 gold-api
+ok 169 - G3 配置指向腾讯 hf_XAU，且不再回退 gold-api
+  ---
+  duration_ms: 0.471936
+  ...
+# Subtest: G4 反向依赖禁止：realtime 不得 import 渲染层或装配层（否则成环）
+ok 170 - G4 反向依赖禁止：realtime 不得 import 渲染层或装配层（否则成环）
+  ---
+  duration_ms: 1.170028
+  ...
+# Subtest: G5 sourceB 只读 latest tick，不自己发请求（抓取职责单点）
+ok 171 - G5 sourceB 只读 latest tick，不自己发请求（抓取职责单点）
+  ---
+  duration_ms: 0.483854
+  ...
+1..171
+# tests 171
+# suites 0
+# pass 171
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 161.371282
