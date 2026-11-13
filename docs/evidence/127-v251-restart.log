@@ -1,0 +1,25 @@
+# v2.5.1 链路换代与 checkedAt 实测  2026-11-13T13:38:57Z
+
+## 1. 取消旧代码运行并立即重启
+cancel 43430927723 (旧代码，13:07 启动)
+dispatch 43435034296 (新代码 c07ba6c，13:35:51 启动)
+
+## 2. 新代码首轮写入的 meta
+{
+  "checkedAt": "2026-11-13T13:36:09.120Z",
+  "syncedAt": "2026-11-13T13:06:47.659Z",
+  "sourceUpdatedAt": 1794572613348,
+  "source": "git202526/xau-desk-data/data.json",
+  "bytes": 19435,
+  "trades": 4,
+  "mode": "actions"
+}
+
+解读：checkedAt 为 2.7 分钟前（刚轮询过），syncedAt 停在 32 分钟前（内容确实未变）
+→ 两个时间语义已分离，页面不会再把「流水没动」误报成「数据陈旧」
+
+## 3. 运行序列
+2026-11-13T13:35:51Z 43435034296 workflow_dispatch in_progress/ c07ba6c
+2026-11-13T13:28:32Z 43433946593 push completed/cancelled c07ba6c
+2026-11-13T13:14:53Z 43432014260 push completed/cancelled 7071302
+2026-11-13T13:07:27Z 43430927723 workflow_dispatch completed/cancelled 9cf3261
