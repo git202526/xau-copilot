@@ -1,13 +1,13 @@
 {
   "symbol": "MACRO",
-  "asOf": "2026-11-15T21:18:13.066Z",
+  "asOf": "2026-11-15T21:28:18.567Z",
   "sources": {
     "vix": "cnbc",
     "tnx": "cnbc",
     "dxy": "cnbc"
   },
   "dxy": 103.41,
-  "dxyPrev": 103.17,
+  "dxyPrev": 103.41,
   "tnx": 5.14,
   "tnxPrev": 5.1,
   "vix": 19.3,
