@@ -136,6 +136,7 @@ function buildSignals(B, C, cfg) {
 function degraded(headline, text, signals) {
   return {
     scenario: "degraded", conf: "degraded", tone: "gray", dir: 0, score: null,
+    weights: { bull: 0, bear: 0, total: 0, voted: 0 },
     headline, text, detail: "仅外部行情 · 不出方向", signals: signals || [],
   };
 }
@@ -163,17 +164,9 @@ export function decideTechnical({ B = null, C = null, stale = false, cfg = {} } 
 
   const signals = buildSignals(B, Cx, cfg);
 
-  /* 优先级 4：VIX 暴涨 → 宏观避险，技术面失效 */
-  if (Cx.mode === "risk_off") {
-    return {
-      scenario: "risk_off", conf: "low", tone: "violet", dir: 0, score: null,
-      headline: "避险模式",
-      text: "VIX 单日暴涨逾 20%，外部宏观进入恐慌定价。技术面信号此时容易失效，先降杠杆、留子弹，不追涨不抄底。",
-      detail: "宏观极值拦截优先于技术信号", signals,
-    };
-  }
-
-  /* 加权投票：只统计 dir≠0 且 weight>0 的项 */
+  /* 加权投票：只统计 dir≠0 且 weight>0 的项。
+     v2.8.0：统计提到 risk_off 判断之前，任何 scenario 都带出投票权重，
+     供 core/ladder.js 换算「距离中性还差几分」，避免两处各算一遍。 */
   let bull = 0, bear = 0, voted = 0;
   for (const s of signals) {
     if (!s.weight || s.dir === 0) continue;
@@ -183,10 +176,21 @@ export function decideTechnical({ B = null, C = null, stale = false, cfg = {} } 
   const total = bull + bear;
   const score = total > 0 ? Math.round((bull / total) * 100) : 50;
   const conf = voted >= 7 && Math.abs(score - 50) >= 30 ? "high" : voted >= 5 ? "medium" : "low";
+  const weights = { bull: +bull.toFixed(2), bear: +bear.toFixed(2), total: +total.toFixed(2), voted };
+
+  /* 优先级 4：VIX 暴涨 → 宏观避险，技术面失效 */
+  if (Cx.mode === "risk_off") {
+    return {
+      scenario: "risk_off", conf: "low", tone: "violet", dir: 0, score: null, weights,
+      headline: "避险模式",
+      text: "VIX 单日暴涨逾 20%，外部宏观进入恐慌定价。技术面信号此时容易失效，先降杠杆、留子弹，不追涨不抄底。",
+      detail: "宏观极值拦截优先于技术信号", signals,
+    };
+  }
 
   if (score >= th.bullScore) {
     return {
-      scenario: "tech_bull", conf, tone: "amber", dir: 1, score,
+      scenario: "tech_bull", conf, tone: "amber", dir: 1, score, weights,
       headline: "外部技术面偏多",
       text: `${bull.toFixed(1)} / ${total.toFixed(1)} 权重的外部指标同向偏多，价格站上均线、动能与评级一致。按计划分批参与，不追高。`,
       detail: `外部指标得分 ${score} / 100`, signals,
@@ -194,14 +198,14 @@ export function decideTechnical({ B = null, C = null, stale = false, cfg = {} } 
   }
   if (score <= th.bearScore) {
     return {
-      scenario: "tech_bear", conf, tone: "indigo", dir: -1, score,
+      scenario: "tech_bear", conf, tone: "indigo", dir: -1, score, weights,
       headline: "外部技术面偏空",
       text: `${bear.toFixed(1)} / ${total.toFixed(1)} 权重的外部指标同向偏空，均线压制、动能转弱。减少逆势补仓，等信号收敛。`,
       detail: `外部指标得分 ${score} / 100`, signals,
     };
   }
   return {
-    scenario: "tech_neutral", conf: "low", tone: "gray", dir: 0, score,
+    scenario: "tech_neutral", conf: "low", tone: "gray", dir: 0, score, weights,
     headline: "外部信号胶着",
     text: `外部指标多空各半（得分 ${score} / 100），未形成一致方向。区间中轴，多看少动，等信号收敛。`,
     detail: `外部指标得分 ${score} / 100`, signals,

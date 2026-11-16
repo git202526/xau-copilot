@@ -52,7 +52,14 @@ const ageText = (min) =>
 const ico = {
   warn: `<svg viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>`,
   check: `<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>`,
+  cross: `<svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
   info: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
+};
+
+/* 条件勾叉：独立常量，渲染时加 cond-ico 类（尺寸/描边由 CSS 控，避免被 svg 默认 300×150 撑开） */
+const COND_ICO = {
+  ok: `<svg class="cond-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>`,
+  no: `<svg class="cond-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
 };
 
 /* ───────────────── M0 晨报 ───────────────── */
@@ -327,6 +334,37 @@ export function renderGrid(s) {
       ? ` · 可分配 ${num(g.budget, 2)} 克${g.unmarked ? `（已扣未标档 ${num(g.unmarked, 1)} 克）` : ""}`
       : "";
 
+  /* v2.8.0：熔断条只说「等转为中性」，没给门槛。这里按用户要求，
+     在提醒条下方把「空 / 中性 / 多」的成立条件逐条列出来并打 ✔ / ✗。 */
+  const L = g.ladder;
+  const ladderBlock = L && Array.isArray(L.tiers) && L.tiers.length
+    ? `<div class="tech-ladder">
+        <div class="tl-head">
+          <span class="tl-title">技术面三档成立条件</span>
+          <span class="tl-sum">${esc(L.summary || "")}</span>
+        </div>
+        ${L.tiers
+          .map(
+            (tier) => `<div class="tl-tier ${tier.active ? "on" : ""}">
+          <div class="tl-trow">
+            <span class="tl-name">${esc(tier.label)}</span>
+            <span class="tl-flag">${tier.active ? "成立" : "不成立"}</span>
+          </div>
+          ${(tier.conds || [])
+            .map(
+              (c) => `<div class="cond ${c.ok ? "ok" : "no"}" data-k="${c.id === "score" ? "gate" : "pre"}">
+            ${c.ok ? COND_ICO.ok : COND_ICO.no}
+            <span class="cond-t">${esc(c.text)}</span>${c.note ? `<span class="cond-n">${esc(c.note)}</span>` : ""}
+          </div>`,
+            )
+            .join("")}
+        </div>`,
+          )
+          .join("")}
+        ${L.hint ? `<div class="tl-hint">${esc(L.hint)}</div>` : ""}
+      </div>`
+    : "";
+
   box.innerHTML = `<section class="card rise ${fuse ? "fuse" : ""}" data-tone="${barTone}">
     <div class="c-head"><span class="c-no">04</span><span class="c-title">网格效率与熔断</span>
       ${fuse ? `<span class="badge b-high" style="margin-left:auto">熔断</span>` : g.ratioPct != null ? `<span class="badge ${g.ratioPct < 70 ? "b-low" : "b-deg"}" style="margin-left:auto">${g.ratioPct}%</span>` : ""}
@@ -343,6 +381,7 @@ export function renderGrid(s) {
       ${fuse ? ico.warn : ico.info}
       <span>${esc(g.text)}</span>
     </div>
+    ${ladderBlock}
   </section>`;
 }
 

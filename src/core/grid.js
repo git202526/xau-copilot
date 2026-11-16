@@ -16,7 +16,7 @@
 const n = (v) => (v == null || v === "" ? null : Number.isFinite(Number(v)) ? Number(v) : null);
 const OZ = 31.1034768;
 
-export function assessGrid({ A, gear = null, atrUsdOz, fx, priceUsdOz, techDir = 0 }) {
+export function assessGrid({ A, gear = null, atrUsdOz, fx, priceUsdOz, techDir = 0, ladder = null }) {
   const plan = (A && A.plan) || {};
   /* 档距口径：优先 gear（老应用同口径）；无 gear 时回退历史字段，仅为老调用方兼容 */
   const spacingUsd = gear && gear.d != null ? n(gear.d) : n(plan.baseSpacing);
@@ -91,6 +91,7 @@ export function assessGrid({ A, gear = null, atrUsdOz, fx, priceUsdOz, techDir =
     target: gear ? gear.target : null,
     targetEff: gear ? gear.targetEff : null,
     openIdx: -1,
+    ladder: ladder || null,
     fuse: state === "fuse",
   };
 }
