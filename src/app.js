@@ -6,6 +6,7 @@ import { CONFIG } from "./config.js";
 import { loadB } from "./sourceB.js";
 import { loadC, loadFx, usdOzToCnyGram, OZ_TO_GRAM } from "./sourceC.js";
 import { normalizeA, degraded } from "./core/normalize.js";
+import { buildGearPlan } from "./core/gear.js";
 import { decideTechnical } from "./core/technical.js";
 import { assess } from "./core/risk.js";
 import { assessGrid } from "./core/grid.js";
@@ -82,16 +83,42 @@ export async function buildState(ctx = {}) {
     cfg,
   });
 
+  /* 档位阶梯：唯一口径来源（与老应用 gearBase/planBase/reallocPlan 逐函数对齐）。
+     必须在 risk/grid 之前算出来 —— 额度防线的「下一档要买多少克」也要用它的口径。 */
+  const gear = buildGearPlan({
+    cfg: A.gearCfg || {},
+    unmarkedGrams: A.plan ? A.plan.unmarkedGrams : 0,
+    heldGrams: A.position ? A.position.grams : null,
+    avgCostCny: A.position ? A.position.avgCost : null,
+    priceUsd: B.priceUsdOz,
+    atrUsd: B.atr14,
+    fx: fx.rate,
+  });
+
+  /* 把「下一档」换成档位表算出来的真实计划克重（旧实现按克重比例反推，档号会错两档） */
+  const planView = { ...(A.plan || {}) };
+  if (gear.ok && gear.nextIdx) {
+    const lv = gear.levels[gear.nextIdx - 1];
+    planView.nextBuyGrams = lv.planGrams;
+    planView.nextBuyAmount = lv.amountCny != null ? lv.amountCny / 10000 : null;
+    planView.ratio =
+      planView.remainingFunds != null && planView.nextBuyAmount > 0
+        ? planView.remainingFunds / planView.nextBuyAmount
+        : null;
+    planView.nextIdx = gear.nextIdx;
+  }
+  const Aplan = { ...A, plan: planView };
+
   /* 下游模块统一接收外部方向 technical.dir；账户事实数据（浮亏/均价/资金/档距）仍来自 A */
   const risk = assess({
-    A,
+    A: Aplan,
     priceCnyGram,
     macro: C,
     stale: B.ok ? staleB : false,
     techDir: technical.dir,
   });
 
-  const grid = assessGrid({ A, atrUsdOz: B.atr14, fx: fx.rate, priceUsdOz: B.priceUsdOz, techDir: technical.dir });
+  const grid = assessGrid({ A: Aplan, gear, atrUsdOz: B.atr14, fx: fx.rate, priceUsdOz: B.priceUsdOz, techDir: technical.dir });
   const rebal = rebalance({ A, spreadPct: cfg.rebalanceSpreadPct, priceCnyGram });
   const disc = discipline({ A, techDir: technical.dir, technical });
 

@@ -235,15 +235,37 @@ body{
 .row .v.red{color:var(--red)} .row .v.green{color:var(--green)} .row .v.amber{color:var(--amber)}
 .mini{font-size:9.5px;color:var(--tx-3);margin-left:5px;font-weight:400}
 
-/* 档位条 */
-.levels{display:flex;gap:3px;margin-top:9px;align-items:flex-end;height:30px}
-.levels i{
-  flex:1;border-radius:2px 2px 0 0;background:rgba(255,255,255,.07);
-  position:relative;transition:background .2s;
+/* 档位表（v2.7.0：每档可点，点开看该档分配了多少克） */
+.lv-mode{margin-top:8px;font-size:10px;line-height:1.55;color:var(--tx-3);letter-spacing:.2px}
+.lv-list{margin-top:8px;border-top:1px solid var(--line-2)}
+.lv-row{
+  display:grid;grid-template-columns:26px 1fr auto 48px 14px;align-items:center;gap:10px;
+  width:100%;min-height:44px;padding:8px 2px;margin:0;border:0;border-bottom:1px solid var(--line-2);
+  background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
 }
-.levels i.on{background:rgba(245,166,35,.34)}
-.levels i.next{background:rgba(245,166,35,.6);box-shadow:0 0 0 1px rgba(245,166,35,.35)}
-.levels i.now{background:rgba(245,166,35,.72)}
+.lv-row:focus-visible{outline:2px solid var(--gold);outline-offset:-2px;border-radius:6px}
+.lv-row .lv-no{
+  font-family:var(--mono);font-size:10px;color:var(--tx-3);text-align:center;
+  border:1px solid var(--line);border-radius:5px;padding:2px 0;
+}
+.lv-row .lv-px{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:-.2px}
+.lv-row .lv-g{font-family:var(--mono);font-size:11px;color:var(--tx-2);white-space:nowrap}
+.lv-row .lv-dp{font-family:var(--mono);font-size:10.5px;color:var(--tx-3);white-space:nowrap;text-align:right}
+.lv-row .lv-caret{width:14px;height:14px;stroke:var(--tx-3);stroke-width:2;fill:none;transition:transform .18s}
+.lv-row.open .lv-caret{transform:rotate(90deg)}
+.lv-row.next .lv-no{border-color:rgba(245,166,35,.55);color:var(--gold)}
+.lv-row.next .lv-px{color:var(--gold)}
+.lv-row.on .lv-no{background:rgba(245,166,35,.14)}
+.lv-row.open{background:rgba(255,255,255,.025)}
+.lv-detail{
+  padding:9px 10px 10px;margin:2px 0 8px;border-radius:8px;
+  background:rgba(255,255,255,.03);border:1px solid var(--line);
+  font-size:11.5px;display:grid;gap:6px;
+}
+.lv-detail .kv{display:flex;align-items:baseline;gap:10px;color:var(--tx-2)}
+.lv-detail .kv span{flex:0 0 auto;font-size:10.5px;color:var(--tx-3)}
+.lv-detail .kv b{margin-left:auto;font-family:var(--mono);font-weight:600;color:var(--tx);text-align:right}
 .lv-next{margin-top:6px;font-size:10.5px;color:var(--tx-2);font-family:var(--mono);letter-spacing:.2px}
 
 /* 账户条 */
@@ -352,7 +374,7 @@ body{
 <body>
 <div class="shell">
   <header class="topbar">
-    <div class="brand"><b>XAU Copilot</b><span>Decision Deck</span><span class="ver" id="app-ver">v2.6.0</span></div>
+    <div class="brand"><b>XAU Copilot</b><span>Decision Deck</span><span class="ver" id="app-ver">v2.7.0</span></div>
     <div class="tb-right">
       <span class="dot" id="live-dot" title="数据源状态"></span>
       <button class="iconbtn" id="btn-refresh" title="刷新" aria-label="刷新">

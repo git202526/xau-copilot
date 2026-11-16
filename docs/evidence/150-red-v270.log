@@ -1,0 +1,842 @@
+# v2.7.0 红灯：v2.6.0 基线 + gear 骨架（断言级失败，不是模块缺失）
+# 2026-11-16T13:38:51+08:00
+# 复现方式：git worktree add /tmp/red-v270 v2.6.0，拷入 tests/v270.test.mjs 与 gear.js 骨架
+
+TAP version 13
+# Subtest: D1 第 1 档 = 高点 ×（1 − 起始跌幅），不是按终止跌幅均分的起点
+not ok 1 - D1 第 1 档 = 高点 ×（1 − 起始跌幅），不是按终止跌幅均分的起点
+  ---
+  duration_ms: 1.227941
+  location: '/tmp/red-v270/tests/v270.test.mjs:70:1'
+  failureType: 'testCodeFailure'
+  error: 'p1 期望 4038.56±0.01，实际 undefined'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    near (file:///tmp/red-v270/tests/v270.test.mjs:37:41)
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:72:3)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.start (node:internal/test_runner/test:829:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: D2a α×ATR：档距 = α × ATR14，与终止跌幅无关
+not ok 2 - D2a α×ATR：档距 = α × ATR14，与终止跌幅无关
+  ---
+  duration_ms: 0.160737
+  location: '/tmp/red-v270/tests/v270.test.mjs:78:1'
+  failureType: 'testCodeFailure'
+  error: '档距 期望 104.992992±0.01，实际 null'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    near (file:///tmp/red-v270/tests/v270.test.mjs:37:41)
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:80:3)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: D2b 目标反解：档距 =（p1 − 目标）/ 前 k 档权重重心
+not ok 3 - D2b 目标反解：档距 =（p1 − 目标）/ 前 k 档权重重心
+  ---
+  duration_ms: 0.40091
+  location: '/tmp/red-v270/tests/v270.test.mjs:84:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - 'target'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'target'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:93:10)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D2c 区间均分：档距 = 终止−起始 均分 n 档
+not ok 4 - D2c 区间均分：档距 = 终止−起始 均分 n 档
+  ---
+  duration_ms: 0.886959
+  location: '/tmp/red-v270/tests/v270.test.mjs:99:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - 'range'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'range'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:108:10)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D2d ATR 缺失时退化为 1%×高点，不返回 null 档距
+not ok 5 - D2d ATR 缺失时退化为 1%×高点，不返回 null 档距
+  ---
+  duration_ms: 0.256684
+  location: '/tmp/red-v270/tests/v270.test.mjs:113:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - 'fallback'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fallback'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:122:10)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D3 α 过大时按终止跌幅夹取档距（只压不拉），clamped 可见
+not ok 6 - D3 α 过大时按终止跌幅夹取档距（只压不拉），clamped 可见
+  ---
+  duration_ms: 0.113577
+  location: '/tmp/red-v270/tests/v270.test.mjs:127:1'
+  failureType: 'testCodeFailure'
+  error: 'capD 期望 190.65759999999995±0.01，实际 undefined'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    near (file:///tmp/red-v270/tests/v270.test.mjs:37:41)
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:137:3)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D3b α 正常时不得被夹取拉深（只压不拉）
+not ok 7 - D3b α 正常时不得被夹取拉深（只压不拉）
+  ---
+  duration_ms: 0.082718
+  location: '/tmp/red-v270/tests/v270.test.mjs:143:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:145:10)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D4 每档克重 =（TOTAL − 未标记档位持仓）× 权重占比
+not ok 8 - D4 每档克重 =（TOTAL − 未标记档位持仓）× 权重占比
+  ---
+  duration_ms: 0.078228
+  location: '/tmp/red-v270/tests/v270.test.mjs:150:1'
+  failureType: 'testCodeFailure'
+  error: '可分配预算 期望 71.1152±0.001，实际 undefined'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    near (file:///tmp/red-v270/tests/v270.test.mjs:37:41)
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:159:3)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D5 跌破档的待补额度按权重下沉给未失效档，总量守恒
+not ok 9 - D5 跌破档的待补额度按权重下沉给未失效档，总量守恒
+  ---
+  duration_ms: 0.308022
+  location: '/tmp/red-v270/tests/v270.test.mjs:165:1'
+  failureType: 'testCodeFailure'
+  error: 'Σ每档计划必须等于可分配预算 期望 undefined±0.000001，实际 0'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    near (file:///tmp/red-v270/tests/v270.test.mjs:37:41)
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:168:3)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D5b 现价高于全部档位时不下沉（无失效档）
+not ok 10 - D5b 现价高于全部档位时不下沉（无失效档）
+  ---
+  duration_ms: 0.248565
+  location: '/tmp/red-v270/tests/v270.test.mjs:175:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'planGrams')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:184:20)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D6 与老应用实拍逐档对齐：档位价与分配克重
+not ok 11 - D6 与老应用实拍逐档对齐：档位价与分配克重
+  ---
+  duration_ms: 0.174705
+  location: '/tmp/red-v270/tests/v270.test.mjs:189:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'planGrams')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:193:20)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D7 下一档 = 现价下方第一个未买满的档（不是按克重比例反推）
+not ok 12 - D7 下一档 = 现价下方第一个未买满的档（不是按克重比例反推）
+  ---
+  duration_ms: 0.184886
+  location: '/tmp/red-v270/tests/v270.test.mjs:199:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    undefined !== 3
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 3
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:201:10)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D8 gearMarks 记录已买克重 → 已补/待补/超买三态正确
+not ok 13 - D8 gearMarks 记录已买克重 → 已补/待补/超买三态正确
+  ---
+  duration_ms: 0.132277
+  location: '/tmp/red-v270/tests/v270.test.mjs:209:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'boughtGrams')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:222:20)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: D9 没有档位参数时不抛异常，返回空档位并标记 ok=false
+ok 14 - D9 没有档位参数时不抛异常，返回空档位并标记 ok=false
+  ---
+  duration_ms: 0.445219
+  ...
+# Subtest: G1 网格效率的「当前档距」用对齐后的档距，不是区间均分的老值
+not ok 15 - G1 网格效率的「当前档距」用对齐后的档距，不是区间均分的老值
+  ---
+  duration_ms: 0.280453
+  location: '/tmp/red-v270/tests/v270.test.mjs:243:1'
+  failureType: 'testCodeFailure'
+  error: '档距 期望 null±0.01，实际 190.7'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    near (file:///tmp/red-v270/tests/v270.test.mjs:37:41)
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:246:3)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: G2 ATR/档距 用同一口径的 ATR 与档距，比值同步变化
+not ok 16 - G2 ATR/档距 用同一口径的 ATR 与档距，比值同步变化
+  ---
+  duration_ms: 0.135027
+  location: '/tmp/red-v270/tests/v270.test.mjs:251:1'
+  failureType: 'testCodeFailure'
+  error: '比值 期望 Infinity±0.000001，实际 0.47462611431567914'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    near (file:///tmp/red-v270/tests/v270.test.mjs:37:41)
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:254:3)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: G2b 无 gear 时保留旧调用路径（baseSpacing 兜底），不抛
+ok 17 - G2b 无 gear 时保留旧调用路径（baseSpacing 兜底），不抛
+  ---
+  duration_ms: 0.073098
+  ...
+# Subtest: V1 六个档位都要渲染成可点的行（button + data-lv + aria-expanded）
+not ok 18 - V1 六个档位都要渲染成可点的行（button + data-lv + aria-expanded）
+  ---
+  duration_ms: 10.428871
+  location: '/tmp/red-v270/tests/v270.test.mjs:278:1'
+  failureType: 'testCodeFailure'
+  error: '第1档行'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <section class="card rise " data-tone="amber">
+        <div class="c-head"><span class="c-no">04</span><span class="c-title">网格效率与熔断</span>
+          <span class="badge b-low" style="margin-left:auto">47%</span>
+        </div>
+        <div class="rows">
+          <div class="row"><span class="k">外部 ATR14</span><span class="v">23.08 <span class="mini">元/克</span></span></div>
+          <div class="row"><span class="k">当前档距</span><span class="v">48.62 <span class="mini">元/克</span></span></div>
+          <div class="row"><span class="k">ATR / 档距</span><span class="v" style="color:var(--tx-2);font-size:11px">47%<span class="mini"> · 6 档 · 高点 4696</span></span></div>
+        </div>
+        
+        
+        <div class="alert-strip warn">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>外部 ATR14 仅 23.08 元/克，低于档距 48.62 的 70%。价格波动撑不满一格，触发频率会明显下降，建议缩小档距或观望。</span>
+        </div>
+      </section>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:283:12)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: V2 点开某档后展示该档分配克重、待补、金额与距现价
+not ok 19 - V2 点开某档后展示该档分配克重、待补、金额与距现价
+  ---
+  duration_ms: 0.322752
+  location: '/tmp/red-v270/tests/v270.test.mjs:290:1'
+  failureType: 'testCodeFailure'
+  error: '第3档要展开'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <section class="card rise " data-tone="amber">
+        <div class="c-head"><span class="c-no">04</span><span class="c-title">网格效率与熔断</span>
+          <span class="badge b-low" style="margin-left:auto">47%</span>
+        </div>
+        <div class="rows">
+          <div class="row"><span class="k">外部 ATR14</span><span class="v">23.08 <span class="mini">元/克</span></span></div>
+          <div class="row"><span class="k">当前档距</span><span class="v">48.62 <span class="mini">元/克</span></span></div>
+          <div class="row"><span class="k">ATR / 档距</span><span class="v" style="color:var(--tx-2);font-size:11px">47%<span class="mini"> · 6 档 · 高点 4696</span></span></div>
+        </div>
+        
+        
+        <div class="alert-strip warn">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>外部 ATR14 仅 23.08 元/克，低于档距 48.62 的 70%。价格波动撑不满一格，触发频率会明显下降，建议缩小档距或观望。</span>
+        </div>
+      </section>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:294:10)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: V2b 展开任意一档都出明细，不限于「下一档」
+not ok 20 - V2b 展开任意一档都出明细，不限于「下一档」
+  ---
+  duration_ms: 0.276013
+  location: '/tmp/red-v270/tests/v270.test.mjs:304:1'
+  failureType: 'testCodeFailure'
+  error: '第5档要展开'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <section class="card rise " data-tone="amber">
+        <div class="c-head"><span class="c-no">04</span><span class="c-title">网格效率与熔断</span>
+          <span class="badge b-low" style="margin-left:auto">47%</span>
+        </div>
+        <div class="rows">
+          <div class="row"><span class="k">外部 ATR14</span><span class="v">23.08 <span class="mini">元/克</span></span></div>
+          <div class="row"><span class="k">当前档距</span><span class="v">48.62 <span class="mini">元/克</span></span></div>
+          <div class="row"><span class="k">ATR / 档距</span><span class="v" style="color:var(--tx-2);font-size:11px">47%<span class="mini"> · 6 档 · 高点 4696</span></span></div>
+        </div>
+        
+        
+        <div class="alert-strip warn">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>外部 ATR14 仅 23.08 元/克，低于档距 48.62 的 70%。价格波动撑不满一格，触发频率会明显下降，建议缩小档距或观望。</span>
+        </div>
+      </section>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:309:10)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: V3 口径要写在卡面上（档距怎么来的可核对）
+not ok 21 - V3 口径要写在卡面上（档距怎么来的可核对）
+  ---
+  duration_ms: 0.477688
+  location: '/tmp/red-v270/tests/v270.test.mjs:313:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /α/. Input:
+    
+    '<section class="card rise " data-tone="amber">\n' +
+      '    <div class="c-head"><span class="c-no">04</span><span class="c-title">网格效率与熔断</span>\n' +
+      '      <span class="badge b-low" style="margin-left:auto">47%</span>\n' +
+      '    </div>\n' +
+      '    <div class="rows">\n' +
+      '      <div class="row"><span class="k">外部 ATR14</span><span class="v">23.08 <span class="mini">元/克</span></span></div>\n' +
+      '      <div class="row"><span class="k">当前档距</span><span class="v">48.62 <span class="mini">元/克</span></span></div>\n' +
+      '      <div class="row"><span class="k">ATR / 档距</span><span class="v" style="color:var(--tx-2);font-size:11px">47%<span class="mini"> · 6 档 · 高点 4696</span></span></div>\n' +
+      '    </div>\n' +
+      '    \n' +
+      '    \n' +
+      '    <div class="alert-strip warn">\n' +
+      '      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>\n' +
+      '      <span>外部 ATR14 仅 23.08 元/克，低于档距 48.62 的 70%。价格波动撑不满一格，触发频率会明显下降，建议缩小档距或观望。</span>\n' +
+      '    </div>\n' +
+      '  </section>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <section class="card rise " data-tone="amber">
+        <div class="c-head"><span class="c-no">04</span><span class="c-title">网格效率与熔断</span>
+          <span class="badge b-low" style="margin-left:auto">47%</span>
+        </div>
+        <div class="rows">
+          <div class="row"><span class="k">外部 ATR14</span><span class="v">23.08 <span class="mini">元/克</span></span></div>
+          <div class="row"><span class="k">当前档距</span><span class="v">48.62 <span class="mini">元/克</span></span></div>
+          <div class="row"><span class="k">ATR / 档距</span><span class="v" style="color:var(--tx-2);font-size:11px">47%<span class="mini"> · 6 档 · 高点 4696</span></span></div>
+        </div>
+        
+        
+        <div class="alert-strip warn">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>外部 ATR14 仅 23.08 元/克，低于档距 48.62 的 70%。价格波动撑不满一格，触发频率会明显下降，建议缩小档距或观望。</span>
+        </div>
+      </section>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:317:10)
+    Test.runInAsyncScope (node:async_hooks:211:14)
+    Test.run (node:internal/test_runner/test:931:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:629:18)
+    Test.postRun (node:internal/test_runner/test:1042:19)
+    Test.run (node:internal/test_runner/test:970:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+# Subtest: V4 渲染产物零外链、零 emoji（图标只用内联 SVG）
+ok 22 - V4 渲染产物零外链、零 emoji（图标只用内联 SVG）
+  ---
+  duration_ms: 0.325442
+  ...
+# Subtest: V5 main.js 必须为档位行做事件委托并只重画 M4（不整页刷新）
+not ok 23 - V5 main.js 必须为档位行做事件委托并只重画 M4（不整页刷新）
+  ---
+  duration_ms: 9.64026
+  location: '/tmp/red-v270/tests/v270.test.mjs:331:1'
+  failureType: 'testCodeFailure'
+  error: '要按 data-lv 找行'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    /**
+     * main.js —— 唯一调度入口
+     *
+     * 调用链严格单向：init → refreshAll → (buildState → renderAll) → 副作用
+     * 七个 render 函数之间零互调，任何交互都走 refreshAll 统一刷新。
+     */
+    import { CONFIG } from "./config.js";
+    import { buildState } from "./app.js";
+    import { renderAll, renderFailSafe, renderSpotTick } from "./render.js";
+    import { createSpotTicker, SPOT_INTERVAL_MS } from "./realtime.js";
+    import { VERSION } from "./version.js";
+    
+    const $ = (id) => document.getElementById(id);
+    const HOOK_KEY = "xau_copilot_hook_url";
+    const FOMO_KEY = "xau_copilot_fomo_dismissed";
+    
+    const ui = { state: null, timer: null, countdown: null, busy: false, spot: null };
+    
+    /* ── 骨架屏：只填充各容器内部，绝不替换容器本身（否则渲染层找不到挂载点） ── */
+    function paintSkeleton() {
+      const sk = (h, w, mb = 7) => `<div class="skel" style="height:${h}px;width:${w};margin-bottom:${mb}px"></div>`;
+      const m0 = $("m0");
+      if (m0) {
+        m0.innerHTML = `<section class="bubble"><div class="b-head"><span class="tag">AI 研判</span><time>加载中</time></div>${sk(16, "92%")}${sk(16, "64%", 0)}</section>`;
+      }
+      const titles = ["宏观雷达", "外部技术面", "账户体检", "网格效率", "再平衡", "纪律复盘"];
+      titles.forEach((t, i) => {
+        const el = $(`m${i + 1}`);
+        if (!el) return;
+        el.innerHTML = `<section class="card" style="--bar:#333">
+          <div class="c-head"><span class="c-no">0${i + 1}</span><span class="c-title">${t}</span></div>
+          ${sk(13, "74%")}${sk(13, "46%", 0)}</section>`;
+      });
+    }
+    
+    /* ── 统一刷新（唯一入口） ── */
+    async function refreshAll() {
+      if (ui.busy) return;
+      ui.busy = true;
+      const dot = $("live-dot");
+      if (dot) dot.className = "dot warn";
+      try {
+        const next = await buildState({});
+        ui.state = next;
+        renderAll(next);
+        afterRender(next);
+        /* 首屏补一拍：首笔 tick 往往在 state 就绪前就返回了（被 applySpotTick 丢弃），
+           不补的话要干等 15 秒才看到实时价。 */
+        ui.spot?.tick();
+      } catch (e) {
+        console.error("[copilot] refresh failed", e);
+        renderFailSafe(e);
+        if (dot) dot.className = "dot bad";
+      } finally {
+        ui.busy = false;
+      }
+    }
+    
+    /* ── 15 秒价格 tick：只改价格相关的 4 个节点，不整页重算 ──
+       为什么不做成 15 秒 refreshAll：buildState 要拉 4 个源 + 跑 6 个引擎，
+       15 秒重算会让决策卡与 FOMO 弹窗反复抖动，也会把 10 分钟快照的同步链打成高压。
+       价格是唯一真正需要秒级的东西，就只让它秒级。 */
+    function applySpotTick(q) {
+      const s = ui.state;
+      if (!s || !s.B || !q) return;
+      s.B.priceUsdOz = +Number(q.price).toFixed(2);
+      s.B.quote = {
+        ...(s.B.quote || {}),
+        price: s.B.priceUsdOz,
+        prevClose: q.prevClose,
+        open: q.open,
+        high: q.high,
+        low: q.low,
+        at: q.at,
+      };
+      s.B.spotSource = q.source;
+      s.B.ts = q.recvAt;
+      s.B.stale = false;
+      s.now = Date.now();
+      renderSpotTick(s);
+    }
+    
+    /* ── 渲染后的副作用：FOMO 锁 + Webhook ── */
+    function afterRender(s) {
+      maybeFomo(s);
+      maybePush(s);
+    }
+    
+    /* FOMO 锁：同日只弹一次，10 秒倒计时后才允许「强行买入」 */
+    function maybeFomo(s) {
+      if (!s.risk || !s.risk.fomoLock) return;
+      const today = new Date(s.now).toISOString().slice(0, 10);
+      let dismissed = null;
+      try {
+        dismissed = localStorage.getItem(FOMO_KEY);
+      } catch (_) {}
+      if (dismissed === today) return;
+    
+      const modal = $("fomo");
+      const txt = $("fomo-text");
+      const cd = $("fomo-cd");
+      const okBtn = $("fomo-ok");
+      if (!modal || !txt || !cd || !okBtn) return;
+    
+      txt.textContent = s.risk.fomoText || "外部技术面偏空，今日仍有买入操作。是否确认强行买入？";
+      modal.hidden = false;
+    
+      let left = s.risk.fomoCountdown || 10;
+      okBtn.disabled = true;
+      cd.innerHTML = `${left}<small>秒后可确认</small>`;
+      if (ui.countdown) clearInterval(ui.countdown);
+      ui.countdown = setInterval(() => {
+        left -= 1;
+        if (left <= 0) {
+          clearInterval(ui.countdown);
+          ui.countdown = null;
+          cd.innerHTML = `0<small>可确认</small>`;
+          okBtn.disabled = false;
+          return;
+        }
+        cd.innerHTML = `${left}<small>秒后可确认</small>`;
+      }, 1000);
+    
+      const close = () => {
+        modal.hidden = true;
+        if (ui.countdown) clearInterval(ui.countdown);
+        ui.countdown = null;
+        try {
+          localStorage.setItem(FOMO_KEY, today);
+        } catch (_) {}
+      };
+      $("fomo-cancel").onclick = close;
+      okBtn.onclick = () => close();
+    }
+    
+    /* Webhook：外部技术面转空 / 转多 / 熔断时静默推一次，同日同事件去重 */
+    async function maybePush(s) {
+      const url = (() => {
+        try {
+          return localStorage.getItem(HOOK_KEY) || CONFIG.webhookUrl || "";
+        } catch (_) {
+          return CONFIG.webhookUrl || "";
+        }
+      })();
+      if (!url) return;
+    
+      const t = s.technical || {};
+      const events = [];
+      if (t.scenario === "tech_bear") events.push("TECH_BEAR");
+      if (t.scenario === "tech_bull") events.push("TECH_BULL");
+      if (t.scenario === "risk_off") events.push("RISK_OFF");
+      if (s.grid && s.grid.fuse) events.push("GRID_FUSE");
+      if (!events.length) return;
+    
+      const day = new Date(s.now).toISOString().slice(0, 10);
+      for (const ev of events) {
+        const key = `xau_copilot_hook_${ev}_${day}`;
+        try {
+          if (localStorage.getItem(key)) continue;
+          localStorage.setItem(key, "1");
+        } catch (_) {}
+        const payload = {
+          app: "XAU Copilot",
+          event: ev,
+          ts: new Date(s.now).toISOString(),
+          price: s.B && s.B.priceUsdOz,
+          ma20: s.B && s.B.ma20UsdOz,
+          rating: s.B && s.B.rating ? s.B.rating.score : null,
+          rsi14: s.B && s.B.indicators ? s.B.indicators.rsi14 : null,
+          macro: s.C ? s.C.label : null,
+          confidence: t.conf,
+          headline: t.headline,
+          techScore: t.score,
+          pnl: s.risk ? s.risk.pnl : null,
+        };
+        try {
+          const ctl = new AbortController();
+          const t = setTimeout(() => ctl.abort(), 5000);
+          try {
+            await fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+              signal: ctl.signal,
+              mode: "no-cors",
+            });
+          } finally {
+            clearTimeout(t); // 成功或异常都必须释放超时器
+          }
+        } catch (e) {
+          console.warn("[copilot] webhook 静默失败：", e.message);
+        }
+      }
+    }
+    
+    /* ── 设置抽屉 ── */
+    function bindUI() {
+      const drawer = $("drawer");
+      const hookInput = $("set-hook");
+    
+      $("btn-refresh")?.addEventListener("click", () => refreshAll());
+    
+      $("btn-settings")?.addEventListener("click", () => {
+        try {
+          hookInput.value = localStorage.getItem(HOOK_KEY) || "";
+        } catch (_) {}
+        drawer.hidden = false;
+      });
+    
+      $("drawer-close")?.addEventListener("click", () => {
+        drawer.hidden = true;
+      });
+      drawer?.addEventListener("click", (e) => {
+        if (e.target === drawer) drawer.hidden = true;
+      });
+    
+      hookInput?.addEventListener("change", () => {
+        const v = hookInput.value.trim();
+        try {
+          if (v) localStorage.setItem(HOOK_KEY, v);
+          else localStorage.removeItem(HOOK_KEY);
+        } catch (_) {}
+      });
+    
+      $("btn-export")?.addEventListener("click", () => {
+        if (!ui.state) return;
+        const blob = new Blob([JSON.stringify(ui.state, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `xau-copilot-${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+    
+      $("btn-clear")?.addEventListener("click", () => {
+        if (!confirm("清除本地缓存（Webhook 配置与 FOMO 记录）？云端数据不受影响。")) return;
+        try {
+          Object.keys(localStorage)
+            .filter((k) => k.startsWith("xau_copilot_"))
+            .forEach((k) => localStorage.removeItem(k));
+        } catch (_) {}
+        alert("已清除。");
+      });
+    
+      // 页面重新可见时刷新（手机切回来不会看到过期数据）
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          refreshAll();
+          ui.spot?.tick();
+        }
+      });
+    }
+    
+    /* ── 启动 ── */
+    async function init() {
+      const ver = $("app-ver");
+      if (ver) ver.textContent = `v${VERSION}`;
+      paintSkeleton();
+      bindUI();
+    
+      /* v2.6.0：金价 15 秒独立通道（腾讯 hf_XAU，CORS 开放、与新浪同口径）。
+         与下面的 60 秒整页刷新互不干扰：整页管判断，这条只管价格数字。 */
+      ui.spot = createSpotTicker({
+        intervalMs: SPOT_INTERVAL_MS,
+        isHidden: () => document.visibilityState !== "visible",
+        onQuote: applySpotTick,
+      });
+      ui.spot.start();
+    
+      /* 先抢一拍再装配：loadB 直接读到最新价，避免首屏拿 10 分钟前的快照价
+         判成「僵尸数据」误报源异常。最多等 900ms，超时就先出内容，tick 回来再补。 */
+      await Promise.race([ui.spot.tick(), new Promise((r) => setTimeout(r, 900))]);
+      await refreshAll();
+    
+      // 现价 60 秒刷新；页面隐藏时暂停，省电省流量
+      ui.timer = setInterval(() => {
+        if (document.visibilityState === "visible") refreshAll();
+      }, 60 * 1000);
+    
+      // 页面卸载 / 进入 bfcache：清理全部定时器，防后台泄漏
+      window.addEventListener("pagehide", () => {
+        if (ui.timer) clearInterval(ui.timer);
+        if (ui.countdown) clearInterval(ui.countdown);
+        if (ui.spot) ui.spot.stop();
+        ui.timer = null;
+        ui.countdown = null;
+      });
+    }
+    
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/red-v270/tests/v270.test.mjs:333:10)
+    async Test.run (node:internal/test_runner/test:932:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:629:7)
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 3
+# fail 20
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 67.617312

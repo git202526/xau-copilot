@@ -344,11 +344,14 @@ test("K5 重叠保护：上一轮没回来时不得并发再发一趟", async ()
 
 /* ───────────────── G 结构守卫 ───────────────── */
 
-test("G1 版本号升到 2.6.0 且页面同步显示", async () => {
+test("G1 版本号三处一致（package.json / version.js / index.html），不写死具体值", async () => {
+  /* v2.7.0 起改为「互相比对」而不是钉死 2.6.0：
+     每发一版都要来改断言的守卫，最后一定会被改成「随便写个能过的」。 */
+  const pkg = JSON.parse(await read("package.json"));
   const v = await read("src/version.js");
-  assert.match(v, /2\.6\.0/);
+  assert.match(v, new RegExp(pkg.version.replace(/\./g, "\\.")), "version.js 必须与 package.json 一致");
   const html = await read("index.html");
-  assert.match(html, /v2\.6\.0/);
+  assert.match(html, new RegExp(`v${pkg.version.replace(/\./g, "\\.")}`), "页面顶部版本号必须同源");
 });
 
 test("G2 渲染层必须给实时价格留挂载点（找不到节点就白改）", async () => {

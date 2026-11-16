@@ -156,14 +156,25 @@ export async function loadB(ctx = {}) {
   }
 
   let atr14 = null;
-  if (bars.length >= 15) {
+  let atr14Src = "none";
+  /* 档距口径优先用老应用同源日线算的 ATR14（v2.7.0）：
+     网格档距 = α × ATR，ATR 换一条日线，档位价就整列漂移，
+     所以能拿到老应用那份就绝不自己另算一份。缺失才回退本仓新浪日线。 */
+  const deskAtr = n(snap.deskAtr && snap.deskAtr.atr14);
+  if (deskAtr != null && deskAtr > 0) {
+    atr14 = deskAtr;
+    atr14Src = "desk:klines";
+  } else if (bars.length >= 15) {
     const trs = [];
     for (let i = 1; i < bars.length; i++) {
       const h = n(bars[i].h ?? bars[i].high), l = n(bars[i].l ?? bars[i].low);
       const pc = n(bars[i - 1].c ?? bars[i - 1].close);
       if (h != null && l != null && pc != null) trs.push(Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)));
     }
-    if (trs.length >= 14) atr14 = trs.slice(-14).reduce((a, b) => a + b, 0) / 14;
+    if (trs.length >= 14) {
+      atr14 = trs.slice(-14).reduce((a, b) => a + b, 0) / 14;
+      atr14Src = "sina:bars";
+    }
   }
 
   const ratingOk = Boolean(ratingDoc && ratingDoc.ok && n(ratingDoc.score) != null);
@@ -185,6 +196,7 @@ export async function loadB(ctx = {}) {
     trend,
     bars: closes.length,
     atr14: round(atr14, 1),
+    atr14Src,
     closes: closes.slice(-30),
     maSeries: closes
       .map((_, i) => (i + 1 >= 20 ? maOf(closes.slice(0, i + 1), 20) : null))

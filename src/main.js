@@ -6,7 +6,7 @@
  */
 import { CONFIG } from "./config.js";
 import { buildState } from "./app.js";
-import { renderAll, renderFailSafe, renderSpotTick } from "./render.js";
+import { renderAll, renderFailSafe, renderSpotTick, renderGrid } from "./render.js";
 import { createSpotTicker, SPOT_INTERVAL_MS } from "./realtime.js";
 import { VERSION } from "./version.js";
 
@@ -240,6 +240,22 @@ function bindUI() {
         .forEach((k) => localStorage.removeItem(k));
     } catch (_) {}
     alert("已清除。");
+  });
+
+  /* 档位行：点开看该档分配了多少克（v2.7.0）。
+     只重画 M4 —— 走 refreshAll 会重拉 4 个源 + 重跑 6 个引擎，
+     点一下档位就整页闪一次，还会把 FOMO 弹窗重新触发。
+     展开态存在 state.grid.openIdx（数组下标），渲染层只读，不反向改状态。 */
+  $("m4")?.addEventListener("click", (e) => {
+    const row = e.target.closest("[data-lv]");
+    if (!row || !ui.state || !ui.state.grid) return;
+    const idx = Number(row.dataset.lv) - 1;
+    if (!Number.isInteger(idx) || idx < 0) return;
+    const g = ui.state.grid;
+    g.openIdx = g.openIdx === idx ? -1 : idx;
+    renderGrid(ui.state);
+    /* 重画会换掉 DOM，键盘用户的焦点要还回同一行，否则焦点掉到 body */
+    document.querySelector(`#m4 [data-lv="${idx + 1}"]`)?.focus({ preventScroll: true });
   });
 
   // 页面重新可见时刷新（手机切回来不会看到过期数据）

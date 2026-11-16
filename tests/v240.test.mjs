@@ -18,6 +18,7 @@ import { dirname, join } from "node:path";
 import { calcPlan } from "../src/core/normalize.js";
 import { assess } from "../src/core/risk.js";
 import { assessGrid } from "../src/core/grid.js";
+import { buildGearPlan } from "../src/core/gear.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => readFile(join(ROOT, p), "utf8");
@@ -92,29 +93,39 @@ test("A6 M0 徽章与 M1 评级同步中文", async () => {
 
 /* ───────────────── B 档位克重 ───────────────── */
 
-test("B1 calcPlan 每档克重 = TOTAL × wPct", () => {
+/* v2.7.0 改写 B1–B4 的**契约**（不是为了让测试过而放宽断言）：
+   档位表原来由 calcPlan 按「区间均分 + TOTAL×wPct」自造，与老应用口径对不上，
+   用户实测第 5 档 3275.9 vs 3618.59。现在档位表唯一来源是 core/gear.js，
+   因此 B1 改成「calcPlan 不得再产第二套档位」，B2–B4 改读 gear 契约的字段名。 */
+
+test("B1 档位表唯一来源：calcPlan 不再自造 levels（统一由 gear.js 出）", () => {
   const p = calcPlan(RAW, GRAMS, PRICE);
-  assert.equal(p.levels.length, 6);
-  assert.deepEqual(p.levels.map((x) => x.grams), [20, 20, 120, 200, 40, 0]);
+  assert.equal(p.levels, undefined, "calcPlan 不得再产第二套档位价，否则又是两个口径");
+  assert.ok(p.baseSpacing > 0, "档距派生量保留，供无 gear 的历史调用兜底");
 });
 
-test("B2 assessGrid 透传档位克重字段", () => {
+test("B2 assessGrid 透传 gear 的每档计划克重", () => {
   const A = { plan: calcPlan(RAW, GRAMS, PRICE) };
-  const g = assessGrid({ A, atrUsdOz: 20.76, fx: 7.1, priceUsdOz: 4000, techDir: 0 });
+  const gear = buildGearPlan({
+    cfg: { ...RAW, alpha: 1.16, spanMode: "alpha", gearMarks: {}, realloc: { on: true, mode: "prop", ratio: 1, maxDrop: 3 } },
+    unmarkedGrams: 328.8848, heldGrams: 327.88, avgCostCny: 969, priceUsd: 3874.69, atrUsd: 90.5112, fx: 7.93,
+  });
+  const g = assessGrid({ A, gear, atrUsdOz: 20.76, fx: 7.93, priceUsdOz: 3874.69, techDir: 0 });
   assert.equal(g.levels.length, 6);
-  assert.ok(g.levels.every((lv) => "grams" in lv), "每档必须带 grams");
+  assert.ok(g.levels.every((lv) => "planGrams" in lv && "pendingGrams" in lv), "每档必须带计划克重与待补");
 });
 
-test("B3 renderGrid 档位柱读取克重并标注单位", async () => {
+test("B3 renderGrid 档位行读取计划克重并标注单位", async () => {
   const src = await read("src/render.js");
-  assert.match(src, /lv\.grams|lv\.gram/, "档位必须读取 grams");
+  assert.match(src, /lv\.planGrams/, "档位必须读取计划克重");
   assert.match(src, /克/, "档位必须出现克重单位");
 });
 
-test("B4 renderGrid 输出「下一档」克重摘要", async () => {
+test("B4 renderGrid 输出「下一档」待补克重摘要", async () => {
   const src = await read("src/render.js");
   assert.match(src, /下一档/, "必须输出下一档摘要");
   assert.match(src, /isNext/, "下一档从 isNext 取");
+  assert.match(src, /pendingGrams/, "下一档要写还差多少克");
 });
 
 /* ───────────────── C 剩余可买 ───────────────── */

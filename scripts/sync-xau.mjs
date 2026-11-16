@@ -20,6 +20,10 @@ import { computeIndicators } from "../src/core/indicators.js";
 const SINA_KLINE =
   "https://stock2.finance.sina.com.cn/futures/api/jsonp.php/xauSync=/GlobalFuturesService.getGlobalFuturesDailyKLine?symbol=XAU";
 const SINA_SPOT = "https://hq.sinajs.cn/list=hf_XAU";
+/* 老应用自己的日线产物（dukascopy 清洗后的 XAU/USD 1d）。
+   v2.7.0：档距要跟老应用逐档对齐，ATR14 就必须取同一条序列 ——
+   新浪日线与它同刻差 0.5~0.6%（90.51 vs 91.05），乘上 α 后第 5 档会漂 2~3 美元。 */
+const DESK_KLINES = "https://git202526.github.io/xau-desk/xau/klines.json";
 const OUT = "data/xauusd.json";
 const ROUT = "data/rating.json";
 const KEEP = 60;
@@ -75,6 +79,33 @@ export function parseSinaKline(text) {
     .filter((b) => [b.o, b.h, b.l, b.c].every((x) => Number.isFinite(x) && x > 0));
 }
 
+/**
+ * 老应用日线 → ATR14。
+ * 公式与老应用 atrPctOf 完全一致：TR = max(h−l, |h−prevC|, |l−prevC|)，取最后 14 根求均值。
+ * 注意老应用把「当日未收盘那根」也算在 14 根里（它自己用现价推进末根），这里不剔除。
+ * @returns {{atr14:number,bars:number,updated:number|null,lastBar:number}|null}
+ */
+export function parseDeskAtr(json) {
+  const raw = json && json.kl && Array.isArray(json.kl["1d"]) ? json.kl["1d"] : null;
+  if (!raw || raw.length < 20) return null;
+  const rows = raw
+    .map((b) => ({ t: +b[0], h: +b[2], l: +b[3], c: +b[4] }))
+    .filter((b) => [b.h, b.l, b.c].every((x) => Number.isFinite(x) && x > 0));
+  if (rows.length < 20) return null;
+  const trs = [];
+  for (let i = 1; i < rows.length; i++) {
+    trs.push(Math.max(rows[i].h - rows[i].l, Math.abs(rows[i].h - rows[i - 1].c), Math.abs(rows[i].l - rows[i - 1].c)));
+  }
+  const atr14 = trs.slice(-14).reduce((a, b) => a + b, 0) / 14;
+  if (!(atr14 > 0)) return null;
+  return {
+    atr14: +atr14.toFixed(3),
+    bars: rows.length,
+    updated: Number(json.updated) || null,
+    lastBar: rows[rows.length - 1].t,
+  };
+}
+
 /** 新浪返回 GBK，名称字段需正确解码；解码失败不影响数值解析 */
 async function fetchGbk(url) {
   const r = await fetch(url, { headers: UA });
@@ -112,6 +143,18 @@ async function main() {
     };
   }
 
+  /* 档位 ATR：优先老应用自己的日线（同源才同口径），拿不到则留 null 由前端回退本仓日线 ATR */
+  let deskAtr = null;
+  try {
+    const r = await fetch(DESK_KLINES, { headers: UA });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    deskAtr = parseDeskAtr(await r.json());
+    if (!deskAtr) throw new Error("日线不足 20 根");
+  } catch (e) {
+    console.warn(`[xau] 老应用日线不可用，ATR 回退本仓日线：${e.message}`);
+    deskAtr = null;
+  }
+
   /* 评级只在服务端计算：前端只读结果，绝不自己拉 K 线造指标 */
   const closed = tail.filter((b) => b.d !== new Date().toISOString().slice(0, 10));
   const rating = computeRating(closed);
@@ -144,7 +187,8 @@ async function main() {
     quote,                       // v2.5.2：现价 + 今开/昨收/最高/最低 + 时刻
     asOf: new Date().toISOString(),
     indicators,
-    note: "日线为伦敦金现（XAU），最后一根为当日未收盘 K；quote 为新浪 hf_XAU 实时快照；indicators 由服务端预算，前端只读",
+    deskAtr,                     // v2.7.0：档距口径对齐用的 ATR14（老应用同源日线）
+    note: "日线为伦敦金现（XAU），最后一根为当日未收盘 K；quote 为新浪 hf_XAU 实时快照；indicators 由服务端预算，前端只读；deskAtr 取自老应用 xau/klines.json，用于档距同口径",
   };
 
   const next = JSON.stringify(doc, null, 2) + "\n";
@@ -159,7 +203,8 @@ async function main() {
         quoteSame:
           Number(p.spot) === Number(doc.spot) &&
           String(p.spotAt || "") === String(doc.spotAt) &&
-          p.indicators != null && p.indicators.ok === true,
+          p.indicators != null && p.indicators.ok === true &&
+          Number(p.deskAtr && p.deskAtr.atr14) === Number(doc.deskAtr && doc.deskAtr.atr14),
       };
     } catch {
       return { barsSame: false, quoteSame: false };
@@ -189,7 +234,8 @@ async function main() {
   writeFileSync(OUT, next);
   console.log(
     `[xau] 写入 ${tail.length} 根日线｜现价 ${quote.price}（${quote.source}）` +
-      ` 今开 ${quote.open ?? "--"} 高 ${quote.high ?? "--"} 低 ${quote.low ?? "--"} 昨收 ${quote.prevClose ?? "--"}`,
+      ` 今开 ${quote.open ?? "--"} 高 ${quote.high ?? "--"} 低 ${quote.low ?? "--"} 昨收 ${quote.prevClose ?? "--"}` +
+      ` ｜档距 ATR14 ${deskAtr ? deskAtr.atr14 : "缺失（回退本仓日线）"}`,
   );
 }
 

@@ -268,26 +268,64 @@ export function renderAccount(s) {
 }
 
 /* ───────────────── M4 网格效率与熔断 ───────────────── */
+/* v2.7.0：档位表与老应用同口径（价 / 计划克重 / 待补 / 距现价），
+   每档都是 button，点开看该档分配了多少克、多少钱 —— 用户此前只能看到一根柱子。 */
 export function renderGrid(s) {
   const box = $("m4");
   if (!box) return;
   const g = s.grid;
   const fuse = g.fuse;
   const barTone = fuse ? "amber" : g.tone;
+  const openIdx = Number.isInteger(g.openIdx) ? g.openIdx : -1;
 
-  const levels = (g.levels || [])
-    .map((lv) => {
-      const h = 8 + (lv.weightPct || 0) * 1.1;
-      const cls = lv.isNext ? "next" : lv.filled ? "on" : "";
-      const grams = lv.grams != null ? `${num(lv.grams, 1)} 克` : "--";
-      return `<i class="${cls}" style="height:${h.toFixed(0)}px" title="第${lv.i}档 ${lv.priceUsd || "--"} · ${grams}"></i>`;
+  const levels = g.levels || [];
+  const rows = levels
+    .map((lv, idx) => {
+      const open = idx === openIdx;   // openIdx 是数组下标（0 起），与 data-lv（1 起）差 1
+      const cls = ["lv-row", lv.isNext ? "next" : "", lv.boughtGrams > 0 ? "on" : "", open ? "open" : ""]
+        .filter(Boolean)
+        .join(" ");
+      const gd = lv.planGrams != null && Number.isInteger(lv.planGrams) ? 0 : 2;
+      const grams = lv.planGrams != null ? `${num(lv.planGrams, gd)} 克` : "--";
+      const dist = lv.distPct != null ? pct(lv.distPct, 1) : "--";
+      const detail = open
+        ? `<div class="lv-detail" id="lv-d-${lv.i}">
+            <div class="kv"><span>该档计划</span><b>${num(lv.planGrams, 2)} 克</b></div>
+            <div class="kv"><span>已补 / 待补</span><b>${num(lv.boughtGrams, 2)} / ${num(lv.pendingGrams, 2)} 克</b></div>
+            <div class="kv"><span>该档金额</span><b>${lv.amountCny != null ? `¥${(lv.amountCny / 10000).toFixed(2)} 万` : "--"}${lv.amountUsd != null ? `<i class="mini">≈ $${lv.amountUsd}</i>` : ""}</b></div>
+            <div class="kv"><span>距现价</span><b>${dist}</b></div>
+            <div class="kv"><span>触发价</span><b>${num(lv.priceUsd, 1)} $/oz${lv.priceCny != null ? `<i class="mini">¥${num(lv.priceCny, 2)}/克</i>` : ""}</b></div>
+          </div>`
+        : "";
+      return `<button type="button" class="${cls}" data-lv="${lv.i}" aria-expanded="${open ? "true" : "false"}" aria-controls="lv-d-${lv.i}">
+          <span class="lv-no">${lv.i}</span>
+          <span class="lv-px">${num(lv.priceUsd, 1)}</span>
+          <span class="lv-g">${grams}</span>
+          <span class="lv-dp">${dist}</span>
+          <svg class="lv-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>${detail}`;
     })
     .join("");
 
-  const nextLv = (g.levels || []).find((lv) => lv.isNext);
+  const nextLv = levels.find((lv) => lv.isNext);
   const nextTxt = nextLv
-    ? `下一档 第${nextLv.i}档 ${num(nextLv.priceUsd, 1)} · ${nextLv.grams != null ? num(nextLv.grams, 1) : "--"} 克`
-    : "";
+    ? `下一档 第${nextLv.i}档 ${num(nextLv.priceUsd, 1)} · 待补 ${num(nextLv.pendingGrams, 2)} 克`
+    : levels.length
+      ? "现价已在最低档下方或各档均已买满"
+      : "";
+
+  /* 口径行：把「档距怎么来的」写在卡面上，用户能拿它跟老应用设置页逐项核 */
+  const modeTxt =
+    g.mode === "alpha"
+      ? `α ${num(g.alpha, 2)} × ATR14 ${num(g.atrBase, 2)} $/oz`
+      : g.mode === "target"
+        ? `目标 ${num(g.target, 0)} 反解 · 前段重心 ${num(g.targetEff != null ? g.targetEff : g.target, 0)}${g.spanSrc === "target-fallback" ? "（目标不可达，回退 α）" : ""}`
+        : `起 ${num(g.startDrop, 0)}% → 止 ${num(g.endDrop, 1)}% 均分`;
+  const clampTxt = g.clamped ? ` · 已按终止跌幅夹到 ${num(g.capD, 1)}` : "";
+  const budgetTxt =
+    g.budget != null
+      ? ` · 可分配 ${num(g.budget, 2)} 克${g.unmarked ? `（已扣未标档 ${num(g.unmarked, 1)} 克）` : ""}`
+      : "";
 
   box.innerHTML = `<section class="card rise ${fuse ? "fuse" : ""}" data-tone="${barTone}">
     <div class="c-head"><span class="c-no">04</span><span class="c-title">网格效率与熔断</span>
@@ -295,10 +333,11 @@ export function renderGrid(s) {
     </div>
     <div class="rows">
       <div class="row"><span class="k">外部 ATR14</span><span class="v">${g.atrCny != null ? `${num(g.atrCny)} <span class="mini">元/克</span>` : "--"}</span></div>
-      <div class="row"><span class="k">当前档距</span><span class="v">${g.spacingCny != null ? `${num(g.spacingCny)} <span class="mini">元/克</span>` : ""}</span></div>
+      <div class="row"><span class="k">当前档距</span><span class="v">${g.spacingCny != null ? `${num(g.spacingCny)} <span class="mini">元/克</span>` : "--"}</span></div>
       <div class="row"><span class="k">ATR / 档距</span><span class="v" style="color:var(--tx-2);font-size:11px">${g.ratioPct != null ? `${g.ratioPct}%` : "--"}${g.gearCount ? `<span class="mini"> · ${g.gearCount} 档 · 高点 ${g.highBase}</span>` : ""}</span></div>
     </div>
-    ${levels ? `<div class="levels">${levels}</div>` : ""}
+    ${g.mode ? `<div class="lv-mode">口径 ${esc(modeTxt)} · 档距 ${num(g.spacingUsd, 1)} $/oz${esc(clampTxt)}${esc(budgetTxt)}</div>` : ""}
+    ${rows ? `<div class="lv-list" role="list">${rows}</div>` : `<div class="deg">${ico.info}<span>${esc(g.text)}</span></div>`}
     ${nextTxt ? `<div class="lv-next">${esc(nextTxt)}</div>` : ""}
     <div class="alert-strip ${fuse || g.tone === "amber" ? "warn" : "gray"}">
       ${fuse ? ico.warn : ico.info}

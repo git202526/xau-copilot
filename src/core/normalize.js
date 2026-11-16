@@ -139,21 +139,9 @@ export function calcPlan(raw, grams, priceCnyGram) {
   const nextBuyAmount = nextBuyGrams != null && price > 0 ? (nextBuyGrams * price) / 10000 : null;
   const ratio = remainingFunds != null && nextBuyAmount > 0 ? remainingFunds / nextBuyAmount : null;
 
-  // 档位价格表（美元/盎司）：第 i 档 = H × (1 − (startDrop + i×step)/100)
-  const stepPct = n > 1 ? (endDrop - startDrop) / (n - 1) : 0;
-  const levels = [];
-  for (let i = 0; i < n; i++) {
-    const dropPct = startDrop + i * stepPct;
-    levels.push({
-      i: i + 1,
-      dropPct: +dropPct.toFixed(2),
-      priceUsd: H > 0 ? +(H * (1 - dropPct / 100)).toFixed(1) : null,
-      weightPct: wPct[i] ?? null,
-      grams: wPct.length === n && TOTAL > 0 ? (TOTAL * wPct[i]) / 100 : null,
-      filled: i < filled,
-      isNext: i === nextIdx && filled < n,
-    });
-  }
+  /* 档位价格表已移交 core/gear.js（v2.7.0）。
+     这里曾按「区间均分」自造一套档位价，与老应用的 α×ATR / 目标反解对不上，
+     成了「同一份配置两个档位表」的根源。现在只保留账户侧的派生量（剩余可买/额度比）。 */
 
   return {
     gearCount: n,
@@ -172,7 +160,6 @@ export function calcPlan(raw, grams, priceCnyGram) {
     nextBuyGrams,
     nextBuyAmount,
     ratio,
-    levels,
     ok: baseSpacing != null && remainingFunds != null,
   };
 }
@@ -240,6 +227,24 @@ export function normalizeA(raw, ctx = {}) {
     accounts,
     trend,
     plan,
+    /* 档位口径原始参数：原样透传给 core/gear.js，避免「归一化时先翻译一遍」
+       导致同一个字段在两处出现两种解释（v2.7.0）。 */
+    gearCfg: {
+      gearCount: raw.gearCount,
+      H_BASE: raw.H_BASE,
+      startDrop: raw.startDrop,
+      endDrop: raw.endDrop,
+      wPct: raw.wPct,
+      alpha: raw.alpha,
+      spanMode: raw.spanMode,
+      avgTarget: raw.avgTarget,
+      avgAnchor: raw.avgAnchor,
+      swingGears: raw.swingGears,
+      gearMarks: raw.gearMarks,
+      realloc: raw.realloc,
+      noCap: raw.noCap === true,
+      TOTAL: raw.TOTAL,
+    },
     todayActions,
     alerts,
     marketValue: grams != null && price > 0 ? grams * price : null,
@@ -256,7 +261,8 @@ export function degraded(err) {
     position: { grams: null, avgCost: null, totalCost: null, bought: 0, sold: 0, soldAmount: 0 },
     accounts: [],
     trend: { text: null, sign: 0, confidence: null, tf: {}, raw: null, at: null },
-    plan: { ok: false, baseSpacing: null, remainingFunds: null, nextBuyAmount: null, ratio: null, levels: [] },
+    plan: { ok: false, baseSpacing: null, remainingFunds: null, nextBuyAmount: null, ratio: null },
+    gearCfg: {},
     todayActions: [],
     alerts: [],
     marketValue: null,
