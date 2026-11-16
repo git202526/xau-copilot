@@ -420,24 +420,24 @@
       "o": 3873.03,
       "h": 3901.15,
       "l": 3860.27,
-      "c": 3869.45
+      "c": 3873
     }
   ],
-  "spot": 3873.76,
-  "spotSource": "sina:hf_XAU",
-  "spotAt": "2026-11-16T13:21:00+08:00",
+  "spot": 3873,
+  "spotSource": "sina:kline-close",
+  "spotAt": "2026-11-16T05:31:37.211Z",
   "quote": {
-    "price": 3873.76,
-    "prevClose": 3879.92,
-    "open": 3873.03,
-    "high": 3901.15,
-    "low": 3860.27,
-    "at": "2026-11-16T13:21:00+08:00",
+    "price": 3873,
+    "prevClose": null,
+    "open": null,
+    "high": null,
+    "low": null,
+    "at": "2026-11-16T05:31:37.211Z",
     "date": "2026-11-16",
-    "time": "13:21:00",
-    "source": "sina:hf_XAU"
+    "time": "",
+    "source": "sina:kline-close"
   },
-  "asOf": "2026-11-16T05:21:27.521Z",
+  "asOf": "2026-11-16T05:31:37.213Z",
   "indicators": {
     "ok": true,
     "rsi14": 41.84,
@@ -463,7 +463,7 @@
     "align": "bear",
     "price": 3879.92,
     "err": null,
-    "at": "2026-11-16T05:21:27.521Z"
+    "at": "2026-11-16T05:31:37.213Z"
   },
   "note": "日线为伦敦金现（XAU），最后一根为当日未收盘 K；quote 为新浪 hf_XAU 实时快照；indicators 由服务端预算，前端只读"
 }
