@@ -257,7 +257,7 @@
     }
   },
   "lastDir": "dn",
-  "updatedAt": 1794713139365,
+  "updatedAt": 1794805076880,
   "gearHit": {
     "第1档": 1,
     "第2档": 1
@@ -686,7 +686,7 @@
   "dripPct": 0.2,
   "dripMaxPremium": 3,
   "dripAt": {
-    "3": 1794713139365
+    "3": 1794805076880
   },
   "realloc": {
     "on": true,
