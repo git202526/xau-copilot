@@ -425,19 +425,19 @@
   ],
   "spot": 3793.55,
   "spotSource": "sina:kline-close",
-  "spotAt": "2026-11-18T03:34:59.782Z",
+  "spotAt": "2026-11-18T03:45:11.361Z",
   "quote": {
     "price": 3793.55,
     "prevClose": null,
     "open": null,
     "high": null,
     "low": null,
-    "at": "2026-11-18T03:34:59.782Z",
+    "at": "2026-11-18T03:45:11.361Z",
     "date": "2026-11-18",
     "time": "",
     "source": "sina:kline-close"
   },
-  "asOf": "2026-11-18T03:34:59.848Z",
+  "asOf": "2026-11-18T03:45:11.424Z",
   "indicators": {
     "ok": true,
     "rsi14": 36.71,
@@ -463,12 +463,12 @@
     "align": "bear",
     "price": 3849.17,
     "err": null,
-    "at": "2026-11-18T03:34:59.848Z"
+    "at": "2026-11-18T03:45:11.424Z"
   },
   "deskAtr": {
-    "atr14": 90.451,
+    "atr14": 91.417,
     "bars": 635,
-    "updated": 1794969676659,
+    "updated": 1794972939954,
     "lastBar": 1794952800000
   },
   "note": "日线为伦敦金现（XAU），最后一根为当日未收盘 K；quote 为新浪 hf_XAU 实时快照；indicators 由服务端预算，前端只读；deskAtr 取自老应用 xau/klines.json，用于档距同口径"
