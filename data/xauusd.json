@@ -420,24 +420,24 @@
       "o": 3852.93,
       "h": 3857.33,
       "l": 3785.41,
-      "c": 3793.55
+      "c": 3793.1
     }
   ],
-  "spot": 3793.55,
+  "spot": 3793.1,
   "spotSource": "sina:kline-close",
-  "spotAt": "2026-11-18T03:45:11.361Z",
+  "spotAt": "2026-11-18T03:55:22.797Z",
   "quote": {
-    "price": 3793.55,
+    "price": 3793.1,
     "prevClose": null,
     "open": null,
     "high": null,
     "low": null,
-    "at": "2026-11-18T03:45:11.361Z",
+    "at": "2026-11-18T03:55:22.797Z",
     "date": "2026-11-18",
     "time": "",
     "source": "sina:kline-close"
   },
-  "asOf": "2026-11-18T03:45:11.424Z",
+  "asOf": "2026-11-18T03:55:22.885Z",
   "indicators": {
     "ok": true,
     "rsi14": 36.71,
@@ -463,7 +463,7 @@
     "align": "bear",
     "price": 3849.17,
     "err": null,
-    "at": "2026-11-18T03:45:11.424Z"
+    "at": "2026-11-18T03:55:22.885Z"
   },
   "deskAtr": {
     "atr14": 91.417,
