@@ -1,9 +1,9 @@
 {
-  "checkedAt": "2026-11-19T12:10:11.381Z",
-  "syncedAt": "2026-11-19T10:58:58.603Z",
-  "sourceUpdatedAt": 1795085490761,
+  "checkedAt": "2026-11-19T12:20:18.048Z",
+  "syncedAt": "2026-11-19T12:20:18.048Z",
+  "sourceUpdatedAt": 1795090616527,
   "source": "git202526/xau-desk-data/data.json",
-  "bytes": 19384,
+  "bytes": 19383,
   "trades": 6,
   "mode": "actions"
 }
