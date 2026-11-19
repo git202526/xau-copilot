@@ -11,50 +11,50 @@
   "detail": [
     {
       "name": "MA5",
-      "value": 3839.7,
+      "value": 3837.49,
       "dir": -1
     },
     {
       "name": "MA10",
-      "value": 3951.94,
+      "value": 3950.83,
       "dir": -1
     },
     {
       "name": "MA20",
-      "value": 3976.01,
+      "value": 3975.46,
       "dir": -1
     },
     {
       "name": "MA50",
-      "value": 4120.03,
+      "value": 4119.8,
       "dir": -1
     },
     {
       "name": "RSI14",
-      "value": 33.92,
+      "value": 33.5,
       "dir": -1
     },
     {
       "name": "MACD",
-      "value": -18.57,
+      "value": -19.28,
       "dir": -1
     },
     {
       "name": "Stoch",
-      "value": 2.06,
+      "value": 1.13,
       "dir": -1
     },
     {
       "name": "CCI20",
-      "value": -205.88,
+      "value": -183.44,
       "dir": -1
     },
     {
       "name": "W%R",
-      "value": -97.94,
+      "value": -98.87,
       "dir": -1
     }
   ],
-  "lastBar": "2026-11-19",
-  "at": "2026-11-18T23:11:34.213Z"
+  "lastBar": "2026-11-18",
+  "at": "2026-11-19T00:02:31.189Z"
 }
