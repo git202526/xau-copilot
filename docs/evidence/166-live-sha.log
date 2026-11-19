@@ -1,0 +1,28 @@
+=== 线上校验 2026-11-19T21:46:54+08:00 ===
+✓ index.html                   e75a729c73a4ae50
+✓ src/main.js                  cf0716de3b30c22e
+✓ src/app.js                   f29e6001852e3338
+✓ src/render.js                7d16d5c91a8f464a
+✓ src/realtime.js              a459911df30ea5fc
+✓ src/config.js                124b01e323e592b2
+✓ src/version.js               849a0821b38522a0
+✓ src/sourceB.js               369952e507c3b606
+✓ src/sourceC.js               6cd4100bf850e784
+✓ src/core/outlook.js          1904e1756d80093e
+✓ src/core/technical.js        c6e0fc76af9ac95e
+✓ src/core/ladder.js           d7b1ebc6bd3b565c
+✓ src/core/grid.js             8b21507d10774b64
+✓ src/core/gear.js             07fa02fdf8cdfe7d
+✓ src/core/normalize.js        5c8e1f4625868fe8
+✓ src/core/risk.js             c33072b9529ea30d
+✓ src/core/rebalance.js        dad1e23ad4543dde
+✓ src/core/discipline.js       ec700b711e165848
+✓ src/core/confidence.js       17459430aa535996
+✓ src/core/indicators.js       8ba8118430f8781d
+✓ src/core/rating.js           8c1d9dce23e677ff
+✓ src/core/sanitize.js         3e6af6e1f234dbcc
+✓ src/core/labels.js           422971584aaf0b34
+✓ tests/v290.test.mjs          45502639bff6c434
+--- 一致 24 / 不一致 0 ---
+--- 线上版本号 ---
+export const VERSION = "2.9.0";
