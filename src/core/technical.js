@@ -77,8 +77,21 @@ function buildSignals(B, C, cfg) {
   const CHANGE_KEYS = new Set(["ma20", "day", "macd"]);
   const NEUTRAL_KEYS = new Set(["price", "atr"]);
   const kindOf = (key) => NEUTRAL_KEYS.has(key) ? "neutral" : CHANGE_KEYS.has(key) ? "change" : "judge";
+  /* v2.9.0：给每一票打上所属层，供首页「四层一致性」与 M2「因子贡献」直接聚合。
+     层归属在这里定义一次，outlook.js 只读不猜 —— 避免两处各有一张映射表。 */
+  const LAYER_OF = {
+    ma20: "trend", align: "trend",
+    day: "momentum", rsi: "momentum", macd: "momentum",
+    boll: "band",
+    rating: "ext", macro: "ext",
+  };
   const add = (key, label, value, dir, note, weight = 1) =>
-    list.push({ key, label, value, dir, note: note || "", kind: kindOf(key), weight });
+    list.push({
+      key, label, value, dir, note: note || "", kind: kindOf(key), weight,
+      layer: LAYER_OF[key] || null,
+      /* contrib：带符号的权重贡献，正=投多、负=投空。渲染层画贡献条只用它，不自己乘一遍 */
+      contrib: weight ? +(dir * weight).toFixed(2) : 0,
+    });
 
   /* 1 现价（$/oz）—— 中性展示位 */
   add("price", "伦敦金现 $/oz", B.priceUsdOz == null ? "--" : Number(B.priceUsdOz).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 0, B.spotSource === "gold-api" ? "实时现价" : "快照价", 0);

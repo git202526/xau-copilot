@@ -87,29 +87,190 @@ function briefingText(s) {
   return { hi, body: `${hi}。${priceTxt}，${indTxt}；${macroTxt}。${tail}` };
 }
 
+/* v2.9.0：首页从「一句话」升级为分层结论卡。
+   层次：定调 → 多周期趋势 → 四层依据 → 5 日区间 → 三情景 → 失效条件。
+   每一层都能单独被核，用户不需要相信一个黑箱句子。 */
+const DIR_ZH = { down: "偏空", up: "偏多", flat: "中性" };
+
+function toneOfDir(dir) {
+  return dir < 0 ? "indigo" : dir > 0 ? "amber" : "gray";
+}
+
+/** 四层依据条：净票 pos/neg 各占半轴，宽度按最大绝对值归一 */
+function layerRows(layers) {
+  const max = Math.max(0.1, ...layers.map((l) => Math.abs(l.net)));
+  return layers
+    .map((l) => {
+      const w = Math.min(50, (Math.abs(l.net) / max) * 50);
+      const cls = l.net > 0 ? "pos" : l.net < 0 ? "neg" : "flat";
+      const side = l.net >= 0 ? `left:50%;width:${w.toFixed(1)}%` : `right:50%;width:${w.toFixed(1)}%`;
+      return `<div class="ly">
+        <span class="ly-k">${esc(l.label)}</span>
+        <span class="ly-b"><i class="${cls}" style="${side}"></i></span>
+        <span class="ly-v ${cls}">${l.net > 0 ? "+" : ""}${num(l.net, 1)}</span>
+        <span class="ly-s ${cls}">${esc(l.stateText)}</span>
+      </div>`;
+    })
+    .join("");
+}
+
+/** 5 日 1σ 区间：一条横向带，2σ 更浅、1σ 更实、现价一个针 */
+function coneSvg(range, price) {
+  if (!range || !range.d5w || !(price > 0)) return "";
+  const lo = range.d5w.lo;
+  const hi = range.d5w.hi;
+  const X = (p) => Math.max(0, Math.min(300, ((p - lo) / (hi - lo)) * 300));
+  const y = 20;
+  const h = 14;
+  return `<svg class="cone-svg" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true">
+    <rect class="cn-2" x="0" y="${y}" width="300" height="${h}" rx="3"/>
+    <rect class="cn-1" x="${X(range.d5.lo).toFixed(1)}" y="${y}" width="${Math.max(1, X(range.d5.hi) - X(range.d5.lo)).toFixed(1)}" height="${h}" rx="3"/>
+    <line class="cn-mid" x1="${X(price).toFixed(1)}" y1="${y - 5}" x2="${X(price).toFixed(1)}" y2="${y + h + 5}"/>
+    <circle class="cn-px" cx="${X(price).toFixed(1)}" cy="${y + h / 2}" r="3.4"/>
+  </svg>`;
+}
+
+function scenarioRows(scenarios) {
+  return scenarios
+    .map((x) => {
+      const cls = x.key === "down" ? "dn" : x.key === "up" ? "up" : "mid";
+      return `<div class="sc">
+        <div class="sc-top">
+          <b class="${cls}">${esc(x.label)}</b>
+          <span class="sc-p">${x.probPct}%</span>
+          <span class="sc-t">${num(x.targetUsd, 0)}<em>$/oz</em></span>
+        </div>
+        <div class="sc-bar"><i class="${cls}" style="width:${Math.max(2, x.probPct)}%"></i></div>
+        <div class="sc-c">${esc(x.cond)}</div>
+      </div>`;
+    })
+    .join("");
+}
+
 export function renderBriefing(s) {
   const box = $("m0");
   if (!box) return;
-  const { body } = briefingText(s);
   const t = s.technical || {};
+  const o = s.outlook || null;
+  const B = s.B || {};
   const chips = [
     `<span class="chip">技术面 ${t.headline ? esc(t.headline) : "--"}</span>`,
-    `<span class="chip">评级 ${s.B && s.B.rating ? esc(ratingZh(s.B.rating.label)) : "未评级"}</span>`,
-    `<span class="chip">宏观 ${s.C.mode === "risk_off" ? "避险" : esc(s.C.label || "--")}</span>`,
-    `<span class="chip ${t.conf === "high" ? "bad" : t.conf === "degraded" ? "" : "warn"}">置信 ${BADGE[t.conf] ? BADGE[t.conf].text : "--"}</span>`,
+    `<span class="chip">评级 ${B.rating ? esc(ratingZh(B.rating.label)) : "未评级"}</span>`,
+    `<span class="chip">宏观 ${s.C && s.C.mode === "risk_off" ? "避险" : esc((s.C && s.C.label) || "--")}</span>`,
     t.score != null ? `<span class="chip">指标得分 ${t.score}</span>` : "",
     s.meta && s.meta.staleB ? `<span class="chip bad">外部行情陈旧 · 判断作废</span>` : "",
     s.meta && s.meta.staleA ? `<span class="chip warn">账户数据陈旧</span>` : "",
     s.meta && s.meta.degraded ? `<span class="chip bad">源异常</span>` : "",
   ].filter(Boolean).join("");
 
+  /* ── 降级：不装样子。只说明为什么不出结论，不摆情景与概率 ── */
+  if (!o || !o.ok) {
+    const why = (o && o.reason) || "外部指标尚未就绪，本次不出趋势与区间结论";
+    box.innerHTML = `<section class="bubble rise">
+      <div class="b-head">
+        <span class="tag">AI 研判</span>
+        <span class="sep"></span>
+        <time>${fmtTime(s.now, true)} · 外部指标融合</time>
+      </div>
+      <div class="bl-top"><span class="bl-stance gray">降级</span><span class="bl-meta">不出方向 · 不给区间</span></div>
+      <p class="b-text">${esc(why)}。判断链需要「行情可用 + 指标就绪」两条同时成立，缺一条就宁可不说。</p>
+      <div class="b-foot">${chips}</div>
+    </section>`;
+    return;
+  }
+
+  const price = o.priceUsd;
+  const dirZh = t.scenario === "risk_off" ? "避险" : DIR_ZH[o.dir < 0 ? "down" : o.dir > 0 ? "up" : "flat"];
+  const strength = o.score == null ? "—" : Math.abs(o.score - 50) >= 35 ? "强" : Math.abs(o.score - 50) >= 20 ? "中" : "弱";
+  const tone = t.scenario === "risk_off" ? "violet" : toneOfDir(o.dir);
+  const badge = BADGE[t.conf] || BADGE.degraded;
+
+  /* 一句人话：先给「现在在哪」，再给「接下来大概率怎么走」，最后给「所以怎么做」 */
+  const rsi = B.indicators ? B.indicators.rsi14 : null;
+  const devTxt =
+    B.devPct == null ? "MA20 偏离不可测"
+      : Math.abs(B.devPct) < 0.05 ? "贴住 MA20"
+        : `比 MA20 ${B.devPct > 0 ? "高" : "低"} ${Math.abs(B.devPct).toFixed(2)}%`;
+  const trendWord = o.trend[0] && o.trend[1]
+    ? o.trend[0].dir !== 0 && o.trend[0].dir === o.trend[1].dir
+      ? `短线与中线同向${o.trend[0].dir > 0 ? "走强" : "走弱"}`
+      : "短中期方向不一致，属于分歧市"
+    : "多周期不可测";
+  const rngTxt = o.range.d5
+    ? `未来 ${o.horizon} 个交易日 68% 概率落在 ${num(o.range.d5.lo, 0)}–${num(o.range.d5.hi, 0)} $/oz（模型值，非保证）`
+    : "波动率不可测，本期不给区间";
+  const hour = new Date(s.now).getHours();
+  const greet = hour < 11 ? "早上好" : hour < 18 ? "下午好" : "晚上好";
+  const body = `${greet}。伦敦金现 {{P}} $/oz，${devTxt}，RSI14 ${rsi == null ? "--" : num(rsi, 1)}；${trendWord}。${rngTxt}。${o.stance.text}。`;
+
+  const trendRows = o.trend
+    .map(
+      (x) => `<div class="tr">
+        <span class="tr-h">${esc(x.h)}</span>
+        <span class="tr-d ${toneOfDir(x.dir)}">${esc(x.text)}</span>
+        <span class="tr-b">${esc(x.basis)}</span>
+      </div>`,
+    )
+    .join("");
+
+  const inv = o.invalidate
+    .map(
+      (x) => `<div class="inv-i">
+        <span class="inv-m ${x.met ? "on" : ""}">${x.met ? "已触发" : "未触发"}</span>
+        <span class="inv-t">${esc(x.text)}</span>
+      </div>`,
+    )
+    .join("");
+
   box.innerHTML = `<section class="bubble rise">
     <div class="b-head">
       <span class="tag">AI 研判</span>
       <span class="sep"></span>
       <time>${fmtTime(s.now, true)} · 外部指标融合</time>
+      <span class="bl-badge ${badge.cls}">置信 ${badge.text}</span>
     </div>
-    <p class="b-text">${esc(body).replace("{{P}}", `<span id="brief-spot">${num(s.B && s.B.priceUsdOz)}</span>`)}</p>
+
+    <div class="bl-top">
+      <span class="bl-stance ${tone}">${esc(dirZh)} · ${strength}</span>
+      <span class="bl-meta">未来 ${o.horizon} 个交易日 · ${esc(o.regime ? o.regime.label : "")}</span>
+    </div>
+
+    <p class="b-text">${esc(body).replace("{{P}}", `<span id="brief-spot">${num(price)}</span>`)}</p>
+
+    <div class="trend-row">${trendRows}</div>
+
+    <div class="ly-wrap">
+      <div class="sec-h">四层依据<span class="sec-n">净票 = 多票 − 空票</span></div>
+      ${layerRows(o.layers)}
+    </div>
+
+    ${o.range.d5
+      ? `<div class="cone">
+          <div class="sec-h">未来 ${o.horizon} 个交易日波动区间<span class="sec-n">σ₁ ${num(o.range.sigma1Pct, 2)}% · ${o.range.src === "atr" ? "ATR 换算" : "20 日实测"}</span></div>
+          ${coneSvg(o.range, price)}
+          <div class="cone-f">
+            <span>${num(o.range.d5.lo, 0)}</span>
+            <span class="mid">${num(price, 0)}<em>现价</em></span>
+            <span>${num(o.range.d5.hi, 0)}</span>
+          </div>
+          <div class="cone-n">内带 = 1σ（68%），浅带 = 2σ（95%）</div>
+        </div>`
+      : ""}
+
+    ${o.scenarios.length
+      ? `<div class="scen">
+          <div class="sec-h">三情景<span class="sec-n">按得分偏移切分 · 概率为模型值</span></div>
+          ${scenarioRows(o.scenarios)}
+        </div>`
+      : ""}
+
+    ${inv
+      ? `<div class="inv">
+          <div class="sec-h">什么会推翻它</div>
+          ${inv}
+        </div>`
+      : ""}
+
     <div class="b-foot">${chips}</div>
   </section>`;
 }
@@ -195,6 +356,102 @@ export function renderRadar(s) {
   </section>`;
 }
 
+/* ── 价格位置尺：把均线 / 布林 / 20 日高低排成一列，现价插在中间 ──
+   为什么不用横向刻度：黄金的均线常常挤在 1–2% 的区间里，横轴标签必然打架；
+   纵列按价格排序，挤在一起也能一行一行读清。 */
+function priceRuler(B, price) {
+  const ind = B.indicators || {};
+  const ma = ind.ma || {};
+  const boll = ind.boll || {};
+  const closes = (Array.isArray(B.closes) ? B.closes : []).map(Number).filter((v) => Number.isFinite(v));
+  const win = closes.slice(-20);
+  const cand = [
+    ["MA50", ma.ma50, "均线"],
+    ["MA20", ma.ma20, "均线"],
+    ["MA10", ma.ma10, "均线"],
+    ["MA5", ma.ma5, "均线"],
+    ["布林上轨", boll.upper, "通道"],
+    ["布林下轨", boll.lower, "通道"],
+    ["20 日高", win.length ? Math.max(...win) : null, "区间"],
+    ["20 日低", win.length ? Math.min(...win) : null, "区间"],
+  ]
+    .map(([label, v, src]) => ({ label, v: Number(v), src }))
+    .filter((x) => Number.isFinite(x.v) && x.v > 0)
+    .filter((x) => Math.abs(x.v / price - 1) > 0.0008);
+
+  /* 同价位去重（0.15% 内），留先出现的 */
+  const uniq = [];
+  for (const x of cand) {
+    if (uniq.some((y) => Math.abs(y.v / x.v - 1) * 100 < 0.15)) continue;
+    uniq.push(x);
+  }
+  const now = `<div class="mr-row now">
+    <span class="mr-px">${num(price, 1)}</span>
+    <span class="mr-k">现价</span>
+    <span class="mr-d">—</span>
+  </div>`;
+  /* 现价插到正确的价格位置：上方阻力在前，下方支撑在后 */
+  const above = uniq.filter((x) => x.v > price).sort((a, b) => a.v - b.v);
+  const below = uniq.filter((x) => x.v < price).sort((a, b) => b.v - a.v);
+  const rowOf = (x) => {
+    const d = (x.v / price - 1) * 100;
+    return `<div class="mr-row ${x.v > price ? "res" : "sup"}">
+      <span class="mr-px">${num(x.v, 1)}</span>
+      <span class="mr-k">${esc(x.label)}</span>
+      <span class="mr-d">${d > 0 ? "+" : ""}${num(d, 1)}%</span>
+    </div>`;
+  };
+  return `<div class="ma-ruler">
+    <div class="mr-rail"></div>
+    ${above.reverse().map(rowOf).join("")}
+    ${now}
+    ${below.map(rowOf).join("")}
+  </div>`;
+}
+
+/* ── 因子贡献：得分 13 是怎么来的，一条一条摆出来 ── */
+function factorRows(signals) {
+  const voted = (signals || []).filter((x) => x.weight > 0 && x.dir !== 0);
+  if (!voted.length) return "";
+  const max = Math.max(...voted.map((x) => Math.abs(x.contrib != null ? x.contrib : x.dir * x.weight)));
+  return voted
+    .map((x) => {
+      const c = x.contrib != null ? x.contrib : x.dir * x.weight;
+      const w = Math.min(50, (Math.abs(c) / max) * 50);
+      const cls = c > 0 ? "pos" : "neg";
+      const side = c >= 0 ? `left:50%;width:${w.toFixed(1)}%` : `right:50%;width:${w.toFixed(1)}%`;
+      return `<div class="fx" data-f="${esc(x.key)}">
+        <span class="fx-k">${esc(x.label)}</span>
+        <span class="fx-bar"><i class="${cls}" style="${side}"></i></span>
+        <span class="fx-v ${cls}">${c > 0 ? "+" : ""}${num(c, 1)}</span>
+      </div>`;
+    })
+    .join("");
+}
+
+/* ── RSI 刻度：30 / 70 两条线必须有，否则「33.5」读者没有参照 ── */
+function rsiGauge(B) {
+  const rsi = B.indicators ? Number(B.indicators.rsi14) : NaN;
+  if (!Number.isFinite(rsi)) return "";
+  const X = (v) => (Math.max(0, Math.min(100, v)) / 100) * 300;
+  const tone = rsi >= 70 ? "hot" : rsi <= 30 ? "cold" : "mid";
+  const note = rsi >= 70 ? "超买区" : rsi <= 30 ? "超卖区，仍在下行" : rsi > 50 ? "偏强区" : "偏弱区";
+  return `<div class="rsi-gauge">
+    <div class="rg-top"><span class="rg-k">RSI14</span><b class="${tone}">${num(rsi, 1)}</b><span class="rg-n">${note}</span></div>
+    <svg class="rg-svg" viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true">
+      <rect class="rg-bg" x="0" y="5" width="300" height="4" rx="2"/>
+      <rect class="rg-cold" x="0" y="5" width="${X(30)}" height="4" rx="2"/>
+      <rect class="rg-hot" x="${X(70)}" y="5" width="${300 - X(70)}" height="4" rx="2"/>
+      <line class="rg-mark" x1="${X(rsi)}" y1="1" x2="${X(rsi)}" y2="13"/>
+    </svg>
+    <div class="rg-l">
+      ${[[0, 0], [30, 30], [50, 50], [70, 70], [100, 100]]
+        .map(([v, p]) => `<span style="left:${p}%${p === 0 ? ";transform:none" : p === 100 ? ";transform:translateX(-100%)" : ""}">${v}</span>`)
+        .join("")}
+    </div>
+  </div>`;
+}
+
 /* ───────────────── M2 外部技术面决策 ───────────────── */
 export function renderDecision(s) {
   const box = $("m2");
@@ -204,6 +461,8 @@ export function renderDecision(s) {
     headline: "外部指标不可用", text: "外部行情指标尚未就绪，本次不出方向结论，请稍后刷新。", detail: "", signals: [],
   };
   const badge = BADGE[t.conf] || BADGE.degraded;
+  const B = s.B || {};
+  const price = Number(B.priceUsdOz);
 
   const cells = (t.signals || [])
     .map((it) => {
@@ -219,12 +478,19 @@ export function renderDecision(s) {
       ? `<div class="alert-strip ${t.scenario === "risk_off" ? "warn" : "gray"}">${ico.warn}<span>${esc(t.text)}</span></div>`
       : `<p class="note">${esc(t.text)}</p>`;
 
+  const factors = factorRows(t.signals);
+  const ruler = Number.isFinite(price) && price > 0 && B.indicators ? priceRuler(B, price) : "";
+  const rsi = rsiGauge(B);
+
   box.innerHTML = `<section class="card rise" data-tone="${t.tone}">
     <div class="c-head"><span class="c-no">02</span><span class="c-title">外部技术面决策</span>
       <span class="badge ${badge.cls}">置信 ${badge.text}</span>
     </div>
     <div class="verdict"><div class="hl ${t.tone}">${esc(t.headline)}</div></div>
+    ${ruler ? `<div class="sec-h">价格位置<span class="sec-n">均线 · 通道 · 20 日区间</span></div>${ruler}` : ""}
     ${cells ? `<div class="tech-grid">${cells}</div>` : `<div class="deg">${ico.info}<span>外部指标清单暂不可用</span></div>`}
+    ${factors ? `<div class="sec-h">因子贡献<span class="sec-n">权重 × 方向，右多左空</span></div><div class="factors">${factors}</div>` : ""}
+    ${rsi}
     ${strip}
     ${t.detail ? `<div style="margin-top:8px"><span class="chip">${esc(t.detail)}</span></div>` : ""}
   </section>`;

@@ -70,7 +70,9 @@ body{
   content:"";position:absolute;right:-40px;top:-58px;width:150px;height:150px;border-radius:50%;
   background:radial-gradient(circle,rgba(212,162,76,.13),transparent 68%);pointer-events:none;
 }
-.b-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.b-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;row-gap:4px}
+/* 320px 下「AI 研判 / 时间 / 置信」会互相挤成竖排，逐个禁折行 + 允许整行换行 */
+.b-head .tag,.b-head time{white-space:nowrap}
 .tag{
   font-size:9.5px;letter-spacing:1.1px;text-transform:uppercase;color:var(--gold);
   border:1px solid rgba(212,162,76,.34);border-radius:5px;padding:1.5px 6px;font-weight:600;
@@ -88,6 +90,128 @@ body{
 .chip.warn{color:var(--amber);border-color:rgba(245,166,35,.28);background:rgba(245,166,35,.08)}
 .chip.bad{color:var(--amber);border-color:rgba(245,166,35,.28);background:rgba(245,166,35,.08)}
 .chip.ok{color:var(--indigo);border-color:rgba(139,147,248,.26);background:rgba(139,147,248,.08)}
+
+/* ── v2.9.0 首页分层结论：定调 / 趋势 / 四层 / 区间 / 情景 / 失效 ── */
+.bl-badge{margin-left:auto;white-space:nowrap;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:.5px;font-family:var(--mono)}
+.bl-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:2px 0 8px}
+.bl-stance{font-size:19px;font-weight:750;letter-spacing:-.3px;line-height:1.16}
+.bl-stance.amber{color:var(--amber)}
+.bl-stance.indigo{color:var(--indigo)}
+.bl-stance.gray{color:var(--tx-2)}
+.bl-stance.violet{color:var(--violet)}
+.bl-meta{font-size:10px;color:var(--tx-3);font-family:var(--mono);letter-spacing:.2px}
+.bubble .b-text{font-size:14px;line-height:1.66;margin-bottom:2px}
+
+.sec-h{
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  font-size:9.5px;color:var(--tx-3);letter-spacing:.9px;font-family:var(--mono);
+  margin:12px 0 6px;
+}
+.sec-n{margin-left:auto;font-size:9.5px;letter-spacing:0;color:var(--tx-3);opacity:.85;font-family:var(--sans)}
+
+/* 多周期趋势 */
+.trend-row{display:grid;gap:1px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:10px}
+.tr{background:rgba(255,255,255,.022);padding:7px 9px;display:grid;grid-template-columns:46px 1fr;gap:2px 8px}
+.tr-h{font-family:var(--mono);font-size:9.5px;color:var(--tx-3);grid-row:span 2;align-self:center;letter-spacing:.2px}
+.tr-d{font-size:12px;font-weight:650}
+.tr-d.amber{color:var(--amber)} .tr-d.indigo{color:var(--indigo)} .tr-d.gray{color:var(--tx-2)}
+.tr-b{font-size:10px;color:var(--tx-3);font-family:var(--mono);letter-spacing:.1px}
+
+/* 四层依据：中轴对称的双向条 */
+.ly-wrap{margin-top:2px}
+.ly{display:grid;grid-template-columns:30px 1fr 40px 34px;align-items:center;gap:8px;padding:4px 0}
+.ly-k{font-size:10.5px;color:var(--tx-2)}
+.ly-b{position:relative;height:5px;background:rgba(255,255,255,.055);border-radius:3px;overflow:hidden}
+.ly-b::before{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:rgba(255,255,255,.14)}
+.ly-b i{position:absolute;top:0;bottom:0;border-radius:2px}
+.ly-b i.pos{background:var(--amber)} .ly-b i.neg{background:var(--indigo)} .ly-b i.flat{background:var(--gray)}
+.ly-v{font-family:var(--mono);font-size:11px;font-weight:600;text-align:right}
+.ly-v.pos{color:var(--amber)} .ly-v.neg{color:var(--indigo)} .ly-v.flat{color:var(--tx-3)}
+.ly-s{font-size:9.5px;text-align:right;color:var(--tx-3)}
+.ly-s.pos{color:#FFC862} .ly-s.neg{color:#B9BEFF}
+
+/* 5 日波动区间 */
+.cone-svg{display:block;width:100%;height:40px;margin:2px 0 2px}
+.cn-2{fill:rgba(139,147,248,.10)}
+.cn-1{fill:rgba(139,147,248,.26)}
+.cn-mid{stroke:rgba(255,255,255,.28);stroke-width:1;stroke-dasharray:2 2}
+.cn-px{fill:var(--gold)}
+.cone-f{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--tx-3)}
+.cone-f .mid{color:var(--gold);font-weight:700}
+.cone-f em{font-style:normal;font-size:8.5px;color:var(--tx-3);margin-left:3px;font-weight:400}
+.cone-n{font-size:9px;color:var(--tx-3);margin-top:3px;letter-spacing:.1px}
+
+/* 三情景 */
+.scen{display:grid;gap:7px}
+.sc{background:rgba(255,255,255,.025);border:1px solid var(--line-2);border-radius:9px;padding:7px 9px}
+.sc-top{display:flex;align-items:baseline;gap:7px}
+.sc-top b{font-size:11.5px;font-weight:650;letter-spacing:.3px}
+.sc-top b.dn{color:var(--indigo)} .sc-top b.up{color:var(--amber)} .sc-top b.mid{color:var(--tx-2)}
+.sc-p{font-family:var(--mono);font-size:11px;color:var(--tx-2)}
+.sc-t{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:650;color:var(--tx)}
+.sc-t em{font-style:normal;font-size:8.5px;color:var(--tx-3);margin-left:2px;font-weight:400}
+.sc-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden;margin:4px 0 4px}
+.sc-bar i{display:block;height:100%;border-radius:2px}
+.sc-bar i.dn{background:var(--indigo)} .sc-bar i.up{background:var(--amber)} .sc-bar i.mid{background:var(--gray)}
+.sc-c{font-size:9.5px;color:var(--tx-3);line-height:1.45}
+
+/* 失效条件 */
+.inv{display:grid;gap:5px}
+.inv-i{display:flex;gap:7px;align-items:flex-start;font-size:11px;line-height:1.5}
+.inv-m{
+  flex:0 0 auto;font-size:9px;padding:1px 5px;border-radius:4px;margin-top:1px;
+  color:var(--tx-3);border:1px solid var(--line);font-family:var(--mono);
+}
+.inv-m.on{color:#FFC862;border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.1)}
+.inv-t{color:var(--tx-2)}
+
+/* ── M2 价格位置尺（纵列，避免横向标签打架） ── */
+.ma-ruler{position:relative;padding-left:13px;margin:2px 0 4px}
+.ma-ruler::before{content:"";position:absolute;left:3px;top:8px;bottom:8px;width:1px;background:var(--line)}
+.mr-row{
+  position:relative;display:grid;grid-template-columns:64px 1fr auto;align-items:baseline;
+  gap:8px;padding:4.5px 0;font-size:11.5px;
+}
+.mr-row::before{
+  content:"";position:absolute;left:-13px;top:50%;width:7px;height:7px;margin-top:-3.5px;
+  border-radius:50%;background:var(--card);border:1px solid var(--tx-3);
+}
+.mr-px{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:-.2px}
+.mr-k{font-size:10.5px;color:var(--tx-3)}
+.mr-d{font-family:var(--mono);font-size:10.5px;color:var(--tx-3)}
+.mr-row.res .mr-px{color:#B9BEFF}
+.mr-row.sup .mr-px{color:#FFC862}
+.mr-row.now{background:rgba(212,162,76,.09);border-radius:6px;padding-left:7px;margin-left:-7px}
+.mr-row.now::before{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(212,162,76,.55)}
+.mr-row.now .mr-px{color:var(--gold);font-weight:750}
+.mr-row.now .mr-k{color:var(--tx-2)}
+
+/* ── M2 因子贡献（右多左空） ── */
+.factors{display:grid;gap:1px}
+.fx{display:grid;grid-template-columns:74px 1fr 40px;align-items:center;gap:9px;padding:4px 0}
+.fx-k{font-size:10.5px;color:var(--tx-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fx-bar{position:relative;height:5px;background:rgba(255,255,255,.055);border-radius:3px;overflow:hidden}
+.fx-bar::before{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:rgba(255,255,255,.14)}
+.fx-bar i{position:absolute;top:0;bottom:0;border-radius:2px}
+.fx-bar i.pos{background:var(--amber)} .fx-bar i.neg{background:var(--indigo)}
+.fx-v{font-family:var(--mono);font-size:10.5px;font-weight:600;text-align:right}
+.fx-v.pos{color:#FFC862} .fx-v.neg{color:#B9BEFF}
+
+/* ── M2 RSI 刻度 ── */
+.rsi-gauge{margin-top:10px}
+.rg-top{display:flex;align-items:baseline;gap:7px;margin-bottom:4px}
+.rg-k{font-family:var(--mono);font-size:9.5px;color:var(--tx-3);letter-spacing:.6px}
+.rg-top b{font-family:var(--mono);font-size:13px;font-weight:700}
+.rg-top b.hot{color:var(--amber)} .rg-top b.cold{color:var(--indigo)} .rg-top b.mid{color:var(--tx-2)}
+.rg-n{margin-left:auto;font-size:10px;color:var(--tx-3)}
+.rg-svg{display:block;width:100%;height:14px}
+.rg-bg{fill:rgba(255,255,255,.07)}
+.rg-cold{fill:rgba(139,147,248,.38)}
+.rg-hot{fill:rgba(245,166,35,.34)}
+.rg-mark{stroke:#EDEFF2;stroke-width:2;stroke-linecap:round}
+/* 标签必须落在刻度真位置上：用 flex 均分会把 30 放到 25%、70 放到 75%，与刻度错位 */
+.rg-l{position:relative;height:11px;font-family:var(--mono);font-size:8.5px;color:var(--tx-3);margin-top:2px}
+.rg-l span{position:absolute;top:0;transform:translateX(-50%)}
 
 /* ── 卡片 ── */
 .card{
@@ -404,7 +528,7 @@ body{
 <body>
 <div class="shell">
   <header class="topbar">
-    <div class="brand"><b>XAU Copilot</b><span>Decision Deck</span><span class="ver" id="app-ver">v2.8.0</span></div>
+    <div class="brand"><b>XAU Copilot</b><span>Decision Deck</span><span class="ver" id="app-ver">v2.9.0</span></div>
     <div class="tb-right">
       <span class="dot" id="live-dot" title="数据源状态"></span>
       <button class="iconbtn" id="btn-refresh" title="刷新" aria-label="刷新">

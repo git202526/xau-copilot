@@ -11,6 +11,7 @@ import { decideTechnical } from "./core/technical.js";
 import { assess } from "./core/risk.js";
 import { assessGrid } from "./core/grid.js";
 import { buildLadder } from "./core/ladder.js";
+import { buildOutlook } from "./core/outlook.js";
 import { rebalance } from "./core/rebalance.js";
 import { discipline } from "./core/discipline.js";
 import { isStale, ageMinutes, premiumState } from "./core/sanitize.js";
@@ -121,6 +122,8 @@ export async function buildState(ctx = {}) {
 
   /* v2.8.0：把技术面判定拆成三档可核对的条件（空 / 中性 / 多），挂在熔断条下方 */
   const ladder = buildLadder(technical, cfg);
+  /* v2.9.0：首页分层结论（趋势 / 区间 / 情景 / 失效）。只读 technical 与 ladder，不重算判定。 */
+  const outlook = buildOutlook({ B, technical, ladder, cfg, now, fxRate: fx.rate });
   const grid = assessGrid({ A: Aplan, gear, atrUsdOz: B.atr14, fx: fx.rate, priceUsdOz: B.priceUsdOz, techDir: technical.dir, ladder });
   const rebal = rebalance({ A, spreadPct: cfg.rebalanceSpreadPct, priceCnyGram });
   const disc = discipline({ A, techDir: technical.dir, technical });
@@ -153,6 +156,7 @@ export async function buildState(ctx = {}) {
       intl: priceCnyGram,
     },
     technical,
+    outlook,
     risk,
     grid,
     rebal,
