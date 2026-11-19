@@ -437,7 +437,7 @@
     "time": "05:58:00",
     "source": "sina:hf_XAU"
   },
-  "asOf": "2026-11-19T22:37:19.134Z",
+  "asOf": "2026-11-19T22:47:25.405Z",
   "indicators": {
     "ok": true,
     "rsi14": 33.5,
@@ -463,12 +463,12 @@
     "align": "bear",
     "price": 3724.67,
     "err": null,
-    "at": "2026-11-19T22:37:19.134Z"
+    "at": "2026-11-19T22:47:25.405Z"
   },
   "deskAtr": {
-    "atr14": 94.913,
+    "atr14": 92.137,
     "bars": 636,
-    "updated": 1795127341439,
+    "updated": 1795128253642,
     "lastBar": 1795039200000
   },
   "note": "日线为伦敦金现（XAU），最后一根为当日未收盘 K；quote 为新浪 hf_XAU 实时快照；indicators 由服务端预算，前端只读；deskAtr 取自老应用 xau/klines.json，用于档距同口径"
